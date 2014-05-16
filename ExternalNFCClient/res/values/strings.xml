@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ExternalNFCClient</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="mainActivityLabel">ACS NFC Reader Service</string>
+    
+    <string name="introductionTitle">Service configuration</string>
+    <string name="introductionDescription">Configure the ACS NFC Reader service</string>
+
+
+    <string name="ndefFormat">Format to NDEF</string>
+    <string name="ndefWrite">Write NDEF</string>
+    
+    <string name="serviceStatus">Service status</string>
+    <string name="serviceStatusUnknown">Unknown</string>
+    <string name="serviceStatusStarted">Started</string>
+    <string name="serviceStatusStopped">Stopped</string>
+
+    <string name="readerStatus">Reader status</string>
+    <string name="readerStatusUnknown">Unknown</string>
+    <string name="readerStatusClosed">Closed</string>
+    <string name="readerStatusOpen">Opened</string>
+    
+    <string name="tagStatus">Tag status</string>
+    <string name="tagStatusNone">Unknown</string>
+    <string name="tagStatusAbsent">Absent</string>
+    <string name="tagStatusPresent">Present</string>
+    
+    <string name="tagType">Tag type</string>
+    <string name="tagTypeNone">Unknown</string>    
+
+    <string name="tagTypeMifareClassic">Mifare Classic</string>
+    <string name="tagTypeMifareUltralight">Mifare Ultralight</string>
+    <string name="tagTypeDesfire">Desfire</string>
+    <string name="tagTypeOther">Other</string>
+    
+    <string name="tagId">Tag id</string>
+    <string name="tagIdNone">-</string>
+    <string name="tagIdUnknown">Unknown</string>    
+    
+    <string name="tagNdefRecords">NDEF Message :</string>
+    
+    <string name="nfcAvailableEnabled">Native NFC available and enabled.</string>
+    <string name="nfcAvailableDisabled">Native NFC available but disabled.</string>
+    <string name="noNfcMessage">Native NFC is not available.</string>
+    
+    <string name="androidApplication">Android Application</string>
+    <string name="androidApplicationPackageName">Package name</string>
+
+    <string name="absoluteURI">Absolute URI</string>
+    
+    <string name="action">Action</string>
+    <string name="actionAction">Action</string>
+    
+    <string name="alternativeCarrier">Alternative Carrier</string>
+    <string name="alternativeCarrierCarrierPowerState">Carrier power state</string>
+    <string name="alternativeCarrierCarrierDataReference">Carrier data reference</string>
+    <string name="alternativeCarrierAuxiliaryDataReferences">Auxiliary data references</string>
+    
+    <string name="empty">Empty</string>
+    <string name="reserved">Reserved</string>
+    <string name="unchanged">Unchanged</string>
+
+    <string name="external">External</string>
+    <string name="domain">Domain</string>
+    <string name="type">Type</string>
+    <string name="data">Data</string>
+    <string name="dataSize">%d bytes</string>
+    
+    <string name="genericControl">Generic Control</string>
+    <string name="genericControlConfigurationByte">Configuration byte</string>
+    <string name="genericControlTarget">Target</string>
+    <string name="genericControlAction">Action</string>
+    <string name="genericControlData">Data</string>
+    <string name="genericControlDataRecords">%d data records</string>
+    
+    <string name="handoverCarrier">Handover Carrier</string>
+    <string name="handoverCarrierCarrierTypeFormat">Carrier type format</string>
+    <string name="handoverCarrierCarrierType">Carrier type</string>
+    <string name="handoverCarrierCarrierData">Carrier data</string>
+    <string name="handoverCarrierCarrierDataValue">%d bytes</string>
+    
+    <string name="handoverRequest">Handover Request</string>
+    <string name="handoverRequestMajorVersion">Major version</string>
+    <string name="handoverRequestMinorVersion">Minor version</string>
+    <string name="handoverRequestCollisionResolution">Collision resolution</string>
+    <string name="handoverRequestAlternativeCarriers">Alternative carriers</string>
+    
+    <string name="handoverSelect">Handover Select</string>
+    <string name="handoverSelectMajorVersion">Major version</string>
+    <string name="handoverSelectMinorVersion">Minor version</string>
+    <string name="handoverSelectAlternativeCarriers">Alternative carriers</string>
+    <string name="handoverSelectError">Error</string>
+
+    <string name="mimemedia">Mimemedia</string>
+    <string name="mimemediaMimetype">Mimetype</string>
+    <string name="mimemediaSize">Payload size</string>
+    
+    <string name="smartPoster">Smart Poster</string>
+    <string name="smartPosterTitle">Title</string>
+    <string name="smartPosterAction">Action</string>
+    <string name="smartPosterURI">URI</string>
+    
+    <string name="text">Text</string>
+    <string name="textMessage">Message</string>
+    <string name="textEncoding">Encoding</string>
+    <string name="textLocale">Locale</string>
+    
+    <string name="unknown">Unknown</string>
+    <string name="uri">URI</string>
+    
+    <string name="wellknownURI">Well-known URI</string>
+    
+</resources>

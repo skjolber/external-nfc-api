@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.skjolberg.nfc.external.client.MainActivity" >
+
+    <item
+        android:id="@+id/action_ndef_format"
+        android:showAsAction="never"
+        android:title="@string/ndefFormat"/>
+
+    <item
+        android:id="@+id/action_ndef_write"
+        android:showAsAction="never"
+        android:title="@string/ndefWrite"/>
+    
+</menu>
