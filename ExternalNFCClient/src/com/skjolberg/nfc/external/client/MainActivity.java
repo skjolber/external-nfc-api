@@ -481,17 +481,17 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	}
 
 	@Override
-	protected void onExternalNfcServiceStopped() {
+	protected void onExternalNfcServiceStopped(Intent intent) {
 		setServiceStarted(false);
 	}
 
 	@Override
-	protected void onExternalNfcServiceStarted() {
+	protected void onExternalNfcServiceStarted(Intent intent) {
 		setServiceStarted(true);
 	}
 
 	@Override
-	protected void onExternalNfcReaderConnected(Intent intent) {
+	protected void onExternalNfcReaderOpened(Intent intent) {
 		setReaderOpen(true);
 		
 		Log.d(TAG, "Reader open");
@@ -512,7 +512,15 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	}
 
 	@Override
-	protected void onExternalNfcReaderDisconnected() {
+	protected void onExternalNfcReaderClosed(Intent intent) {
+    	if(intent.hasExtra(NfcReader.EXTRA_READER_STATUS_CODE)) {
+    		Log.d(TAG, "Disconnect status code " + intent.getIntExtra(NfcReader.EXTRA_READER_STATUS_CODE, -1));
+    	}
+
+    	if(intent.hasExtra(NfcReader.EXTRA_READER_STATUS_MESSAGE)) {
+    		Log.d(TAG, "Disconnect status message " + intent.getCharSequenceExtra(NfcReader.EXTRA_READER_STATUS_MESSAGE));
+    	}
+
 		setReaderOpen(false);
 	}
 

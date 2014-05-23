@@ -48,9 +48,12 @@ public class VersionInfo {
     private int productionYear;		
 	
 	public VersionInfo(byte[] bytes) throws IOException {
+		if(bytes.length < 7 + 7 + uid.length + batchNumber.length + 2) {
+			throw new IllegalArgumentException();
+		}
 
 		DataInputStream din = new DataInputStream(new ByteArrayInputStream(bytes));
-		
+				
 		hardwareVendorId = din.read();
 		hardwareType = din.read();
 		hardwareSubtype = din.read();

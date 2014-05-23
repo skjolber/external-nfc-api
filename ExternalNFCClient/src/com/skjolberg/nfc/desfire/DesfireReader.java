@@ -3,6 +3,7 @@ package com.skjolberg.nfc.desfire;
 import java.io.ByteArrayOutputStream;
 
 import android.nfc.tech.IsoDep;
+import android.util.Log;
 
 public class DesfireReader {
 	
@@ -30,6 +31,20 @@ public class DesfireReader {
     public static final byte STATUS_OPERATION_OK = (byte)0x00;
     public static final byte STATUS_PERMISSION_ERROR = (byte)0x9D;
     public static final byte STATUS_ADDITIONAL_FRAME = (byte)0xAF;
+    
+    /**
+     * Converts the byte array to HEX string.
+     * 
+     * @param buffer
+     *            the buffer.
+     * @return the HEX string.
+     */
+    public static String toHexString(byte[] buffer) {
+		StringBuilder sb = new StringBuilder();
+		for(byte b: buffer)
+			sb.append(String.format("%02x", b&0xff));
+		return sb.toString();
+    }
     
     private IsoDep isoDep;
 
@@ -95,6 +110,8 @@ public class DesfireReader {
     public VersionInfo getVersionInfo() throws Exception {
     	byte[] bytes = sendRequest(GET_VERSION_INFO);
 
+    	Log.d(TAG, "Got version info " + toHexString(bytes));
+    	
     	return new VersionInfo(bytes);
     }
 
@@ -105,7 +122,7 @@ public class DesfireReader {
 
         while (true) {
             if (recvBuffer[recvBuffer.length - 2] != (byte) 0x91) {
-                throw new Exception("Invalid response");
+                throw new Exception("Invalid response " + Integer.toHexString(recvBuffer[recvBuffer.length - 2] & 0xFF));
             }
 
             output.write(recvBuffer, 0, recvBuffer.length - 2);

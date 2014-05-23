@@ -73,11 +73,11 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
             if (NfcReader.ACTION_READER_OPENED.equals(action)) {
             	Log.d(TAG, "Reader opened");
 
-            	onExternalNfcReaderConnected(intent);
+            	onExternalNfcReaderOpened(intent);
             } else if (NfcReader.ACTION_READER_CLOSED.equals(action)) {
             	Log.d(TAG, "Reader closed");
             	
-            	onExternalNfcReaderDisconnected();
+            	onExternalNfcReaderClosed(intent);
             } else {
             	throw new IllegalArgumentException("Unexpected action " + action);
             }
@@ -94,11 +94,11 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
             if (NfcService.ACTION_SERVICE_STARTED.equals(action)) {
             	Log.d(TAG, "Service started");
             	
-            	onExternalNfcServiceStarted();
+            	onExternalNfcServiceStarted(intent);
             } else  if (NfcService.ACTION_SERVICE_STOPPED.equals(action)) {
             	Log.d(TAG, "Service stopped");
             	
-            	onExternalNfcServiceStopped();
+            	onExternalNfcServiceStopped(intent);
             } else {
             	throw new IllegalArgumentException("Unexpected action " + action);
             }
@@ -251,9 +251,9 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
 		sendBroadcast(intent); 
 	}
 
-	protected abstract void onExternalNfcServiceStopped();
+	protected abstract void onExternalNfcServiceStopped(Intent intent);
 
-	protected abstract void onExternalNfcServiceStarted();
+	protected abstract void onExternalNfcServiceStarted(Intent intent);
 
     /**
      * 
@@ -262,16 +262,17 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
      * 
      */
     
-    protected abstract void onExternalNfcReaderConnected(Intent intent);
+    protected abstract void onExternalNfcReaderOpened(Intent intent);
 
     /**
      * 
      * An external NFC reader was disconnected
+     * @param intent 
      * @param b 
      * 
      */
 
-    protected abstract void onExternalNfcReaderDisconnected();
+    protected abstract void onExternalNfcReaderClosed(Intent intent);
 
 	protected abstract void onExternalNfcTagLost(Intent intent);
 	
