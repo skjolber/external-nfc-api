@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ExternalNFCClient</string>
-    <string name="action_settings">Settings</string>
-
-    <string name="mainActivityLabel">ACS NFC Reader Service</string>
-    
-    <string name="introductionTitle">Service configuration</string>
-    <string name="introductionDescription">Configure the ACS NFC Reader service</string>
-
+    <string name="app_name">External NFC Client</string>
 
     <string name="ndefFormat">Format to NDEF</string>
     <string name="ndefWrite">Write NDEF</string>

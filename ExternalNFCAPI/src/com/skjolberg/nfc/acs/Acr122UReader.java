@@ -54,6 +54,17 @@ public class Acr122UReader extends AcrReader {
 		return readBoolean(response);
 	}
 	
+	public boolean setBuzzerForCardDetection(boolean value) {
+		byte[] response;
+		try {
+			response = readerControl.setBuzzerForCardDetection(value);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
+	
    @Override
     public int describeContents() {
         return 0;

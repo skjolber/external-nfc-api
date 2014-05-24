@@ -56,6 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.skjolberg.nfc.NfcReader;
+import com.skjolberg.nfc.acs.Acr122UReader;
 import com.skjolberg.nfc.acs.AcrPICC;
 import com.skjolberg.nfc.acs.AcrReader;
 import com.skjolberg.nfc.desfire.DesfireReader;
@@ -73,9 +74,9 @@ public class MainActivity extends NfcExternalDetectorActivity {
 
 	private static final String TAG = MainActivity.class.getName();
 	
-	private boolean service = false;
-	private boolean reader = false;
-	private boolean tag = false;
+	protected boolean service = false;
+	protected boolean reader = false;
+	protected boolean tag = false;
 	
 	private NdefFormatable ndefFormatable;
 	private Ndef ndef;
@@ -112,7 +113,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 
 		if(intent.hasExtra(NfcAdapter.EXTRA_ID)) {
 			byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-			Log.d(TAG, "Tag id " + toHexString(id).toUpperCase());
+			Log.d(TAG, "Tag id " + toHexString(id));
 			
 			setTagId(toHexString(id));
 		} else {
@@ -275,6 +276,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
 				Log.d(TAG, "Problem processing tag technology", e);
 			}
 		}
+		
+		invalidateOptionsMenu();
 	}
 
 	@Override
@@ -506,6 +509,11 @@ public class MainActivity extends NfcExternalDetectorActivity {
     		List<AcrPICC> picc = reader.getPICC();
     		
     		Log.d(TAG, "Got reader " + name + " with firmware " + firmware + " and PICC setting " + picc);
+    		
+    		if(reader instanceof Acr122UReader) {
+    			Acr122UReader acr122uReader = (Acr122UReader)reader;
+    			acr122uReader.setBuzzerForCardDetection(false);
+    		}
     	} else {
     		Log.d(TAG, "No reader supplied");
     	}
@@ -575,6 +583,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	@Override
 	protected void onNfcTagLost(Intent intent) {
 		setTagPresent(false);
+		
+		invalidateOptionsMenu();
 	}
     
 	protected void onExternalNfcTagLost(Intent intent) {

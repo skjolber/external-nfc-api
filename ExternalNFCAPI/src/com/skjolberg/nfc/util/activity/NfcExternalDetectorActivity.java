@@ -242,7 +242,7 @@ public abstract class NfcExternalDetectorActivity extends NfcDetectorActivity {
 			byte b = buffer[i];
 			sb.append(String.format("%02x", b&0xff));
 		}
-		return sb.toString();
+		return sb.toString().toUpperCase();
     }
 	
 	protected void broadcast(String action) {
