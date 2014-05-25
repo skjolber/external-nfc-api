@@ -27,8 +27,9 @@ The API defines
  * 'extras' objects for interaction with readers
  * abstract activities for interaction with built-in and external NFC (in parallell)
   * these currently depend on the [NDEF Tools for Android](https://code.google.com/p/ndef-tools-for-android/) project.
+ * Programmatically start and stop the service (see methods startService() and stopService() in NfcExternalDetectorActivity class for an example).
 
-Note that tag interaction is performed via the native NFC classes and so these are not included.
+Note that tag interaction is performed via the native NFC classes and so these are not included. 
 
 Demo client
 ==============
@@ -75,5 +76,6 @@ If you need professional assistance with an NFC project, get in touch. I also do
  * Host Card Emulation for Android
  * Desfire EV1 tags (with encryption)
  * Smart card related workflows and integrations
+ * Tag emulation
 
 Check me out and connect with me on [LinkedIn](http://lnkd.in/r7PWDz).
