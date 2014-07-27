@@ -1,4 +1,4 @@
-External NFC Service API (native style) for Android BETA
+External NFC Service API (native style) for Android
 ==================================
 
 This API is for interacting with the [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app found in Google Play. 
@@ -9,7 +9,7 @@ The [External NFC Service](https://play.google.com/store/apps/details?id=com.skj
  - External NFC reader management and interaction
  - NFC Tag access <b>using Andriod built-in (native) types </b> (Ndef, MifareUltralight, IsoDep, etc). 
 
-This very much simplifies implementation in use-cases where external NFC readers is required.
+This very much simplifies implementation in use-cases where external NFC readers is required, so so will save a lot of development time.
 
 Overview
 =================
@@ -46,7 +46,7 @@ are supported and must be connected to your Android device via an On-The-Go (OTG
 
 Supported tag technology
 ========================
-Mifare Ultralight and Mifare Classic (including NTAG203) tags are supported. I recommend Mifare Ultralights / NTAG203. Desfire EV1 tags are supported but without NDEF support. Host card emulation targets are also supported.
+Mifare Ultralight and Mifare Classic (including NTAG203) tags are supported. I recommend Mifare Ultralights / NTAG203. Desfire EV1 tags are supported but without NDEF support. Host card emulation (IsoDep) targets are also supported.
 
 Please note:
  - ACR 122U the Mifare Classic support is experimental.
