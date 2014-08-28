@@ -74,9 +74,9 @@ public class MainActivity extends NfcExternalDetectorActivity {
 
 	private static final String TAG = MainActivity.class.getName();
 	
-	protected boolean service = false;
-	protected boolean reader = false;
-	protected boolean tag = false;
+	protected Boolean service = null;
+	protected Boolean reader = null;
+	protected Boolean tag = null;
 	
 	private NdefFormatable ndefFormatable;
 	private Ndef ndef;
@@ -216,7 +216,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 							
 							StringBuilder builder = new StringBuilder();
 							for(int k = 0; k < buffer.length; k+= readLength) {
-								builder.append(toHexString(buffer, k, readLength));
+								builder.append((offset + k) + " " + toHexString(buffer, k, readLength));
 								builder.append('\n');
 							}
 							
@@ -287,7 +287,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -300,6 +300,14 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		} else if (id == R.id.action_ndef_write) {
 			ndefWrite();
 			return true;
+		} else if(id == R.id.action_start_service) {
+	        Intent intent = new Intent();
+			intent.setClassName("com.skjolberg.nfc.external", "com.skjolberg.service.BackgroundUsbService");
+	        startService(intent);
+		} else if(id == R.id.action_stop_service) {
+	        Intent intent = new Intent();
+			intent.setClassName("com.skjolberg.nfc.external", "com.skjolberg.service.BackgroundUsbService");
+	        stopService(intent);
 		}
 		
 		return super.onOptionsItemSelected(item);
@@ -358,6 +366,10 @@ public class MainActivity extends NfcExternalDetectorActivity {
 				item.setVisible(ndefFormatable != null);
 			} else if(item.getItemId() == R.id.action_ndef_write) {
 				item.setVisible(ndef != null);
+			} else if(item.getItemId() == R.id.action_start_service) {
+				item.setVisible(service == null || !service);
+			} else if(item.getItemId() == R.id.action_stop_service) {
+				item.setVisible(service != null && service);
 			}
 		}
 		
@@ -368,8 +380,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-
-		private MainActivity activity;
 		
 		public PlaceholderFragment() {
 		}
@@ -392,8 +402,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			 
-			this.activity = (MainActivity) activity;
 		}
 	}
 
@@ -409,6 +417,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
 			
 			setViewVisibility(R.id.readerStatusRow, View.GONE);
 		}
+		
+		invalidateOptionsMenu();
 	}
 	
 	public void setReaderOpen(final boolean open) {
@@ -426,6 +436,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
 			setViewVisibility(R.id.tagIdRow, View.GONE);
 			setViewVisibility(R.id.tagTypeRow, View.GONE);
 		}
+		
+		invalidateOptionsMenu();
 	}
 
 	private void setViewVisibility(int id, int visibility) {
@@ -451,6 +463,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
 			
 			hideRecords();
 		}
+		
+		invalidateOptionsMenu();
 	}
 
 	public void setTextViewText(final int resource, final int string) {

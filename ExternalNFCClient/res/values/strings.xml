@@ -2,10 +2,14 @@
 <resources>
 
     <string name="app_name">External NFC Client</string>
-
+    <string name="overview">External NFC service overview</string>
+    
     <string name="ndefFormat">Format to NDEF</string>
     <string name="ndefWrite">Write NDEF</string>
-    
+
+    <string name="startService">Start service</string>
+    <string name="stopService">Stop service</string>
+
     <string name="serviceStatus">Service status</string>
     <string name="serviceStatusUnknown">Unknown</string>
     <string name="serviceStatusStarted">Started</string>
