@@ -25,7 +25,7 @@ The API defines
   * reader open / close and status
   * tag connect / disconnect
  * 'extras' objects for interaction with readers
- * abstract activities for interaction with built-in and external NFC (in parallell)
+ * abstract activities for interaction with built-in and external NFC (in parallel)
   * these currently depend on the [NDEF Tools for Android](https://code.google.com/p/ndef-tools-for-android/) project.
  * Programmatically start and stop the service (see methods startService() and stopService() in NfcExternalDetectorActivity class for an example).
 
@@ -33,7 +33,7 @@ Note that tag interaction is performed via the native NFC classes and so these a
 
 Demo client
 ==============
-The demo client keeps track of the service, reader and tag states. 
+The demo client keeps track of the service, reader and tag states. It can also start and stop the service.
 
 Supported readers
 =================
@@ -53,7 +53,7 @@ Please note:
  - ACR 1251U support is in beta.
 
 Troubleshooting
-===========
+===============
 Note that not all Android devices actually have an USB hub.
 
 Does the ACR reader not light up when connected to your device, even after the service asks for USB permissions? The ACR reader shuts down if there is not enough battery, so try charging your battery more. 
@@ -69,13 +69,21 @@ You might be interested in
 
 for configuration of your reader. Approximately the same configuration options are available using this API. 
 
+Feature requests
+================
+Please email feature requests to skjolber@gmail.com.
+
+Distribution
+============
+Get in touch for bulk and/or offline distribution. A library jar is also available, simplifying distribution of your own app(s).
+
 Need help?
 ===========
 If you need professional assistance with an NFC project, get in touch. I also do
 
- * Host Card Emulation for Android
- * Desfire EV1 tags (with encryption)
- * Smart card related workflows and integrations
+ * Host Card Emulation (HCE) for Android
+ * Desfire EV1 tech (with encryption)
+ * Smartcard-related workflows and integrations
  * Tag emulation
 
-Check me out and connect with me on [LinkedIn](http://lnkd.in/r7PWDz).
+Feel free to connect with me on [LinkedIn](http://lnkd.in/r7PWDz).
