@@ -30,6 +30,7 @@ import org.ndeftools.wellknown.UriRecord;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
@@ -43,6 +44,8 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -56,11 +59,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.skjolberg.nfc.NfcReader;
+import com.skjolberg.nfc.NfcTag;
 import com.skjolberg.nfc.acs.Acr122UReader;
 import com.skjolberg.nfc.acs.AcrPICC;
 import com.skjolberg.nfc.acs.AcrReader;
 import com.skjolberg.nfc.desfire.DesfireReader;
 import com.skjolberg.nfc.desfire.VersionInfo;
+import com.skjolberg.nfc.util.CommandAPDU;
+import com.skjolberg.nfc.util.ResponseAPDU;
 import com.skjolberg.nfc.util.activity.NfcExternalDetectorActivity;
 
 /**
@@ -86,11 +92,13 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
-
+		
 		initializeExternalNfc();
 		
         setDetecting(true);
@@ -236,21 +244,78 @@ public class MainActivity extends NfcExternalDetectorActivity {
 						Log.d(TAG, "Ignore " + tech);
 					} else if (tech.equals(android.nfc.tech.IsoDep.class.getName())) {
 						android.nfc.tech.IsoDep isoDep = IsoDep.get(tag);
-						
-						setTagType(getString(R.string.tagTypeDesfire));
 
-						Log.d(TAG, "Got " + isoDep.getClass().getName());
-	
-						isoDep.connect();
-						
-						DesfireReader reader = new DesfireReader(isoDep);
-						
-						VersionInfo versionInfo = reader.getVersionInfo();
-						
-						Log.d(TAG, "Got version info - hardware version " + versionInfo.getHardwareVersion() + " / software version " + versionInfo.getSoftwareVersion());
-						
-						isoDep.close();
-						
+						boolean hostCardEmulation = intent.getBooleanExtra(NfcTag.EXTRA_HOST_CARD_EMULATION, false);
+
+						if(hostCardEmulation) {
+							setTagType(getString(R.string.tagTypeHostCardEmulation));
+							
+							Log.d(TAG, "Got " + isoDep.getClass().getName() + " for HCE");
+
+				           	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+				           	
+					    	boolean autoSelectIsoApplication = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_AUTO_SELECT_ISO_APPLICATION, true);
+
+					    	if(autoSelectIsoApplication) {
+								isoDep.connect();
+
+								// attempt to select demo HCE application using iso adpu
+						    	String isoApplicationString = prefs.getString(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID, null);
+								
+						    	// clean whitespace
+						    	isoApplicationString = isoApplicationString.replaceAll("\\s","");
+						    	
+						    	try {
+						    		byte[] key = hexStringToByteArray(isoApplicationString);
+						    		
+						    		CommandAPDU command = new CommandAPDU(0x00, 0xA4, 0x04, 00, key);
+
+						    		Log.d(TAG, "Send request " + toHexString(command.getBytes()) );
+
+						    		byte[] responseBytes = isoDep.transceive(createSelectAidApdu(key));
+						    		
+						    		Log.d(TAG, "Got response " + toHexString(responseBytes));
+
+						    		ResponseAPDU response = new ResponseAPDU(responseBytes);
+						    		
+						    		if(response.getSW1() == 0x91 && response.getSW2() == 0x00) {
+							    		Log.d(TAG, "Selected HCE application " + isoApplicationString);
+							    		
+							    		// issue command which now should be routed to the same HCE client
+							    		// pretend to select application of desfire card
+							    		
+							    		DesfireReader reader = new DesfireReader(isoDep);
+							    		reader.selectApplication(0x00112233);
+
+							    		Log.d(TAG, "Selected application using desfire select application command");
+						    		} else if(response.getSW1() == 0x82 && response.getSW2() == 0x6A) {
+							    		Log.d(TAG, "HCE application " + isoApplicationString + " not found on remote device");
+						    		} else {
+							    		Log.d(TAG, "Unknown error selecting HCE application " + isoApplicationString);
+						    		}
+						    	} catch(Exception e) {
+						    		Log.w(TAG, "Unable to decode HEX string " + isoApplicationString + " into binary data", e);
+						    	}
+								isoDep.close();
+
+					    	}
+
+
+						} else {
+							setTagType(getString(R.string.tagTypeDesfire));
+
+							Log.d(TAG, "Got " + isoDep.getClass().getName());
+		
+							isoDep.connect();
+							
+							DesfireReader reader = new DesfireReader(isoDep);
+							
+							VersionInfo versionInfo = reader.getVersionInfo();
+							
+							Log.d(TAG, "Got version info - hardware version " + versionInfo.getHardwareVersion() + " / software version " + versionInfo.getSoftwareVersion());
+							
+							isoDep.close();
+						}						
 	
 					} else if (tech.equals(android.nfc.tech.MifareClassic.class.getName())) {
 						android.nfc.tech.MifareClassic mifareClassic = MifareClassic.get(tag);
@@ -279,6 +344,18 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		
 		invalidateOptionsMenu();
 	}
+	
+    private static final byte[] CLA_INS_P1_P2 = { 0x00, (byte)0xA4, 0x04, 0x00 };
+	
+	private byte[] createSelectAidApdu(byte[] aid) {
+		byte[] result = new byte[6 + aid.length];
+		System.arraycopy(CLA_INS_P1_P2, 0, result, 0, CLA_INS_P1_P2.length);
+		result[4] = (byte)aid.length;
+		System.arraycopy(aid, 0, result, 5, aid.length);
+		result[result.length - 1] = 0;
+		return result;
+	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -308,12 +385,15 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	        Intent intent = new Intent();
 			intent.setClassName("com.skjolberg.nfc.external", "com.skjolberg.service.BackgroundUsbService");
 	        stopService(intent);
+		} else if(id == R.id.action_preferences) {
+			Intent intent = new Intent(this, PreferencesActivity.class);
+			startActivity(intent);
 		}
 		
 		return super.onOptionsItemSelected(item);
 	}
 
-	
+
 	
 	private void ndefWrite() {
 		Log.d(TAG, "NDEF write");
@@ -659,4 +739,13 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		ndefRecords.setVisibility(View.GONE);
 	}
 
+	public static byte[] hexStringToByteArray(String s) {
+	    int len = s.length();
+	    byte[] data = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+	                             + Character.digit(s.charAt(i+1), 16));
+	    }
+	    return data;
+	}
 }

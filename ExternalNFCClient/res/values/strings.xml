@@ -6,7 +6,14 @@
     
     <string name="ndefFormat">Format to NDEF</string>
     <string name="ndefWrite">Write NDEF</string>
-
+    
+    <string name="preferences">Preferences</string>
+    <string name="preferenceCategoryHostCardEmulation">Host card emulation</string>
+    <string name="preferenceHostCardEmulationApplicationAutoSelectIsoApplicationTitle">Auto-select application</string>
+    <string name="preferenceHostCardEmulationApplicationAutoSelectIsoApplicationSummary">Automatically issue command selecting HCE application upon HCE device detect.</string>
+    <string name="preferenceHostCardEmulationApplicationIdTitle">Application ID</string>
+    <string name="preferenceHostCardEmulationApplicationIdSummary">Auto-selected Application ID.</string>
+    
     <string name="startService">Start service</string>
     <string name="stopService">Stop service</string>
 
@@ -31,6 +38,7 @@
     <string name="tagTypeMifareClassic">Mifare Classic</string>
     <string name="tagTypeMifareUltralight">Mifare Ultralight</string>
     <string name="tagTypeDesfire">Desfire</string>
+    <string name="tagTypeHostCardEmulation">Host card emulation</string>
     <string name="tagTypeOther">Other</string>
     
     <string name="tagId">Tag id</string>

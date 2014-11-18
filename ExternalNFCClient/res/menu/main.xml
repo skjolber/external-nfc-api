@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_start_service"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/startService"
         android:visible="false"
         android:icon="@android:drawable/ic_media_play"
@@ -27,5 +27,11 @@
         android:id="@+id/action_ndef_write"
         android:showAsAction="withText"
         android:title="@string/ndefWrite"/>
+
+    <item
+        android:id="@+id/action_preferences"
+        android:showAsAction="withText"
+        android:title="@string/preferences"/>
     
+
 </menu>
