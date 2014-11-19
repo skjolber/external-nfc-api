@@ -272,7 +272,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 
 						    		Log.d(TAG, "Send request " + toHexString(command.getBytes()) );
 
-						    		byte[] responseBytes = isoDep.transceive(createSelectAidApdu(key));
+						    		byte[] responseBytes = isoDep.transceive(command.getBytes());
 						    		
 						    		Log.d(TAG, "Got response " + toHexString(responseBytes));
 
@@ -345,18 +345,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		invalidateOptionsMenu();
 	}
 	
-    private static final byte[] CLA_INS_P1_P2 = { 0x00, (byte)0xA4, 0x04, 0x00 };
-	
-	private byte[] createSelectAidApdu(byte[] aid) {
-		byte[] result = new byte[6 + aid.length];
-		System.arraycopy(CLA_INS_P1_P2, 0, result, 0, CLA_INS_P1_P2.length);
-		result[4] = (byte)aid.length;
-		System.arraycopy(aid, 0, result, 5, aid.length);
-		result[result.length - 1] = 0;
-		return result;
-	}
-
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -555,18 +543,10 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		setTextViewText(R.id.tagType, type);
 	}
 
-	private void clearTagType() {
-		setTagType(getString(R.string.tagTypeNone));			
-	}
-
 	public void setTagId(final String type) {
 		setTextViewText(R.id.tagId, type);
 	}
 
-	private void clearTagId() {
-		setTagId(getString(R.string.tagIdNone));			
-	}
-	
 	public void setTextViewText(final int resource, final String string) {
 		runOnUiThread(new Runnable() {
 			public void run() {
