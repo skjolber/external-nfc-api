@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.skjolberg.nfc.external.kiosk.MainActivity" >
+
+        <item
+        android:id="@+id/action_start_service"
+        android:showAsAction="ifRoom"
+        android:title="@string/startService"
+        android:visible="false"
+        android:icon="@android:drawable/ic_media_play"
+        />
+        
+	<item
+        android:id="@+id/action_stop_service"
+        android:showAsAction="always"
+        android:title="@string/stopService"
+        android:visible="false"
+        android:icon="@android:drawable/ic_media_pause"
+        />
+	
+    <item
+        android:id="@+id/action_preferences"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/preferences"/>
+
+</menu>

@@ -1,0 +1,70 @@
+<html>
+<head>
+	<meta name="mobile-web-app-capable" content="yes">
+    <script type="text/javascript">
+
+	function nfcTagPresent(uid){
+		console.log("Tag present " + uid);
+
+		document.getElementById('tagState').innerHTML = 'Present';
+		document.getElementById('tagUID').innerHTML = uid;
+	}
+
+	function nfcTagLost(){
+		console.log("Tag lost");
+
+		document.getElementById('tagState').innerHTML = 'Lost';
+		document.getElementById('tagUID').innerHTML = '-';
+	}
+
+	function nfcServiceStarted(){
+		console.log("Service started");
+
+		document.getElementById('serviceState').innerHTML = 'Started';
+	}
+	
+	function nfcServiceStopped(){
+		console.log("Service stopped");
+
+		document.getElementById('serviceState').innerHTML = 'Stopped';
+	}
+
+	function nfcReaderOpen(){
+		console.log("Reader open");
+
+		document.getElementById('readerState').innerHTML = 'Open';
+	}
+	
+	function nfcReaderClosed(){
+		console.log("Reader closed");
+
+		document.getElementById('readerState').innerHTML = 'Closed';
+	}
+
+	</script>
+</head>
+<body>
+
+<h1>NFC Web Kiosk embedded example</h1>
+<p>See <a href="https://github.com/skjolber/external-nfc-api/tree/develop/ExternalNFCWebKiosk">Github page</a> for javascript API.</p>
+<table style="width:100%">
+  <tr>
+    <td style="width:50%">Service state</td>
+    <td id="serviceState">-</td>		
+  </tr>
+  <tr>
+    <td>Reader state</td>
+    <td id="readerState">-</td>		
+  </tr>
+  <tr>
+    <td>Tag state</td>
+    <td id="tagState">-</td>		
+  </tr>
+  <tr>
+    <td>UID</td>
+    <td id="tagUID">-</td>		
+  </tr>
+</table>
+
+</body>
+</html>

@@ -2,4 +2,7 @@ logs/
 target/
 bin/
 activemq-data/
-
+transaction.log
+*.bpr
+*.class
+.attach_pid*
