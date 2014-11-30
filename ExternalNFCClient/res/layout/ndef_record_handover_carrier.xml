@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+     >
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/handoverCarrier"
+		android:padding="3dip"
+        android:textColor="@color/ndefText"
+		android:textStyle="bold"
+	/>
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1" >
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/handoverCarrierCarrierTypeFormat"
+				android:textColor="@color/ndefText"
+                />
+
+            <TextView
+                android:gravity="left"
+                android:padding="3dip"
+        	    android:id="@+id/handoverCarrierCarrierTypeFormatValue"
+				android:textColor="@color/ndefText"
+            />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/handoverCarrierCarrierType"
+				android:textColor="@color/ndefText"
+                 />
+
+            <TextView
+                android:gravity="left"
+                android:padding="3dip"
+        	    android:id="@+id/handoverCarrierCarrierTypeValue"
+				android:textColor="@color/ndefText"
+                 />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/handoverCarrierCarrierData"
+				android:textColor="@color/ndefText"
+                 />
+
+            <TextView
+                android:gravity="left"
+                android:padding="3dip"
+        	    android:id="@+id/handoverCarrierCarrierDataValue"
+				android:textColor="@color/ndefText"
+                 />
+        </TableRow>
+    </TableLayout>
+ 
+    
+</LinearLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NFC Web Kiosk</string>
+    <string name="preferences">Preferences</string>
+    <string name="preferenceCategoryURL">Kiosk URL</string>
+    <string name="preferenceURLTitle">URL</string>
+    <string name="preferenceURLSummary">Webview address</string>
+
+    <string name="nfcAvailableEnabled">Native NFC available and enabled.</string>
+    <string name="nfcAvailableDisabled">Native NFC available but disabled.</string>
+    <string name="noNfcMessage">Native NFC is not available.</string>
+    
+    <string name="startService">Start service</string>
+    <string name="stopService">Stop service</string>
+    
+</resources>

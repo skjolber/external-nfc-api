@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:picker="http://schemas.android.com/apk/res/com.skjolberg.instaowner" >
+
+    <PreferenceCategory android:title="@string/preferenceCategoryURL" > 
+        
+        <EditTextPreference
+            android:key="preference_url"
+            android:title="@string/preferenceURLTitle"
+            android:summary="@string/preferenceURLSummary"
+			android:defaultValue=""
+                 />
+    </PreferenceCategory>
+
+</PreferenceScreen>

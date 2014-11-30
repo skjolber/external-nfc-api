@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+	android:padding="5dip"    
+    >
+
+	<TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/overview"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+        
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:shrinkColumns="2"
+        android:stretchColumns="1" >
+
+        <TableRow android:id="@+id/serviceStatusRow">
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/serviceStatus"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+
+            <TextView
+                android:id="@+id/serviceStatus"
+                android:gravity="right"
+                android:padding="3dip"
+                android:text="@string/serviceStatusUnknown"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+        </TableRow>
+
+        <TableRow  android:id="@+id/readerStatusRow" android:visibility="gone">
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/readerStatus"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+
+            <TextView
+                android:id="@+id/readerStatus"
+                android:gravity="right"
+                android:padding="3dip"
+                android:text="@string/readerStatusUnknown"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+        </TableRow>
+
+        <TableRow  android:id="@+id/tagStatusRow" android:visibility="gone">
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/tagStatus"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+
+            <TextView
+                android:id="@+id/tagStatus"
+                android:gravity="right"
+                android:padding="3dip"
+                android:text="@string/tagStatusNone"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+        </TableRow>
+
+        <TableRow android:id="@+id/tagTypeRow" android:visibility="gone">
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/tagType"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+
+            <TextView
+                android:id="@+id/tagType"
+                android:gravity="right"
+                android:padding="3dip"
+                android:text="@string/tagTypeNone"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+        </TableRow>
+        
+        <TableRow android:id="@+id/tagIdRow" android:visibility="gone">
+
+            <TextView
+                android:layout_column="1"
+                android:padding="3dip"
+                android:text="@string/tagId"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+
+            <TextView
+                android:id="@+id/tagId"
+                android:gravity="right"
+                android:padding="3dip"
+                android:text="@string/tagIdNone"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                 />
+        </TableRow>
+    </TableLayout>    
+    
+    <TextView
+        android:id="@+id/ndefRecords"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:text="@string/tagNdefRecords"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:visibility="gone"
+         />
+    
+	<ListView
+        android:id="@+id/recordListView"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:cacheColorHint="@android:color/transparent"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+    
+</LinearLayout>    
