@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -380,4 +381,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
         return new String(getResource(id, this), Charset.forName("UTF-8"));
     }
     
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
 }

@@ -2,27 +2,16 @@ package com.skjolberg.nfc.external.hceclient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Random;
 
-import com.skjolberg.nfc.util.CommandAPDU;
-import com.skjolberg.nfc.util.Broadcast;
-
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.cardemulation.CardEmulation;
 import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
+
+import com.skjolberg.nfc.util.Broadcast;
+import com.skjolberg.nfc.util.CommandAPDU;
 
 public class ExternalNFCHostApduService extends HostApduService {
 
@@ -69,7 +58,7 @@ public class ExternalNFCHostApduService extends HostApduService {
 			}
 			case SELECT_APPLICATION: {
 
-				String application = toHexString(command.getData());
+				String application = toHexString(command.getData(), 1, 3);
 				
 				Log.d(TAG, "Selected application " + application);
 

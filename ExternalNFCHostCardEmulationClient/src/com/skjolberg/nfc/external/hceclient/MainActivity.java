@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.cardemulation.CardEmulation;
@@ -143,4 +144,8 @@ public class MainActivity extends DialogActivity {
 		super.onDestroy();
 	}
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
 }
