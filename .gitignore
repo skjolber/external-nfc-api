@@ -6,3 +6,4 @@ transaction.log
 *.bpr
 *.class
 .attach_pid*
+libs/nxp*.jar

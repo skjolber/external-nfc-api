@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ExternalNFCNxpLibrary</string>
+
+    <string name="title">NXP Log View</string>
+    <string name="clear">Clear</string>
+    
+    <string name="nfcAvailableEnabled">Native NFC available and enabled.</string>
+    <string name="nfcAvailableDisabled">Native NFC available but disabled.</string>
+    <string name="noNfcMessage">Native NFC is not available.</string>
+    
+</resources>
