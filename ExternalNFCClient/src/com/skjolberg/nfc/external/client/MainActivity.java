@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
@@ -268,6 +269,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
 						    	try {
 						    		byte[] key = hexStringToByteArray(isoApplicationString);
 						    		
+						    		// send ISO select application. 
+						    		// All commands starting with 0x00 are passed through without ADPU wrapping for HCE 
 						    		CommandAPDU command = new CommandAPDU(0x00, 0xA4, 0x04, 00, key);
 
 						    		Log.d(TAG, "Send request " + toHexString(command.getBytes()) );
@@ -727,5 +730,10 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	                             + Character.digit(s.charAt(i+1), 16));
 	    }
 	    return data;
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
 	}
 }

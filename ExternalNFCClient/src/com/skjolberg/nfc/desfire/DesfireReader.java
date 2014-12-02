@@ -118,20 +118,24 @@ public class DesfireReader {
     private byte[] sendRequest (byte command, byte[] parameters) throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
+        Log.d(TAG, "Request : " + toHexString(wrapCommand(command, parameters)));
+
         byte[] recvBuffer = isoDep.transceive(wrapCommand(command, parameters));
 
+        Log.d(TAG, "Response: " + toHexString(recvBuffer));
+        
         while (true) {
-            if (recvBuffer[recvBuffer.length - 2] != (byte) 0x91) {
-                throw new Exception("Invalid response " + Integer.toHexString(recvBuffer[recvBuffer.length - 2] & 0xFF));
-            }
+            output.write(recvBuffer, 1, recvBuffer.length - 1);
 
-            output.write(recvBuffer, 0, recvBuffer.length - 2);
-
-            byte status = recvBuffer[recvBuffer.length - 1];
+            byte status = recvBuffer[0];
             if (status == STATUS_OPERATION_OK) {
                 break;
             } else if (status == STATUS_ADDITIONAL_FRAME) {
+                Log.d(TAG, "Request : " + toHexString(wrapCommand(command, parameters)));
+                
                 recvBuffer = isoDep.transceive(wrapCommand(GET_ADDITIONAL_FRAME, null));
+                
+                Log.d(TAG, "Response: " + toHexString(recvBuffer));
              } else if (status == STATUS_PERMISSION_ERROR) {
                 throw new DesfireException(status, "Permission denied");
             } else {
@@ -145,15 +149,11 @@ public class DesfireReader {
     private byte[] wrapCommand(byte command, byte[] parameters) throws Exception {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        stream.write(0x90);
         stream.write(command);
-        stream.write(0x00);
-        stream.write(0x00);
         if (parameters != null) {
             stream.write(parameters.length);
             stream.write(parameters);
         }
-        stream.write(0x00);
 
         return stream.toByteArray();
     }
