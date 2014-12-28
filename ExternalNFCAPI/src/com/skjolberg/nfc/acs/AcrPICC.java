@@ -7,6 +7,7 @@ public enum AcrPICC {
 
 	AUTO_PICC_POLLING(1 << 7),
 	AUTO_ATS_GENERATION(1 << 6),
+	/** 1 for 250, 0 for 500 milliseconds */
 	POLLING_INTERVAL(1 << 5),
 	POLL_FELICA_424K(1 << 4),
 	POLL_FELICA_212K(1 << 3),

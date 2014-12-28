@@ -8,6 +8,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
 
+import com.skjolberg.nfc.acs.acr1281u.AutomaticPICCPolling;
+import com.skjolberg.nfc.acs.acr1281u.DefaultLEDAndBuzzerBehaviour;
 import com.skjolberg.nfc.acs.remote.IAcr1281UReaderControl;
 
 public class Acr1281UReader extends AcrReader {
@@ -159,4 +161,73 @@ public class Acr1281UReader extends AcrReader {
 		return readBoolean(response);
 	}
 
+	public List<AutomaticPICCPolling> getAutomaticPICCPolling() {
+		byte[] response;
+		try {
+			response = readerControl.getAutomaticPICCPolling();
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return AutomaticPICCPolling.parse(readInteger(response));
+	}
+	
+	public boolean setAutomaticPICCPolling(AutomaticPICCPolling ... types) {
+		byte[] response;
+		try {
+			response = readerControl.setAutomaticPICCPolling(AutomaticPICCPolling.serialize(types));
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
+	
+	public boolean setExclusiveMode(boolean shared) {
+		byte[] response;
+		try {
+			response = readerControl.setExclusiveMode(shared);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		byte[] resultByteArray = readByteArray(response);
+		
+		return resultByteArray[1] != 0;
+	}
+	
+	public boolean getExclusiveMode() {
+		byte[] response;
+		try {
+			response = readerControl.getExclusiveMode();
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		byte[] resultByteArray = readByteArray(response);
+		
+		return resultByteArray[1] != 0;
+	}
+
+	public List<DefaultLEDAndBuzzerBehaviour> getDefaultLEDAndBuzzerBehaviour() {
+		byte[] response;
+		try {
+			response = readerControl.getDefaultLEDAndBuzzerBehaviour();
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return DefaultLEDAndBuzzerBehaviour.parse(readInteger(response));
+	}
+	
+	public boolean setDefaultLEDAndBuzzerBehaviour(DefaultLEDAndBuzzerBehaviour ... types) {
+		byte[] response;
+		try {
+			response = readerControl.setDefaultLEDAndBuzzerBehaviour(DefaultLEDAndBuzzerBehaviour.serialize(types));
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
 }
