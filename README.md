@@ -15,7 +15,12 @@ Overview
 =================
 This repository contains source code for 
  * An Android library project (the actual API), and 
- * a demo client app demonstrating actual usage
+ * Demo client apps demonstrating actual usage
+  * [Basic client app](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCClient)
+  * [NXP API client](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/)
+  * [Web Kiosk client](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCWebKiosk) with javascript bindings
+
+There is also a [Host Card Emulation client app](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCHostCardEmulationClient) for use with the Basic client app.
 
 API
 ===
@@ -27,13 +32,9 @@ The API defines
  * 'extras' objects for interaction with readers
  * abstract activities for interaction with built-in and external NFC (in parallel)
   * these currently depend on the [NDEF Tools for Android](https://code.google.com/p/ndef-tools-for-android/) project.
- * Programmatically start and stop the service (see methods startService() and stopService() in NfcExternalDetectorActivity class for an example).
+ * Programmatically start and stop the service (see methods startService() and stopService() in the [NfcExternalDetectorActivity](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/util/activity/NfcExternalDetectorActivity.java) class in for an example).
 
-Note that tag interaction is performed via the native NFC classes and so these are not included. 
-
-Demo client
-==============
-The demo client keeps track of the service, reader and tag states. It can also start and stop the service.
+Note that tag interaction is performed via the native NFC classes and so these are not included in the API itself. 
 
 Supported readers
 =================
@@ -41,6 +42,7 @@ Currently the ACS readers
  * [ACR 122U](http://www.acs.com.hk/index.php?pid=product&id=ACR122U) 
  * [ACR 1222L](http://www.acs.com.hk/index.php?pid=product&id=ACR1222L)
  * [ACR 1251U](http://www.acs.com.hk/en/products/218/acr1251-usb-nfc-reader-ii/)
+ * [ACR 1281U-C1](http://www.acs.com.hk/en/products/159/acr1281u-c1-dualboost-ii-usb-dual-interface-reader/)
  
 are supported and must be connected to your Android device via an On-The-Go (OTG) USB cable.
 
@@ -50,7 +52,7 @@ Mifare Ultralight and Mifare Classic (including NTAG203) tags are supported. I r
 
 Please note:
  - ACR 122U the Mifare Classic support is experimental.
- - ACR 1251U support is in beta.
+ - ACR 1281U support is in beta.
 
 Troubleshooting
 ===============
@@ -66,6 +68,7 @@ You might be interested in
  * [ACR 1222L USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1222) 
  * [ACR 122 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr122u)
  * [ACR 1251 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1251u)
+ * [ACR 1281 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1281u)
 
 for configuration of your reader. Approximately the same configuration options are available using this API. 
 
