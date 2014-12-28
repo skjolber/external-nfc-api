@@ -9,7 +9,7 @@ The [External NFC Service](https://play.google.com/store/apps/details?id=com.skj
  - External NFC reader management and interaction
  - NFC Tag access <b>using Andriod built-in (native) types </b> (Ndef, MifareUltralight, IsoDep, etc). 
 
-This very much simplifies implementation in use-cases where external NFC readers is required, so so will save a lot of development time.
+This very much simplifies implementation in use-cases where external NFC readers is required, so it will save a lot of development time.
 
 Overview
 =================
