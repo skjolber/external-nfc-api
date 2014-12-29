@@ -1,6 +1,6 @@
 package com.skjolberg.nfc.acs.remote;
 
-interface IAcr1283UReaderControl {
+interface IAcr1283LReaderControl {
 
 	byte[] getFirmware();
 	

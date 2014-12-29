@@ -8,11 +8,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
 
-import com.skjolberg.nfc.acs.remote.IAcr1283UReaderControl;
+import com.skjolberg.nfc.acs.remote.IAcr1283LReaderControl;
 
-public class Acr1283UReader extends AcrReader {
+public class Acr1283LReader extends AcrReader {
 
-	private static final String TAG = Acr1283UReader.class.getName();
+	private static final String TAG = Acr1283LReader.class.getName();
 	
 	private static final int LED_GREEN = 1;
 	private static final int LED_BLUE = 1 << 1;
@@ -107,9 +107,9 @@ public class Acr1283UReader extends AcrReader {
 		return leds;
 	}
 	
-	protected IAcr1283UReaderControl readerControl;
+	protected IAcr1283LReaderControl readerControl;
 	
-	public Acr1283UReader(String name, IAcr1283UReaderControl readerControl) {
+	public Acr1283LReader(String name, IAcr1283LReaderControl readerControl) {
 		this.name = name;
 		this.readerControl = readerControl;
 	}
@@ -164,23 +164,23 @@ public class Acr1283UReader extends AcrReader {
     	dest.writeStrongBinder(readerControl.asBinder());
     }
 
-    public static final Parcelable.Creator<Acr1283UReader> CREATOR =
-            new Parcelable.Creator<Acr1283UReader>() {
+    public static final Parcelable.Creator<Acr1283LReader> CREATOR =
+            new Parcelable.Creator<Acr1283LReader>() {
         @Override
-        public Acr1283UReader createFromParcel(Parcel in) {
+        public Acr1283LReader createFromParcel(Parcel in) {
         	String name = in.readString();
         	
         	IBinder binder = in.readStrongBinder();
         	
-        	IAcr1283UReaderControl iin = IAcr1283UReaderControl.Stub.asInterface(binder);
+        	IAcr1283LReaderControl iin = IAcr1283LReaderControl.Stub.asInterface(binder);
         	
-        	return new Acr1283UReader(name, iin);
+        	return new Acr1283LReader(name, iin);
 
         }
 
         @Override
-        public Acr1283UReader[] newArray(int size) {
-            return new Acr1283UReader[size];
+        public Acr1283LReader[] newArray(int size) {
+            return new Acr1283LReader[size];
         }
     };
 

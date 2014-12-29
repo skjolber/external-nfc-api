@@ -75,7 +75,7 @@ public class Acr1222LReader extends AcrReader {
 	public boolean setLEDs(AcrLED ... types) {
 		byte[] response;
 		try {
-			int operation = Acr1283UReader.serializeLEDs(types);
+			int operation = Acr1283LReader.serializeLEDs(types);
 			
 			response = readerControl.setLEDs(operation);
 		} catch (RemoteException e) {
@@ -114,13 +114,13 @@ public class Acr1222LReader extends AcrReader {
 			throw new AcrReaderException(e);
 		}
 		
-		return Acr1283UReader.parseBehaviour(readInteger(response));
+		return Acr1283LReader.parseBehaviour(readInteger(response));
 	}
 	
 	public boolean setDefaultLEDAndBuzzerBehaviour(AcrDefaultLEDAndBuzzerBehaviour ... types) {
 		byte[] response;
 		try {
-			int operation = Acr1283UReader.serializeBehaviour(types);
+			int operation = Acr1283LReader.serializeBehaviour(types);
 			
 			response = readerControl.setDefaultLEDAndBuzzerBehaviour(operation);
 		} catch (RemoteException e) {
