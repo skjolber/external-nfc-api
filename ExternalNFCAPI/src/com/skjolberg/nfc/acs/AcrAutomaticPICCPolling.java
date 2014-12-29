@@ -1,9 +1,16 @@
-package com.skjolberg.nfc.acs.acr1281u;
+package com.skjolberg.nfc.acs;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public enum AutomaticPICCPolling {
+/**
+ * ACR 1281 and ACR 1283
+ * 
+ * @author thomas
+ *
+ */
+
+public enum AcrAutomaticPICCPolling {
 
 	AUTO_PICC_POLLING(1 << 0),
 	TURN_ANTENNA_FIELD_IF_NO_PICC_FOUND(1 << 1),
@@ -19,11 +26,11 @@ public enum AutomaticPICCPolling {
 	private final int filter;
 	private final int value;
 	
-	private AutomaticPICCPolling(int filter) {
+	private AcrAutomaticPICCPolling(int filter) {
 		this(filter, filter);
 	}
 
-	private AutomaticPICCPolling(int filter, int value) {
+	private AcrAutomaticPICCPolling(int filter, int value) {
 		this.filter = filter;
 		this.value = value;
 	}
@@ -36,10 +43,10 @@ public enum AutomaticPICCPolling {
 		return value;
 	}
 
-	public static List<AutomaticPICCPolling> parse(int picc) {
-		ArrayList<AutomaticPICCPolling> values = new ArrayList<AutomaticPICCPolling>();
+	public static List<AcrAutomaticPICCPolling> parse(int picc) {
+		ArrayList<AcrAutomaticPICCPolling> values = new ArrayList<AcrAutomaticPICCPolling>();
 		
-		for(AutomaticPICCPolling acrPICC : values()) {
+		for(AcrAutomaticPICCPolling acrPICC : values()) {
 			if((picc & acrPICC.getFilter()) == acrPICC.getValue()) {
 				values.add(acrPICC);
 			}
@@ -48,10 +55,10 @@ public enum AutomaticPICCPolling {
 		return values;
 	}
 	
-	public static int serialize(AutomaticPICCPolling[] acrPICCs) {
+	public static int serialize(AcrAutomaticPICCPolling[] acrPICCs) {
 		int value = 0;
 		
-		for(AutomaticPICCPolling acrPICC : acrPICCs) {
+		for(AcrAutomaticPICCPolling acrPICC : acrPICCs) {
 			value |= acrPICC.getValue();
 		}
 		
