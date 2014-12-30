@@ -8,38 +8,37 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
 
-import com.skjolberg.nfc.acs.remote.IAcr1281UReaderControl;
+import com.skjolberg.nfc.acs.remote.IAcr1283LReaderControl;
 
-public class Acr1281UReader extends AcrReader {
+public class Acr1283LReader extends AcrReader {
 
-	private static final String TAG = Acr1281UReader.class.getName();
+	private static final String TAG = Acr1283LReader.class.getName();
 	
-	private static final int LED_GREEN = 1 << 1;
-	private static final int LED_RED = 1;
+	private static final int LED_GREEN = 1;
+	private static final int LED_BLUE = 1 << 1;
+	private static final int LED_ORANGE = 1 << 2;
+	private static final int LED_RED = 1 << 3;
 	
-	private static final int ICC_ACTIVATION_STATUS_LED = 1 << 0;
+	// behaviour bits
+	// bit 0 RFU
 	private static final int PICC_POLLING_STATUS_LED = 1 << 1;
-	// bit 2 RFU
-	// bit 3 RFU
-	private static final int CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER = 1 << 4;
-	private static final int CONTACTLESS_CHIP_RESET_INDICATION_BUZZER = 1 << 5;
-	private static final int EXCLUSIVE_MODE_STATUS_BUZZER = 1 << 6;
+	private static final int PICC_ACTIVATION_STATUS_LED = 1 << 2;
+	private static final int CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER = 1 << 3;
+	// bit 4 RFU
+	// bit 5 RFU
+	// bit 6 RFU
 	private static final int LED_CARD_OPERATION_BLINK = 1 << 7;
 	
 	public static int serializeBehaviour(AcrDefaultLEDAndBuzzerBehaviour... types) {
 		int operation = 0;
 
 		for(AcrDefaultLEDAndBuzzerBehaviour type : types) {
-			if(type == AcrDefaultLEDAndBuzzerBehaviour.ICC_ACTIVATION_STATUS_LED) {
-				operation |= ICC_ACTIVATION_STATUS_LED;
-			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.PICC_POLLING_STATUS_LED) {
+			if(type == AcrDefaultLEDAndBuzzerBehaviour.PICC_POLLING_STATUS_LED) {
 				operation |= PICC_POLLING_STATUS_LED;
+			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.PICC_ACTIVATION_STATUS_LED) {
+				operation |= PICC_ACTIVATION_STATUS_LED;
 			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER) {
 				operation |= CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER;
-			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.CONTACTLESS_CHIP_RESET_INDICATION_BUZZER) {
-				operation |= CONTACTLESS_CHIP_RESET_INDICATION_BUZZER;
-			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.EXCLUSIVE_MODE_STATUS_BUZZER) {
-				operation |= EXCLUSIVE_MODE_STATUS_BUZZER;
 			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.LED_CARD_OPERATION_BLINK) {
 				operation |= LED_CARD_OPERATION_BLINK;
 			} else {
@@ -52,36 +51,65 @@ public class Acr1281UReader extends AcrReader {
 	public static List<AcrDefaultLEDAndBuzzerBehaviour> parseBehaviour(int operation) {
 		List<AcrDefaultLEDAndBuzzerBehaviour> behaviours = new ArrayList<AcrDefaultLEDAndBuzzerBehaviour>();
 
-		if((operation & ICC_ACTIVATION_STATUS_LED) != 0) {
-			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.ICC_ACTIVATION_STATUS_LED);
+		if((operation & PICC_ACTIVATION_STATUS_LED) != 0) {
+			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.PICC_POLLING_STATUS_LED);
 		}
 
-		if((operation & PICC_POLLING_STATUS_LED) != 0) {
-			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.PICC_POLLING_STATUS_LED);
+		if((operation & PICC_ACTIVATION_STATUS_LED) != 0) {
+			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.PICC_ACTIVATION_STATUS_LED);
 		}
 
 		if((operation & CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER) != 0) {
 			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER);
 		}
 
-		if((operation & CONTACTLESS_CHIP_RESET_INDICATION_BUZZER) != 0) {
-			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.CONTACTLESS_CHIP_RESET_INDICATION_BUZZER);
-		}
-
-		if((operation & EXCLUSIVE_MODE_STATUS_BUZZER) != 0) {
-			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.EXCLUSIVE_MODE_STATUS_BUZZER);
-		}
-
 		if((operation & LED_CARD_OPERATION_BLINK) != 0) {
 			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.LED_CARD_OPERATION_BLINK);
 		}
-		
+
 		return behaviours;
 	}
 
-	protected IAcr1281UReaderControl readerControl;
+	public static int serializeLEDs(AcrLED... types) {
+		int operation = 0;
+		for(AcrLED type : types) {
+			if(type == AcrLED.GREEN) {
+				operation |= LED_GREEN;
+			} else if(type == AcrLED.RED) {
+				operation |= LED_RED;
+			} else if(type == AcrLED.BLUE) {
+				operation |= LED_BLUE;
+			} else if(type == AcrLED.ORANGE) {
+				operation |= LED_ORANGE;
+			} else {
+				throw new IllegalArgumentException("LED " + type + " not supported");
+			}
+		}
+		return operation;
+	}
+
+	public static List<AcrLED> parseLEDs(int operation) {
+		List<AcrLED> leds = new ArrayList<AcrLED>();
+
+		if((operation & LED_RED) != 0) {
+			leds.add(AcrLED.RED);
+		}
+		if((operation & LED_GREEN) != 0) {
+			leds.add(AcrLED.GREEN);
+		}
+		if((operation & LED_BLUE) != 0) {
+			leds.add(AcrLED.BLUE);
+		}
+		if((operation & LED_ORANGE) != 0) {
+			leds.add(AcrLED.ORANGE);
+		}
+		
+		return leds;
+	}
 	
-	public Acr1281UReader(String name, IAcr1281UReaderControl readerControl) {
+	protected IAcr1283LReaderControl readerControl;
+	
+	public Acr1283LReader(String name, IAcr1283LReaderControl readerControl) {
 		this.name = name;
 		this.readerControl = readerControl;
 	}
@@ -136,23 +164,23 @@ public class Acr1281UReader extends AcrReader {
     	dest.writeStrongBinder(readerControl.asBinder());
     }
 
-    public static final Parcelable.Creator<Acr1281UReader> CREATOR =
-            new Parcelable.Creator<Acr1281UReader>() {
+    public static final Parcelable.Creator<Acr1283LReader> CREATOR =
+            new Parcelable.Creator<Acr1283LReader>() {
         @Override
-        public Acr1281UReader createFromParcel(Parcel in) {
+        public Acr1283LReader createFromParcel(Parcel in) {
         	String name = in.readString();
         	
         	IBinder binder = in.readStrongBinder();
         	
-        	IAcr1281UReaderControl iin = IAcr1281UReaderControl.Stub.asInterface(binder);
+        	IAcr1283LReaderControl iin = IAcr1283LReaderControl.Stub.asInterface(binder);
         	
-        	return new Acr1281UReader(name, iin);
+        	return new Acr1283LReader(name, iin);
 
         }
 
         @Override
-        public Acr1281UReader[] newArray(int size) {
-            return new Acr1281UReader[size];
+        public Acr1283LReader[] newArray(int size) {
+            return new Acr1283LReader[size];
         }
     };
 
@@ -179,40 +207,11 @@ public class Acr1281UReader extends AcrReader {
 		
 		return readByteArray(response);
 	}
-
-	public List<AcrLED> getLEDs() {
-		byte[] response;
-		try {
-			response = readerControl.getLEDs();
-		} catch (RemoteException e) {
-			throw new AcrReaderException(e);
-		}
-		
-		List<AcrLED> leds = new ArrayList<AcrLED>();
-
-		if((response[0] & LED_RED) != 0) {
-			leds.add(AcrLED.RED);
-		}
-		if((response[0] & LED_GREEN) != 0) {
-			leds.add(AcrLED.GREEN);
-		}
-		
-		return leds;
-	}
 	
 	public boolean setLEDs(AcrLED ... types) {
 		byte[] response;
 		try {
-			int operation = 0;
-			for(AcrLED type : types) {
-				if(type == AcrLED.GREEN) {
-					operation |= LED_GREEN;
-				} else if(type == AcrLED.RED) {
-					operation |= LED_RED;
-				} else {
-					throw new IllegalArgumentException("LED " + type + " not supported");
-				}
-			}
+			int operation = serializeLEDs(types);
 			response = readerControl.setLEDs(operation);
 		} catch (RemoteException e) {
 			throw new AcrReaderException(e);
@@ -221,6 +220,25 @@ public class Acr1281UReader extends AcrReader {
 		return readBoolean(response);
 	}
 
+	public boolean lightLED(boolean ready, boolean progress, boolean complete, boolean error) {
+		List<AcrLED> types = new ArrayList<AcrLED>();
+		
+		if(ready) {
+			types.add(AcrLED.GREEN);
+		}
+		if(progress) {
+			types.add(AcrLED.BLUE);
+		}
+		if(complete) {
+			types.add(AcrLED.ORANGE);
+		}
+		if(error) {
+			types.add(AcrLED.RED);
+		}
+		
+		return setLEDs(types.toArray(new AcrLED[types.size()]));
+	}	
+	
 	public List<AcrAutomaticPICCPolling> getAutomaticPICCPolling() {
 		byte[] response;
 		try {
@@ -243,32 +261,6 @@ public class Acr1281UReader extends AcrReader {
 		return readBoolean(response);
 	}
 	
-	public boolean setExclusiveMode(boolean shared) {
-		byte[] response;
-		try {
-			response = readerControl.setExclusiveMode(shared);
-		} catch (RemoteException e) {
-			throw new AcrReaderException(e);
-		}
-		
-		byte[] resultByteArray = readByteArray(response);
-		
-		return resultByteArray[1] != 0;
-	}
-	
-	public boolean getExclusiveMode() {
-		byte[] response;
-		try {
-			response = readerControl.getExclusiveMode();
-		} catch (RemoteException e) {
-			throw new AcrReaderException(e);
-		}
-		
-		byte[] resultByteArray = readByteArray(response);
-		
-		return resultByteArray[1] != 0;
-	}
-
 	public List<AcrDefaultLEDAndBuzzerBehaviour> getDefaultLEDAndBuzzerBehaviour() {
 		byte[] response;
 		try {
@@ -276,6 +268,8 @@ public class Acr1281UReader extends AcrReader {
 		} catch (RemoteException e) {
 			throw new AcrReaderException(e);
 		}
+		
+		
 		
 		return parseBehaviour(readInteger(response));
 	}
@@ -292,4 +286,5 @@ public class Acr1281UReader extends AcrReader {
 		
 		return readBoolean(response);
 	}
+
 }

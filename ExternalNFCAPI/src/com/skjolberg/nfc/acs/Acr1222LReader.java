@@ -1,5 +1,6 @@
 package com.skjolberg.nfc.acs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.IBinder;
@@ -53,20 +54,30 @@ public class Acr1222LReader extends AcrReader {
 	}
 	
 	public boolean lightLED(boolean ready, boolean progress, boolean complete, boolean error) {
-		byte[] response;
-		try {
-			response = readerControl.lightLED(ready, progress, complete, error);
-		} catch (RemoteException e) {
-			throw new AcrReaderException(e);
+		List<AcrLED> types = new ArrayList<AcrLED>();
+		
+		if(ready) {
+			types.add(AcrLED.GREEN);
+		}
+		if(progress) {
+			types.add(AcrLED.BLUE);
+		}
+		if(complete) {
+			types.add(AcrLED.ORANGE);
+		}
+		if(error) {
+			types.add(AcrLED.RED);
 		}
 		
-		return readBoolean(response);
+		return setLEDs(types.toArray(new AcrLED[types.size()]));
 	}
 	
-	public boolean setDefaultLEDAndBuzzerBehaviours(boolean piccPollingStatusLED, boolean piccActivationStatusLED, boolean buzzerForCardInsertionOrRemoval, boolean cardOperationBlinkingLED) throws AcrReaderException {
+	public boolean setLEDs(AcrLED ... types) {
 		byte[] response;
 		try {
-			response = readerControl.setDefaultLEDAndBuzzerBehaviours(piccPollingStatusLED, piccActivationStatusLED, buzzerForCardInsertionOrRemoval, cardOperationBlinkingLED);
+			int operation = Acr1283LReader.serializeLEDs(types);
+			
+			response = readerControl.setLEDs(operation);
 		} catch (RemoteException e) {
 			throw new AcrReaderException(e);
 		}
@@ -74,6 +85,50 @@ public class Acr1222LReader extends AcrReader {
 		return readBoolean(response);
 	}
 
+	
+	public boolean setDefaultLEDAndBuzzerBehaviours(boolean piccPollingStatusLED, boolean piccActivationStatusLED, boolean buzzerForCardInsertionOrRemoval, boolean cardOperationBlinkingLED) throws AcrReaderException {
+		
+		List<AcrDefaultLEDAndBuzzerBehaviour> types = new ArrayList<AcrDefaultLEDAndBuzzerBehaviour>();
+		
+		if(piccPollingStatusLED) {
+			types.add(AcrDefaultLEDAndBuzzerBehaviour.PICC_POLLING_STATUS_LED);
+		}
+		if(piccActivationStatusLED) {
+			types.add(AcrDefaultLEDAndBuzzerBehaviour.PICC_ACTIVATION_STATUS_LED);
+		}
+		if(buzzerForCardInsertionOrRemoval) {
+			types.add(AcrDefaultLEDAndBuzzerBehaviour.CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER);
+		}
+		if(cardOperationBlinkingLED) {
+			types.add(AcrDefaultLEDAndBuzzerBehaviour.LED_CARD_OPERATION_BLINK);
+		}
+		
+		return setDefaultLEDAndBuzzerBehaviour(types.toArray(new AcrDefaultLEDAndBuzzerBehaviour[types.size()]));
+	}
+
+	public List<AcrDefaultLEDAndBuzzerBehaviour> getDefaultLEDAndBuzzerBehaviour() {
+		byte[] response;
+		try {
+			response = readerControl.getDefaultLEDAndBuzzerBehaviour();
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return Acr1283LReader.parseBehaviour(readInteger(response));
+	}
+	
+	public boolean setDefaultLEDAndBuzzerBehaviour(AcrDefaultLEDAndBuzzerBehaviour ... types) {
+		byte[] response;
+		try {
+			int operation = Acr1283LReader.serializeBehaviour(types);
+			
+			response = readerControl.setDefaultLEDAndBuzzerBehaviour(operation);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
 	@Override
 	public byte[] control(int slotNum, int controlCode, byte[] command) {
 		byte[] response;

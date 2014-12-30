@@ -43,6 +43,7 @@ Currently the ACS readers
  * [ACR 1222L](http://www.acs.com.hk/index.php?pid=product&id=ACR1222L)
  * [ACR 1251U](http://www.acs.com.hk/en/products/218/acr1251-usb-nfc-reader-ii/)
  * [ACR 1281U-C1](http://www.acs.com.hk/en/products/159/acr1281u-c1-dualboost-ii-usb-dual-interface-reader/)
+ * [ACR 1283L](http://www.acs.com.hk/en/products/226/acr1283l-standalone-contactless-reader/)
  
 are supported and must be connected to your Android device via an On-The-Go (OTG) USB cable.
 
@@ -53,6 +54,7 @@ Mifare Ultralight and Mifare Classic (including NTAG203) tags are supported. I r
 Please note:
  - ACR 122U the Mifare Classic support is experimental.
  - ACR 1281U support is in beta.
+ - ACR 1283L support is in beta.
 
 Troubleshooting
 ===============
