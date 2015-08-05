@@ -597,17 +597,19 @@ public class MainActivity extends NfcExternalDetectorActivity {
     		} else if(reader instanceof Acr1222LReader) {
     			Acr1222LReader acr1222lReader = (Acr1222LReader)reader;
     			
-    			// display welcome message
+    			// display font example - note that also font type C
     			acr1222lReader.lightDisplayBacklight(true);
-    			acr1222lReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Welcome reader!");
-    			acr1222lReader.displayText(AcrFont.FontA, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+    			acr1222lReader.clearDisplay();
+    			acr1222lReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1222L!");
+    			acr1222lReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
     		} else if(reader instanceof Acr1283LReader) {
     			Acr1283LReader acr1283LReader = (Acr1283LReader)reader;
     			
-    			// display welcome message
+    			// display font example - note that also font type C
     			acr1283LReader.lightDisplayBacklight(true);
-    			acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Welcome reader!");
-    			acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+    			acr1283LReader.clearDisplay();
+    			acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1283L!");
+    			acr1283LReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
     		}
     	} else {
     		Log.d(TAG, "No reader supplied");
