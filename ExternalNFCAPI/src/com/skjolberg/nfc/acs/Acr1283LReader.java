@@ -3,6 +3,7 @@ package com.skjolberg.nfc.acs;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Typeface;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -269,8 +270,6 @@ public class Acr1283LReader extends AcrReader {
 			throw new AcrReaderException(e);
 		}
 		
-		
-		
 		return parseBehaviour(readInteger(response));
 	}
 	
@@ -286,5 +285,75 @@ public class Acr1283LReader extends AcrReader {
 		
 		return readBoolean(response);
 	}
+	
 
+	public boolean displayText(AcrFont font, int style, int line, int position, String message) throws AcrReaderException {
+		return displayText(font, style, line, position, font.mapString(message));
+	}
+
+	public boolean displayText(AcrFont font, int style, int line, int position, byte[] message) throws AcrReaderException {
+
+		if(line < 0) {
+			throw new IllegalArgumentException("Expected non-negative line index");
+		}
+		if(position < 0) {
+			throw new IllegalArgumentException("Expected non-negative position index");
+		}
+
+		if(line >= font.getLines()) {
+			throw new IllegalArgumentException("Font " + font + " supports " + font.getLines() + " lines");
+		}
+
+		if(position + message.length > font.getLineLength()) {
+			throw new IllegalArgumentException("Font " + font + " supports " + font.getLineLength() + " chars per line");
+		}
+		
+		if(style != Typeface.BOLD && style != Typeface.NORMAL) {
+			throw new IllegalArgumentException("Only font styles " + Typeface.NORMAL +" and " + Typeface.BOLD + " supported");
+		}
+		
+		byte[] response;
+		try {
+			response = readerControl.displayText(font.getId(), style == Typeface.BOLD, line, position, message);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+		
+	}
+	
+	public boolean lightDisplayBacklight(boolean value) {
+		byte[] response;
+		try {
+			response = readerControl.lightDisplayBacklight(value);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
+
+	
+	public boolean clearDisplay() {
+		byte[] response;
+		try {
+			response = readerControl.clearDisplay();
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
+	
+	public boolean setDisplayContrast(int contrast) {
+		byte[] response;
+		try {
+			response = readerControl.setDisplayContrast(contrast);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
 }

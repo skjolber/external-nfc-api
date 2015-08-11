@@ -32,6 +32,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
@@ -61,7 +62,10 @@ import android.widget.Toast;
 
 import com.skjolberg.nfc.NfcReader;
 import com.skjolberg.nfc.NfcTag;
+import com.skjolberg.nfc.acs.Acr1222LReader;
 import com.skjolberg.nfc.acs.Acr122UReader;
+import com.skjolberg.nfc.acs.Acr1283LReader;
+import com.skjolberg.nfc.acs.AcrFont;
 import com.skjolberg.nfc.acs.AcrPICC;
 import com.skjolberg.nfc.acs.AcrReader;
 import com.skjolberg.nfc.desfire.DesfireReader;
@@ -590,6 +594,22 @@ public class MainActivity extends NfcExternalDetectorActivity {
     		if(reader instanceof Acr122UReader) {
     			Acr122UReader acr122uReader = (Acr122UReader)reader;
     			acr122uReader.setBuzzerForCardDetection(false);
+    		} else if(reader instanceof Acr1222LReader) {
+    			Acr1222LReader acr1222lReader = (Acr1222LReader)reader;
+    			
+    			// display font example - note that also font type C
+    			acr1222lReader.lightDisplayBacklight(true);
+    			acr1222lReader.clearDisplay();
+    			acr1222lReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1222L!");
+    			acr1222lReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+    		} else if(reader instanceof Acr1283LReader) {
+    			Acr1283LReader acr1283LReader = (Acr1283LReader)reader;
+    			
+    			// display font example - note that also font type C
+    			acr1283LReader.lightDisplayBacklight(true);
+    			acr1283LReader.clearDisplay();
+    			acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1283L!");
+    			acr1283LReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
     		}
     	} else {
     		Log.d(TAG, "No reader supplied");

@@ -22,4 +22,11 @@ interface IAcr1283LReaderControl {
 		
 	byte[] transmit(int slotNum, in byte[] command);
 
+	byte[] lightDisplayBacklight(boolean on);
+	
+	byte[] clearDisplay();
+	
+	byte[] displayText(char fontId, boolean styleBold, int line, int position, in byte[] message);
+
+	byte[] setDisplayContrast(int contrast);
 }
