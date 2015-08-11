@@ -26,10 +26,15 @@ API
 ===
 The API defines 
  * broadcast actions
-  * service start / stop and state
+  * service start / stop and status
   * reader open / close and status
   * tag connect / disconnect
  * 'extras' objects for interaction with readers
+  * disable beeps
+  * display text
+  * configure NFC tech types (PICC)
+  * enable/disable LEDs
+  * run custom commands 
  * abstract activities for interaction with built-in and external NFC (in parallel)
   * these currently depend on the [NDEF Tools for Android](https://code.google.com/p/ndef-tools-for-android/) project.
  * Programmatically start and stop the service (see methods startService() and stopService() in the [NfcExternalDetectorActivity](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/util/activity/NfcExternalDetectorActivity.java) class in for an example).
@@ -49,12 +54,10 @@ are supported and must be connected to your Android device via an On-The-Go (OTG
 
 Supported tag technology
 ========================
-Mifare Ultralight and Mifare Classic (including NTAG203) tags are supported. I recommend Mifare Ultralights / NTAG203. Desfire EV1 tags are supported but without NDEF support. Host card emulation (IsoDep) targets are also supported.
+Mifare Ultralight and Mifare Classic (including NTAG203, NTAG213) tags are supported. I recommend Mifare Ultralights / NTAG203. Desfire EV1 tags are supported but without NDEF support. Host card emulation (IsoDep) targets are also supported. 
 
 Please note:
- - ACR 122U the Mifare Classic support is experimental.
- - ACR 1281U support is in beta.
- - ACR 1283L support is in beta.
+ - ACR 122U the Mifare Classic does not work.
 
 Troubleshooting
 ===============
