@@ -14,13 +14,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nxp.nfclib.exceptions.ReaderException;
 import com.nxp.nfclib.exceptions.SmartCardException;
 import com.nxp.nfclib.utils.Utilities;
 import com.nxp.nfcliblite.Interface.NxpNfcLibLite;
-import com.nxp.nfcliblite.cards.DESFire;
+import com.nxp.nfcliblite.cards.DESFireEV1;
 import com.skjolberg.nfc.NfcReader;
 import com.skjolberg.nfc.util.activity.NfcExternalDetectorActivity;
-
+import com.nxp.nfcliblite.cards.IDESFireEV1;
+import com.nxp.nfcliblite.cards.IPlus;
 
 public class MainActivity extends NfcExternalDetectorActivity {
 
@@ -29,7 +31,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	private NxpNfcLibLite libInstance = null;
 	
 	private TextView textView = null;
-	private DESFire desfire;
+	private IDESFireEV1 desfire;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -167,7 +169,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	protected void onNfcIntentDetected(Intent intent, String action) {
 		Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 		
-		desfire = DESFire.getInstance(tag);
+		desfire = DESFireEV1.getInstance(tag);
 
 		if(desfire != null) {
 			try {
@@ -194,22 +196,23 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	 * Mifare Desfire Card Logic. Copied from NXP sample lite client
 	 * 
 	 * @throws IOException 
+	 * @throws ReaderException 
 	 */
-	protected void testDesfireLite() throws IOException {
+	protected void testDesfireLite() throws IOException, ReaderException {
 		showMessage("DesFire Card Detected :" + "Desfire EV1");
 		
-		desfire.connect();
-		desfire.setTimeOut(2000);
+		desfire.getReader().connect();
+		desfire.getReader().setTimeout(2000);
 		testDesfireFormat();
 		testDesfirepersonalize();
 		testDesfireauthenticate();
 		testDesfireupdatePICCMasterKey();
 		testDesfireauthenticate();
-		testDesfireupdateApplicationMasterKey();
+		testDESFireupdateApplicationMasterKey();
 		testDesfireWrite();
 		testDesfireRead();
-		desfire.setTimeOut(2000);
-		desfire.close();
+		desfire.getReader().setTimeout(2000);
+		desfire.getReader().close();
 	}
 	
 	/** Desfire read IO Operations. */
@@ -255,27 +258,32 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		Log.d(TAG, "testDesfireWrite, End");
 
 	}
-
-	/** Desfire Update Application master key IO Operations. */
-	private void testDesfireupdateApplicationMasterKey() {
-		byte[] oldKey = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+	
+	/** DESFire Update Application master key IO Operations. */
+	private void testDESFireupdateApplicationMasterKey() {
+		byte[] oldKey = new byte[] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 		byte[] newKey = new byte[] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
+		byte[] masterKey = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+		byte[] appId = { 0x12, 0x12, 0x12 };
 		boolean res = false;
 		try {
-			Log.d(TAG, "testDesfireupdateApplicationMasterKey, start");
-			desfire.updateApplicationMasterKey(oldKey, newKey);
+			Log.d(TAG, "testDESFireupdateApplicationMasterKey, start");
+			desfire.updateApplicationMasterKey(masterKey, appId, oldKey,
+					newKey);
 			res = true;
-		} catch (SmartCardException e) {
-			Log.d(TAG, "Problem running test", e);
-		} finally {
 			showMessage("Update Application MasterKey: " + res);
+		} catch (SmartCardException e) {
+			showMessage("Update Application MasterKey: " + res);
+			e.printStackTrace();
 		}
-		Log.d(TAG, "testDesfireupdateApplicationMasterKey, result is "
+		Log.d(TAG, "testDESFireupdateApplicationMasterKey, result is "
 				+ res);
-		Log.d(TAG, "testDesfireupdateApplicationMasterKey, End");
+		Log.d(TAG, "testDESFireupdateApplicationMasterKey, End");
 	}
 
 	/** Desfire Authenticate IO Operations .*/
