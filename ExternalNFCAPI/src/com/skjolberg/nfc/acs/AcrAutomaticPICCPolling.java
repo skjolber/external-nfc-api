@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ACR 1281 and ACR 1283
+ * ACR 1281 and ACR 1283 and 1252
  * 
  * @author thomas
  *
@@ -15,7 +15,9 @@ public enum AcrAutomaticPICCPolling {
 	AUTO_PICC_POLLING(1 << 0),
 	TURN_ANTENNA_FIELD_IF_NO_PICC_FOUND(1 << 1),
 	TURN_ANTENNA_FIELD_IF_PICC_IS_INACTIVE(1 << 2),
-	// bit 3 RFU
+	
+	ACTIVATE_PICC_WHEN_DETECTED(1 << 3), // for ACR 1252
+	
 	PICC_POLLING_INTERVAL_250(0x3 << 4, 0x00 << 4),
 	PICC_POLLING_INTERVAL_500(0x3 << 4, 0x01 << 4),
 	PICC_POLLING_INTERVAL_1000(0x3 << 4, 0x02 << 4),

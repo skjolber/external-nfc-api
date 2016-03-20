@@ -15,6 +15,9 @@ import com.skjolberg.nfc.acs.remote.IAcr1222LReaderControl;
 
 public class Acr1222LReader extends AcrReader {
 
+	private static final int POLL_ISO14443_TYPE_B = 1 << 1;
+	private static final int POLL_ISO14443_TYPE_A = 1;
+
 	protected IAcr1222LReaderControl readerControl;
 	
 	public Acr1222LReader(String name, IAcr1222LReaderControl readerControl) {
@@ -42,13 +45,40 @@ public class Acr1222LReader extends AcrReader {
 			throw new AcrReaderException(e);
 		}
 		
-		return AcrPICC.parse(readInteger(response));
+		int operation = readInteger(response);
+
+		ArrayList<AcrPICC> values = new ArrayList<AcrPICC>();
+
+		if((operation & POLL_ISO14443_TYPE_B) != 0) {
+			values.add(AcrPICC.POLL_ISO14443_TYPE_B);
+		}
+		if((operation & POLL_ISO14443_TYPE_A) != 0) {
+			values.add(AcrPICC.POLL_ISO14443_TYPE_A);
+		}
+		
+		return values;
 	}
 
 	public boolean setPICC(AcrPICC ... types) {
+		int picc = 0;
+		for(AcrPICC type : types) {
+			switch(type) {
+				case POLL_ISO14443_TYPE_A:{
+					picc |= POLL_ISO14443_TYPE_A;
+					break;
+				}
+				case POLL_ISO14443_TYPE_B: {
+					picc |= POLL_ISO14443_TYPE_B;
+					break;
+				}
+				default : {
+					throw new IllegalArgumentException("Unexpected PICC " + type);
+				}
+			}
+		}
 		byte[] response;
 		try {
-			response = readerControl.setPICC(AcrPICC.serialize(types));
+			response = readerControl.setPICC(picc);
 		} catch (RemoteException e) {
 			throw new AcrReaderException(e);
 		}
@@ -103,7 +133,7 @@ public class Acr1222LReader extends AcrReader {
 			types.add(AcrDefaultLEDAndBuzzerBehaviour.CARD_INSERTION_AND_REMOVAL_EVENTS_BUZZER);
 		}
 		if(cardOperationBlinkingLED) {
-			types.add(AcrDefaultLEDAndBuzzerBehaviour.LED_CARD_OPERATION_BLINK);
+			types.add(AcrDefaultLEDAndBuzzerBehaviour.CARD_OPERATION_BLINK_LED);
 		}
 		
 		return setDefaultLEDAndBuzzerBehaviour(types.toArray(new AcrDefaultLEDAndBuzzerBehaviour[types.size()]));

@@ -1,5 +1,6 @@
 package com.skjolberg.nfc.acs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.os.IBinder;
@@ -13,6 +14,12 @@ public class Acr1251UReader extends AcrReader {
 
 	private static final String TAG = Acr1251UReader.class.getName();
 	
+	private static final int POLL_TOPAZ = 1 << 4;
+	private static final int POLL_FELICA_424K = 1 << 3;
+	private static final int POLL_FELICA_212K = 1 << 2;
+	private static final int POLL_ISO14443_TYPE_B = 1 << 1;
+	private static final int POLL_ISO14443_TYPE_A = 1;
+
 	protected IAcr1251UReaderControl readerControl;
 	
 	public Acr1251UReader(String name, IAcr1251UReaderControl readerControl) {
@@ -40,13 +47,61 @@ public class Acr1251UReader extends AcrReader {
 			throw new AcrReaderException(e);
 		}
 		
-		return AcrPICC.parse(readInteger(response));
+		int operation = readInteger(response);
+
+		ArrayList<AcrPICC> values = new ArrayList<AcrPICC>();
+
+		if((operation & POLL_TOPAZ) != 0) {
+			values.add(AcrPICC.POLL_TOPAZ);
+		}
+		if((operation & POLL_FELICA_424K) != 0) {
+			values.add(AcrPICC.POLL_FELICA_424K);
+		}
+		if((operation & POLL_FELICA_212K) != 0) {
+			values.add(AcrPICC.POLL_FELICA_212K);
+		}
+		if((operation & POLL_ISO14443_TYPE_B) != 0) {
+			values.add(AcrPICC.POLL_ISO14443_TYPE_B);
+		}
+		if((operation & POLL_ISO14443_TYPE_A) != 0) {
+			values.add(AcrPICC.POLL_ISO14443_TYPE_A);
+		}
+		
+		return values;
 	}
 
 	public boolean setPICC(AcrPICC ... types) {
+		int picc = 0;
+		for(AcrPICC type : types) {
+			switch(type) {
+				case POLL_FELICA_424K:{
+					picc |= POLL_FELICA_424K;
+					break;
+				}
+				case POLL_FELICA_212K:{
+					picc |= POLL_FELICA_212K;
+					break;
+				}
+				case POLL_TOPAZ:{
+					picc |= POLL_TOPAZ;
+					break;
+				}
+				case POLL_ISO14443_TYPE_A:{
+					picc |= POLL_ISO14443_TYPE_A;
+					break;
+				}
+				case POLL_ISO14443_TYPE_B: {
+					picc |= POLL_ISO14443_TYPE_B;
+					break;
+				}
+				default : {
+					throw new IllegalArgumentException("Unexpected PICC " + type);
+				}
+			}
+		}
 		byte[] response;
 		try {
-			response = readerControl.setPICC(AcrPICC.serialize(types));
+			response = readerControl.setPICC(picc);
 		} catch (RemoteException e) {
 			throw new AcrReaderException(e);
 		}

@@ -26,6 +26,10 @@ public class Acr1281UReader extends AcrReader {
 	private static final int EXCLUSIVE_MODE_STATUS_BUZZER = 1 << 6;
 	private static final int LED_CARD_OPERATION_BLINK = 1 << 7;
 	
+	private static final int POLL_ISO14443_TYPE_B = 1 << 1;
+	private static final int POLL_ISO14443_TYPE_A = 1;
+
+	
 	public static int serializeBehaviour(AcrDefaultLEDAndBuzzerBehaviour... types) {
 		int operation = 0;
 
@@ -40,7 +44,7 @@ public class Acr1281UReader extends AcrReader {
 				operation |= CONTACTLESS_CHIP_RESET_INDICATION_BUZZER;
 			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.EXCLUSIVE_MODE_STATUS_BUZZER) {
 				operation |= EXCLUSIVE_MODE_STATUS_BUZZER;
-			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.LED_CARD_OPERATION_BLINK) {
+			} else if(type == AcrDefaultLEDAndBuzzerBehaviour.CARD_OPERATION_BLINK_LED) {
 				operation |= LED_CARD_OPERATION_BLINK;
 			} else {
 				throw new IllegalArgumentException("Behaviour " + type + " not supported");
@@ -73,7 +77,7 @@ public class Acr1281UReader extends AcrReader {
 		}
 
 		if((operation & LED_CARD_OPERATION_BLINK) != 0) {
-			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.LED_CARD_OPERATION_BLINK);
+			behaviours.add(AcrDefaultLEDAndBuzzerBehaviour.CARD_OPERATION_BLINK_LED);
 		}
 		
 		return behaviours;
@@ -106,18 +110,40 @@ public class Acr1281UReader extends AcrReader {
 			throw new AcrReaderException(e);
 		}
 		
-		return AcrPICC.parse(readInteger(response));
+		int operation = readInteger(response);
+
+		ArrayList<AcrPICC> values = new ArrayList<AcrPICC>();
+
+		if((operation & POLL_ISO14443_TYPE_B) != 0) {
+			values.add(AcrPICC.POLL_ISO14443_TYPE_B);
+		}
+		if((operation & POLL_ISO14443_TYPE_A) != 0) {
+			values.add(AcrPICC.POLL_ISO14443_TYPE_A);
+		}
+		
+		return values;
 	}
-	
+
 	public boolean setPICC(AcrPICC ... types) {
-		byte[] response;
-		try {
-			for(AcrPICC type : types) {
-				if(type != AcrPICC.POLL_ISO14443_TYPE_B && type != AcrPICC.POLL_ISO14443_TYPE_A) {
-					throw new IllegalArgumentException("PICC " + type + " not supported");
+		int picc = 0;
+		for(AcrPICC type : types) {
+			switch(type) {
+				case POLL_ISO14443_TYPE_A:{
+					picc |= POLL_ISO14443_TYPE_A;
+					break;
+				}
+				case POLL_ISO14443_TYPE_B: {
+					picc |= POLL_ISO14443_TYPE_B;
+					break;
+				}
+				default : {
+					throw new IllegalArgumentException("Unexpected PICC " + type);
 				}
 			}
-			response = readerControl.setPICC(AcrPICC.serialize(types));
+		}
+		byte[] response;
+		try {
+			response = readerControl.setPICC(picc);
 		} catch (RemoteException e) {
 			throw new AcrReaderException(e);
 		}
