@@ -30,7 +30,9 @@ public class Acr1252UReader extends AcrReader {
 	private static final int POLL_ISO14443_TYPE_B = 1 << 1;
 	private static final int POLL_ISO14443_TYPE_A = 1;
 	
-
+	private static final int LED_GREEN = 1 << 1;
+	private static final int LED_RED = 1;
+	
 	protected IAcr1252UReaderControl readerControl;
 	
 	public Acr1252UReader(String name, IAcr1252UReaderControl readerControl) {
@@ -268,4 +270,69 @@ public class Acr1252UReader extends AcrReader {
 		return readBoolean(response);
 	}
 	
+	public List<AcrDefaultLEDAndBuzzerBehaviour> getDefaultLEDAndBuzzerBehaviour() {
+		byte[] response;
+		try {
+			response = readerControl.getDefaultLEDAndBuzzerBehaviour();
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return parseBehaviour(readInteger(response));
+	}
+	
+	public boolean setDefaultLEDAndBuzzerBehaviour(AcrDefaultLEDAndBuzzerBehaviour ... types) {
+		byte[] response;
+		try {
+			int operation = serializeBehaviour(types);
+			
+			response = readerControl.setDefaultLEDAndBuzzerBehaviour(operation);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
+	
+	public List<AcrLED> getLEDs() {
+		byte[] response;
+		try {
+			response = readerControl.getLEDs();
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		List<AcrLED> leds = new ArrayList<AcrLED>();
+
+		if((response[0] & LED_RED) != 0) {
+			leds.add(AcrLED.RED);
+		}
+		if((response[0] & LED_GREEN) != 0) {
+			leds.add(AcrLED.GREEN);
+		}
+		
+		return leds;
+	}
+	
+	public boolean setLEDs(AcrLED ... types) {
+		byte[] response;
+		try {
+			int operation = 0;
+			for(AcrLED type : types) {
+				if(type == AcrLED.GREEN) {
+					operation |= LED_GREEN;
+				} else if(type == AcrLED.RED) {
+					operation |= LED_RED;
+				} else {
+					throw new IllegalArgumentException("LED " + type + " not supported");
+				}
+			}
+			response = readerControl.setLEDs(operation);
+		} catch (RemoteException e) {
+			throw new AcrReaderException(e);
+		}
+		
+		return readBoolean(response);
+	}
+
 }
