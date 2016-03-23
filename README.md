@@ -5,9 +5,6 @@ This API is for interaction with the [External NFC Service](https://play.google.
 
 The [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app provides NFC-functionality along the lines of native Android NFC for external NFC readers connected via USB.
 
-Overview
-========
-
 Projects using this library will benefit from:
  - External NFC reader management and interaction
  - Parallell use of external and/or internal NFC (i.e. in the same activity)
@@ -16,7 +13,7 @@ Projects using this library will benefit from:
 
 As this project very much simplifies implementation for use-cases requiring external NFC readers, it saves a lot of development time (2-8 weeks depending on use-case and previous knowledge).
 
-Table of contents
+Overview
 =================
 This repository contains source code for 
  * An Android library project (the actual API), and 
