@@ -14,7 +14,7 @@ Projects using this library will benefit from:
  - Support for both tags and Android devices (Host Card Emulation), simultaneously
  - Use of <b>using Andriod built-in (native) types </b> (Ndef, MifareUltralight, IsoDep, etc). 
 
-As this project very much simplifies implementation in use-cases where external NFC readers is required, so it typically  save you a lot of development time (2-8 weeks depending on use-case and knowledge).
+As this project very much simplifies implementation for use-cases requiring external NFC readers, it saves a lot of development time (2-8 weeks depending on use-case and previous knowledge).
 
 Table of contents
 =================
