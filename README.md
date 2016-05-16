@@ -18,11 +18,11 @@ Overview
 This repository contains source code for 
  * An Android library project (the actual API), and 
  * Demo client apps demonstrating actual usage
-  * [Basic client app](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCClient)
-  * [NXP API client](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/)
-  * [Web Kiosk client](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCWebKiosk) with javascript bindings
+  * [Basic client app](externalNFCClient)
+  * [NXP API client](externalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/)
+  * [Web Kiosk client](externalNFCWebKiosk) with javascript bindings
 
-There is also a [Host Card Emulation client app](https://github.com/skjolber/external-nfc-api/tree/master/ExternalNFCHostCardEmulationClient) for use with the Basic client app.
+There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the Basic client app.
 
 External NFC reader API
 =======================
@@ -39,20 +39,20 @@ The API defines
   * run custom commands
   * and more.. 
  * abstract activities for interaction with built-in and external NFC (simultaneously)
-  * these currently depend on the [NDEF Tools for Android](https://code.google.com/p/ndef-tools-for-android/) project.
- * Programmatically start and stop the service (see methods startService() and stopService() in the [NfcExternalDetectorActivity](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/util/activity/NfcExternalDetectorActivity.java) class in for an example).
+  * these currently depend on the [NDEF Tools for Android](https://github.com/skjolber/ndef-tools-for-android) project.
+ * Programmatically start and stop the service (see methods startService() and stopService() in the [NfcExternalDetectorActivity](externalNFCAPI/src/main/java/com/skjolberg/nfc/util/activity/NfcExternalDetectorActivity.java) class in for an example).
 
 Note that tag interaction is performed via the native NFC classes and so these are not included in the API itself. These native NFC classes are present even on non-NFC devices.
 
 Supported readers
 =================
 Currently the ACS readers
- * [ACR 122U](http://www.acs.com.hk/index.php?pid=product&id=ACR122U) ([API](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/acs/Acr122UReader.java)) 
- * [ACR 1222L](http://www.acs.com.hk/index.php?pid=product&id=ACR1222L) ([API](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/acs/Acr1222LReader.java)) 
- * [ACR 1251U](http://www.acs.com.hk/en/products/218/acr1251-usb-nfc-reader-ii/) ([API](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/acs/Acr1251UReader.java)) 
- * [ACR 1252U](http://www.acs.com.hk/en/products/342/acr1252u-usb-nfc-reader-iii-nfc-forum-certified-reader/) ([API](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/acs/Acr1252UReader.java)) 
- * [ACR 1281U-C1](http://www.acs.com.hk/en/products/159/acr1281u-c1-dualboost-ii-usb-dual-interface-reader/) ([API](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/acs/Acr1281UReader.java)) 
- * [ACR 1283L](http://www.acs.com.hk/en/products/226/acr1283l-standalone-contactless-reader/) ([API](https://github.com/skjolber/external-nfc-api/blob/master/ExternalNFCAPI/src/com/skjolberg/nfc/acs/Acr1283LReader.java)) 
+ * [ACR 122U](http://www.acs.com.hk/index.php?pid=product&id=ACR122U) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr122UReader.java)) 
+ * [ACR 1222L](http://www.acs.com.hk/index.php?pid=product&id=ACR1222L) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1222LReader.java)) 
+ * [ACR 1251U](http://www.acs.com.hk/en/products/218/acr1251-usb-nfc-reader-ii/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1251UReader.java)) 
+ * [ACR 1252U](http://www.acs.com.hk/en/products/342/acr1252u-usb-nfc-reader-iii-nfc-forum-certified-reader/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1252UReader.java)) 
+ * [ACR 1281U-C1](http://www.acs.com.hk/en/products/159/acr1281u-c1-dualboost-ii-usb-dual-interface-reader/) ([API](externalNFCAPI/src/main/java/src/com/skjolberg/nfc/acs/Acr1281UReader.java)) 
+ * [ACR 1283L](http://www.acs.com.hk/en/products/226/acr1283l-standalone-contactless-reader/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1283LReader.java)) 
  
 are supported and must be connected to your Android device via an On-The-Go (OTG) USB cable.
 
