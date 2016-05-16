@@ -3,7 +3,7 @@ External NFC Service API (native style) for Android
 
 This API is for interaction with the [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app found in Google Play. 
 
-The [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app provides NFC-functionality along the lines of native Android NFC for external NFC readers connected via USB.
+The [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app provides NFC-functionality along the lines of native Android NFC for external NFC readers connected via USB. 
 
 Projects using this library will benefit from:
  - External NFC reader management and interaction
@@ -61,7 +61,7 @@ Supported tag technology
 Mifare Ultralight and Mifare Classic (including NTAG203, NTAG213) tags are supported. Desfire EV1 tags are supported but without NDEF support. [Host Card Emulation](http://developer.android.com/guide/topics/connectivity/nfc/hce.html) targets are also supported - in other words, interaction with Android devices.
 
 Please note:
- - ACR 122U the Mifare Classic does not work.
+ - ACR 122U the Mifare Classic does not work well.
 
 Troubleshooting
 ===============
@@ -98,9 +98,17 @@ Development
 ===========
 If you need professional, cost-efficient assistance with an NFC project, get in touch. I also do
 
- * Host Card Emulation (HCE) for Android
- * Desfire EV1 tech (with encryption)
- * Smartcard-related workflows and integrations
- * WebView-based apps
+ * Desfire EV1 tech (with encryption) - [example app](https://play.google.com/store/apps/details?id=com.skjolberg.mifare.desfiretool)
+ * WebView-based apps, either visiting ULRs and/or interaction over Javascript.
+ * NFC-initiated [wifi connectivity](https://play.google.com/store/apps/details?id=w.i)
+ * More advanced Host Card Emulation (HCE) for Android
+ * NFC development tools
+   * [NFC Developer](https://play.google.com/store/apps/details?id=com.antares.nfc)
+   * [NDEF Tools for Android](https://play.google.com/store/apps/details?id=org.ndeftools.boilerplate&hl=no)
+   * [Mifare Classic refactor](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.mifareclassic)
+ * NFC supplimented with QR codes
+ * Smartcard-related workflows and integrations over [ESB](http://camel.apache.org/) or [BPM](https://camunda.com/) modelling
+ * Custom binary formats for NDEF or raw tag data
+
 
 Feel free to connect with me on [LinkedIn](http://lnkd.in/r7PWDz), see also my [Github page](https://skjolber.github.io).
