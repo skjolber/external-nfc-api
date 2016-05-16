@@ -7,7 +7,7 @@ The [External NFC Service](https://play.google.com/store/apps/details?id=com.skj
 
 Projects using this library will benefit from:
  - External NFC reader management and interaction
- - Parallell use of external and/or internal NFC (i.e. in the same activity)
+ - Parallell use of external and/or internal NFC (i.e. in the same activity, both enabled at the same time)
  - Support for both tags and Android devices (Host Card Emulation), simultaneously
  - Use of <b>using Andriod built-in (native) types </b> (Ndef, MifareUltralight, IsoDep, etc). 
 
