@@ -30,7 +30,6 @@ public class PreferencesActivity extends Activity implements OnSharedPreferenceC
 	public static final String PREFERENCE_HOST_CARD_EMULATION_AUTO_SELECT_ISO_APPLICATION = "preference_host_card_emulation_auto_select_iso_application";
 	public static final String PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID = "preference_host_card_emulation_iso_application_id";
 	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

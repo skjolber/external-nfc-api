@@ -44,6 +44,8 @@ import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
+import android.nfc.tech.NfcA;
+import android.nfc.tech.NfcB;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -198,7 +200,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 						try {
 							mifareUltralight.connect();
 					
-							int offset = 4;
+							int offset = 0;
 							int length;
 							
 							int type = mifareUltralight.getType();
@@ -221,7 +223,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 							
 							ByteArrayOutputStream bout = new ByteArrayOutputStream();
 							
-							for (int i = offset; i < offset + length; i+= readLength) {
+							for (int i = offset; i < offset + length; i+= 1) {
 								bout.write(mifareUltralight.readPages(i));
 							}
 							
@@ -240,9 +242,19 @@ public class MainActivity extends NfcExternalDetectorActivity {
 							Log.d(TAG, "Problem processing tag technology", e);
 						}
 					} else if (tech.equals(android.nfc.tech.NfcA.class.getName())) {
-						Log.d(TAG, "Ignore " + tech);
+						NfcA nfcA = NfcA.get(tag);
+
+						byte[] atqa = nfcA.getAtqa();
+						short sak = nfcA.getSak();
+
+						Log.d(TAG, "Got NfcA with ATQA " + toHexString(atqa) + " and sak " + Integer.toHexString(sak));
 					} else if (tech.equals(android.nfc.tech.NfcB.class.getName())) {
-						Log.d(TAG, "Ignore " + tech);
+						NfcB nfcB = NfcB.get(tag);
+
+						byte[] applicationData = nfcB.getApplicationData();
+						byte[] protocolInfo = nfcB.getProtocolInfo();
+
+						Log.d(TAG, "Got NfcB with application data " + toHexString(applicationData) + " and protcol info " + toHexString(protocolInfo));
 					} else if (tech.equals(android.nfc.tech.NfcF.class.getName())) {
 						Log.d(TAG, "Ignore " + tech);
 					} else if (tech.equals(android.nfc.tech.NfcV.class.getName())) {

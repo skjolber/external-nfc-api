@@ -18,6 +18,10 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile project(':externalNFCAPI')
     compile 'com.google.code.ndef-tools-for-android:ndeftools:1.2.4'
