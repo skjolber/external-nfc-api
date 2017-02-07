@@ -1,5 +1,4 @@
-External NFC Service API (native style) for Android
-==================================
+# External NFC Service API (native style) for Android
 
 This API is for interaction with the [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app found in Google Play. 
 
@@ -13,8 +12,7 @@ Projects using this library will benefit from:
 
 As this project very much simplifies implementation for use-cases requiring external NFC readers, it saves a lot of development time (2-8 weeks depending on use-case and previous knowledge).
 
-Overview
-=================
+# Overview
 This repository contains source code for 
  * An Android library project (the actual API), and 
  * Demo client apps demonstrating actual usage
@@ -24,29 +22,28 @@ This repository contains source code for
 
 There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the Basic client app.
 
-External NFC reader API
-=======================
+# External NFC reader API
 The API defines 
  * broadcast actions
-  * service start / stop and status
-  * reader open / close and status
-  * tag connect / disconnect
+   * service start / stop and status
+   * reader open / close and status
+   * tag connect / disconnect
  * 'extras' objects for interaction with readers
-  * disable beeps
-  * display text
-  * configure NFC tech types (PICC)
-  * enable/disable LEDs
-  * run custom commands
-  * and more.. 
+   * disable beeps
+   * display text
+   * configure NFC tech types (PICC)
+   * enable/disable LEDs
+   * run custom commands
+   * and more.. 
  * abstract activities for interaction with built-in and external NFC (simultaneously)
   * these currently depend on the [NDEF Tools for Android](https://github.com/skjolber/ndef-tools-for-android) project.
  * Programmatically start and stop the service (see methods startService() and stopService() in the [NfcExternalDetectorActivity](externalNFCAPI/src/main/java/com/skjolberg/nfc/util/activity/NfcExternalDetectorActivity.java) class in for an example).
 
 Note that tag interaction is performed via the native NFC classes and so these are not included in the API itself. These native NFC classes are present even on non-NFC devices.
 
-Supported readers
-=================
+# Supported readers
 Currently the ACS readers
+
  * [ACR 122U](http://www.acs.com.hk/index.php?pid=product&id=ACR122U) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr122UReader.java)) 
  * [ACR 1222L](http://www.acs.com.hk/index.php?pid=product&id=ACR1222L) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1222LReader.java)) 
  * [ACR 1251U](http://www.acs.com.hk/en/products/218/acr1251-usb-nfc-reader-ii/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1251UReader.java)) 
@@ -56,15 +53,22 @@ Currently the ACS readers
  
 are supported and must be connected to your Android device via an On-The-Go (OTG) USB cable.
 
-Supported tag technology
-========================
-Mifare Ultralight and Mifare Classic (including NTAG203, NTAG213) tags are supported. Desfire EV1 tags are supported but without NDEF support. [Host Card Emulation](http://developer.android.com/guide/topics/connectivity/nfc/hce.html) targets are also supported - in other words, interaction with Android devices.
+# Supported tag technology
+The following tags are supported
+  * Mifare Ultralight (including Mifare Ultralight C, NTAG203, NTAG213, for some readers NTAG216) 
+  * Mifare Classic and friends
+  * Desfire EV1 tags (no NDEF support). 
+  * [Host Card Emulation](http://developer.android.com/guide/topics/connectivity/nfc/hce.html) - interaction with Android devices.
 
 Please note:
  - ACR 122U the Mifare Classic does not work well.
+ - NTAG 216 is not for all readers
+ - The readers for the most part can be enabled for all tag types at the same time, including Host Card Emulation.
 
-Troubleshooting
-===============
+# Troubleshooting
+Please report any issues to thomas.skjolberg@gmail.com.
+
+### Reader connection
 Note that not all Android devices actually have an USB hub, in which case no USB devices work.
 
 Does the ACR reader not light up when connected to your device, even after the service asks for USB permissions? The ACR reader shuts down if there is not enough battery, so try charging your battery more, or connect external power.
@@ -72,10 +76,10 @@ Does the ACR reader not light up when connected to your device, even after the s
 If you are using external power, be aware that the connection order (device, reader, power) might be important. Known symptom: 
  - Seeing an USB permissions window that disappears rather quickly.
 
-Please report any issues to thomas.skjolberg@gmail.com.
+### Tag detection
+There is quite a few types of tags out there, and if your tag type is not recognized, please let me know. If the tag does not register at all, make sure that auto polling is configured, and that the right protocol is enabled (see below).
 
-Related apps
-============
+# Related apps
 You might be interested in
  * [ACR 1222L USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1222) 
  * [ACR 122 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr122u)
@@ -86,16 +90,13 @@ You might be interested in
 
 for configuration of your reader. Approximately the same configuration options are available using this API. 
 
-Feature requests
-================
+# Feature requests
 Please email feature requests to thomas.skjolberg@gmail.com.
 
-Distribution
-============
+# Distribution
 Get in touch for bulk and/or offline distribution. A library jar is also available on request, simplifying distribution of your own app(s).
 
-Development
-===========
+# Development
 If you need professional, cost-efficient assistance with an NFC project, get in touch. I also do
 
  * Desfire EV1 tech (with encryption) - [example app](https://play.google.com/store/apps/details?id=com.skjolberg.mifare.desfiretool)
@@ -108,7 +109,7 @@ If you need professional, cost-efficient assistance with an NFC project, get in 
    * [Mifare Classic refactor](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.mifareclassic)
  * NFC supplimented with QR codes
  * Smartcard-related workflows and integrations over [ESB](http://camel.apache.org/) or [BPM](https://camunda.com/) modelling
- * Custom binary formats for NDEF or raw tag data
+ * Custom binary formats for NDEF or raw tag data - fit your data for minimal read/write time and best form factor selection 
 
 
 Feel free to connect with me on [LinkedIn](http://lnkd.in/r7PWDz), see also my [Github page](https://skjolber.github.io).
