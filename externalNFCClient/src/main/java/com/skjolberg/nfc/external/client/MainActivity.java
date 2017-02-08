@@ -206,32 +206,35 @@ public class MainActivity extends NfcExternalDetectorActivity {
 							int type = mifareUltralight.getType();
 							switch (type) {
 							case MifareUltralight.TYPE_ULTRALIGHT: {
-									length = 12;
-									
-									break;
+								length = 12;
+								offset = 4;
+
+								break;
 							}
 							case MifareUltralight.TYPE_ULTRALIGHT_C: {
 								length = 36;
-					
+								offset = 4;
+
 								break;
 							}
 							default :
 								throw new IllegalArgumentException("Unknown mifare ultralight tag " + type);
 							}
-							
-							int readLength = 4;
-							
+
+							// android read 4 and 4 pages of 4 bytes
+							int pageCountPerRead = 4;
+
 							ByteArrayOutputStream bout = new ByteArrayOutputStream();
 							
-							for (int i = offset; i < offset + length; i+= 1) {
+							for (int i = 0; i < offset + length; i+= pageCountPerRead) {
 								bout.write(mifareUltralight.readPages(i));
 							}
 							
 							byte[] buffer = bout.toByteArray();
 							
 							StringBuilder builder = new StringBuilder();
-							for(int k = 0; k < buffer.length; k+= readLength) {
-								builder.append((offset + k) + " " + toHexString(buffer, k, readLength));
+							for(int k = 0; k < offset + length; k+= 1) {
+								builder.append(k + " " + toHexString(buffer, k * 4, 4));
 								builder.append('\n');
 							}
 							
