@@ -19,4 +19,15 @@ public interface NfcTag {
     /** int value indicating the reader slot. Use this value if you want to do issue custom commands to the reader. */
     public static final String EXTRA_TAG_SLOT_NUMBER = NfcTag.class.getName() + ".extra.SLOT_NUMBER";
 
+    /** Ultralight subtype, essensially NTAG21x types (positive numbers) or their corresponding legacy types (negative numbers) */
+    public static final String EXTRA_ULTRALIGHT_TYPE = NfcTag.class.getName() + ".extra.ULTRALIGHT_TYPE";
+
+    public static final int EXTRA_ULTRALIGHT_TYPE_NTAG210 = 1; // aka ultralight
+    public static final int EXTRA_ULTRALIGHT_TYPE_NTAG212 = 2;
+    public static final int EXTRA_ULTRALIGHT_TYPE_NTAG213 = 3; // aka ultralight c or NTAG 203
+    public static final int EXTRA_ULTRALIGHT_TYPE_NTAG215 = 4;
+    public static final int EXTRA_ULTRALIGHT_TYPE_NTAG216 = 5;
+    public static final int EXTRA_ULTRALIGHT_TYPE_NTAG213F = 6;
+    public static final int EXTRA_ULTRALIGHT_TYPE_NTAG216F = 7;
+
 }

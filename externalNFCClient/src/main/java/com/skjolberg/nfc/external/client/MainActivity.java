@@ -20,6 +20,7 @@
 package com.skjolberg.nfc.external.client;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.ndeftools.Message;
@@ -190,57 +191,121 @@ public class MainActivity extends NfcExternalDetectorActivity {
 					Log.d(TAG, "Tech " + tech);
 		
 					if (tech.equals(android.nfc.tech.MifareUltralight.class.getName())) {
-		
-						setTagType(getString(R.string.tagTypeMifareUltralight));
-						
-						MifareUltralight mifareUltralight = MifareUltralight.get(tag);
-						if(mifareUltralight == null) {
-							throw new IllegalArgumentException("No Mifare Ultralight");
-						}
-						try {
-							mifareUltralight.connect();
-					
-							int offset = 0;
-							int length;
-							
-							int type = mifareUltralight.getType();
-							switch (type) {
-							case MifareUltralight.TYPE_ULTRALIGHT: {
-								length = 12;
-								offset = 4;
+                        setTagType(getString(R.string.tagTypeMifareUltralight));
 
-								break;
-							}
-							case MifareUltralight.TYPE_ULTRALIGHT_C: {
-								length = 36;
-								offset = 4;
+                        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                        try {
 
-								break;
-							}
-							default :
-								throw new IllegalArgumentException("Unknown mifare ultralight tag " + type);
-							}
+                            if(intent.hasExtra(NfcTag.EXTRA_ULTRALIGHT_TYPE)) {
+                                // handle NTAG21x types
+                                // the NTAG21x product familiy have replacements for all previous Ultralight tags
+                                int type = intent.getIntExtra(NfcTag.EXTRA_ULTRALIGHT_TYPE, 0);
 
-							// android read 4 and 4 pages of 4 bytes
-							int pageCountPerRead = 4;
+                                NfcA nfcA = NfcA.get(tag);
+                                if(nfcA == null) {
+                                    throw new IllegalArgumentException("No NTAG");
+                                }
 
-							ByteArrayOutputStream bout = new ByteArrayOutputStream();
-							
-							for (int i = 0; i < offset + length; i+= pageCountPerRead) {
-								bout.write(mifareUltralight.readPages(i));
-							}
-							
+                                int size;
+                                switch(type) {
+                                    case NfcTag.EXTRA_ULTRALIGHT_TYPE_NTAG210: {
+                                        size = 48;
+                                        break;
+                                    }
+                                    case NfcTag.EXTRA_ULTRALIGHT_TYPE_NTAG212: {
+                                        size = 128;
+                                        break;
+                                    }
+                                    case NfcTag.EXTRA_ULTRALIGHT_TYPE_NTAG213: {
+                                        size = 144;
+                                        break;
+                                    }
+                                    case NfcTag.EXTRA_ULTRALIGHT_TYPE_NTAG215: {
+                                        size = 504;
+                                        break;
+                                    }
+                                    case NfcTag.EXTRA_ULTRALIGHT_TYPE_NTAG216 :
+                                    case NfcTag.EXTRA_ULTRALIGHT_TYPE_NTAG216F : {
+                                        size = 888;
+                                        break;
+                                    }
+                                    default : {
+                                        size = 48;
+                                    }
+                                }
+                                int pagesToRead = size / 4 + 4;
+
+                                // instead of reading 4 and 4 pages, read more using the FAST READ command
+                                int pagesPerRead = Math.min(255, nfcA.getMaxTransceiveLength() / 4);
+
+                                int reads = pagesToRead / pagesPerRead;
+
+                                if(pagesToRead % pagesPerRead != 0) {
+                                    reads++;
+                                }
+
+                                try {
+                                    nfcA.connect();
+                                    int read = 0;
+                                    for (int i = 0; i < reads; i++) {
+                                        int range = Math.min(pagesPerRead, pagesToRead - read);
+
+                                        byte[] fastRead = new byte[]{
+                                                0x3A,
+                                                (byte) (read & 0xFF), // start page
+                                                (byte) ((read + range - 1) & 0xFF), // end page (inclusive)
+                                        };
+
+                                        bout.write(nfcA.transceive(fastRead));
+
+                                        read += range;
+                                    }
+                                } finally {
+                                    nfcA.close();
+                                }
+
+
+                            } else {
+                                MifareUltralight mifareUltralight = MifareUltralight.get(tag);
+                                if(mifareUltralight == null) {
+                                    throw new IllegalArgumentException("No Mifare Ultralight");
+                                }
+                                mifareUltralight.connect();
+
+                                int length;
+
+                                int type = mifareUltralight.getType();
+                                switch (type) {
+                                    case MifareUltralight.TYPE_ULTRALIGHT: {
+                                        length = 12;
+
+                                        break;
+                                    }
+                                    case MifareUltralight.TYPE_ULTRALIGHT_C: {
+                                        length = 36;
+
+                                        break;
+                                    }
+                                    default:
+                                        throw new IllegalArgumentException("Unknown mifare ultralight tag " + type);
+                                }
+
+                                // android read 4 and 4 pages of 4 bytes
+                                for (int i = 0; i < length; i += 4) {
+                                    bout.write(mifareUltralight.readPages(i));
+                                }
+                                mifareUltralight.close();
+                            }
+
 							byte[] buffer = bout.toByteArray();
 							
 							StringBuilder builder = new StringBuilder();
-							for(int k = 0; k < offset + length; k+= 1) {
-								builder.append(k + " " + toHexString(buffer, k * 4, 4));
+							for(int k = 0; k < buffer.length; k+= 4) {
+								builder.append( String.format("%02x", (k / 4)) + " " + toHexString(buffer, k, 4));
 								builder.append('\n');
 							}
 							
 							Log.d(TAG, builder.toString());
-							
-							mifareUltralight.close();
 						} catch(Exception e) {
 							Log.d(TAG, "Problem processing tag technology", e);
 						}
