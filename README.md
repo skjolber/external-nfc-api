@@ -8,19 +8,20 @@ Projects using this library will benefit from:
  - External NFC reader management and interaction
  - Parallell use of external and/or internal NFC (i.e. in the same activity, both enabled at the same time)
  - Support for both tags and Android devices (Host Card Emulation), simultaneously
- - Use of <b>using Andriod built-in (native) types </b> (Ndef, MifareUltralight, IsoDep, etc). 
+ - Use of __using Andriod built-in (native) types__ ([Ndef], [MifareUltralight], [IsoDep], etc). 
 
 As this project very much simplifies implementation for use-cases requiring external NFC readers, it saves a lot of development time (2-8 weeks depending on use-case and previous knowledge).
 
 # Overview
 This repository contains source code for 
+
  * An Android library project (the actual API), and 
  * Demo client apps demonstrating actual usage
   * [Basic client app](externalNFCClient)
   * [NXP API client](externalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/)
   * [Web Kiosk client](externalNFCWebKiosk) with javascript bindings
 
-There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the Basic client app.
+There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the [Basic client app](externalNFCClient).
 
 # External NFC reader API
 The API defines 
@@ -54,17 +55,24 @@ Currently the ACS readers
 are supported and must be connected to your Android device via an On-The-Go (OTG) USB cable.
 
 # Supported tag technology
-The following tags are supported
-  * Mifare Ultralight (including Mifare Ultralight C, NTAG203, NTAG213, for some readers NTAG216) 
+The following tags are supported by the service
+  * Mifare Ultralight familiy
+    * Mifare Ultralight
+    * NTAG 21x with FAST READ
   * Mifare Classic and friends
-  * Desfire EV1 tags (no NDEF support). 
+    * Not recommended due to security and compatibility issues
+  * Desfire EV1 tags
   * [Host Card Emulation](http://developer.android.com/guide/topics/connectivity/nfc/hce.html) - interaction with Android devices.
+  
+The readers can for the __most part can be enabled for all tag types at the same time__, including Host Card Emulation.
 
 Please note:
+ - Some readers only support a subset of the above tags
  - ACR 122U the Mifare Classic does not work well.
- - NTAG 216 is not for all readers
- - The readers for the most part can be enabled for all tag types at the same time, including Host Card Emulation.
+ - No built-in NDEF support for Desfire EV1 cards
+ - The service can be configured to only support NTAG21x Mifare Ultralight targets
 
+If you are only interested in the tag UIDs, there is a custom service for that which ignores tag data.
 # Troubleshooting
 Please report any issues to thomas.skjolberg@gmail.com.
 
@@ -77,10 +85,11 @@ If you are using external power, be aware that the connection order (device, rea
  - Seeing an USB permissions window that disappears rather quickly.
 
 ### Tag detection
-There is quite a few types of tags out there, and if your tag type is not recognized, please let me know. If the tag does not register at all, make sure that auto polling is configured, and that the right protocol is enabled (see below).
+There is quite a few types of tags out there, and if your tag type is not recognized, please let me know. If the tag does not register at all, make sure that auto polling is configured, and that the right protocols are enabled. __Use the below utility apps for tweaking your reader settings__.
 
-# Related apps
+# Reader setting utility apps
 You might be interested in
+
  * [ACR 1222L USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1222) 
  * [ACR 122 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr122u)
  * [ACR 1251 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1251u)
@@ -94,7 +103,7 @@ for configuration of your reader. Approximately the same configuration options a
 Please email feature requests to thomas.skjolberg@gmail.com.
 
 # Distribution
-Get in touch for bulk and/or offline distribution. A library jar is also available on request, simplifying distribution of your own app(s).
+Get in touch for bulk and/or offline distribution. A library jar is also available on request, simplifying distribution of your own app(s). Source code is also an option.
 
 # Development
 If you need professional, cost-efficient assistance with an NFC project, get in touch. I also do
@@ -109,7 +118,12 @@ If you need professional, cost-efficient assistance with an NFC project, get in 
    * [Mifare Classic refactor](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.mifareclassic)
  * NFC supplimented with QR codes
  * Smartcard-related workflows and integrations over [ESB](http://camel.apache.org/) or [BPM](https://camunda.com/) modelling
- * Custom binary formats for NDEF or raw tag data - fit your data for minimal read/write time and best form factor selection 
-
+ * Custom binary formats for NDEF or raw tag data - fit your data for __minimal read/write time and best form factor selection__
+ * [Apache Cordova] plugins for Android
 
 Feel free to connect with me on [LinkedIn](http://lnkd.in/r7PWDz), see also my [Github page](https://skjolber.github.io).
+
+[Ndef]:                 https://developer.android.com/reference/android/nfc/tech/Ndef.html
+[MifareUltralight]:     https://developer.android.com/reference/android/nfc/tech/MifareUltralight.html
+[IsoDep]:               https://developer.android.com/reference/android/nfc/tech/IsoDep.html
+[Apache Cordova]:       https://cordova.apache.org/
