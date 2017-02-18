@@ -3,18 +3,24 @@ package com.skjolberg.nfc.acs;
 
 public enum AcrDefaultLEDAndBuzzerBehaviour {
 
-	/** 1252: PICC Activation Status LED: To show the activation status of the PICC interface. <br/>*/
+    /** 1255: To show Battery Charging Status */
+    BATTERY_CHARGING_STATUS_LED,
+
+    /** 1252: PICC Activation Status LED: To show the activation status of the PICC interface. <br/>*/
 	PICC_ACTIVATION_STATUS_LED,
-	
+
+    /** 1255: ICC Activation Status LED: To show the activations status of the ICC interface. <br/>*/
 	/** 1281: ICC Activation Status LED: To show the activations status of the ICC interface. <br/>*/
 	ICC_ACTIVATION_STATUS_LED,
-	/** 
+	/**
+     * 1255: PICC Polling Status LED: To show the PICC Polling Status. <br/>
 	 * 1252: PICC Polling Status LED: To show the PICC Polling Status. <br/>
 	 * 1281: PICC Polling Status LED: To show the PICC Polling Status. <br/>
 	 */
 	PICC_POLLING_STATUS_LED,
 	
-	/** 
+	/**
+     * 1255: Card Insertion and Removal Events Buzzer: To make a beep whenever a card insertion or removal event is detected (for both ICC and PICC). <br/>
 	 * 1252: Card Insertion and Removal Events Buzzer: To make a beep whenever a card insertion or removal event is detected (for both ICC and PICC). <br/>
 	 * 1252: Card Insertion and Removal Events Buzzer: To make a beep whenever a card insertion or removal event is detected (for both ICC and PICC). <br/>
 	 */
@@ -33,7 +39,8 @@ public enum AcrDefaultLEDAndBuzzerBehaviour {
 	 */
 	EXCLUSIVE_MODE_STATUS_BUZZER,
 	
-	/** 
+	/**
+     * 1255: Card Operation Blinking LED: To light up the LED whenever the card is being accessed. <br/>
 	 * 1252: Card Operation Blinking LED: To blink the LED whenever the PICC card is being accessed. <br/>
 	 * 1281: Card Operation Blinking LED: To make the LED blink whenever the card (PICC or ICC) is being accessed. <br/>
 	 */

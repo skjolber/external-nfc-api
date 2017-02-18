@@ -95,6 +95,27 @@ public abstract class AcrReader implements Parcelable, NfcReader {
 		}
 	}
 
+    protected static byte readByte(byte[] response) {
+        try {
+            DataInputStream din = new DataInputStream(new ByteArrayInputStream(response));
+
+            int version = din.readInt();
+            if(version == VERSION) {
+                int status = din.readInt();
+
+                if(status == STATUS_OK) {
+                    return din.readByte();
+                } else {
+                    throw new AcrReaderException(din.readUTF());
+                }
+            } else {
+                throw new IllegalArgumentException("Unexpected version " + version);
+            }
+        } catch (IOException e) {
+            throw new AcrReaderException(e);
+        }
+    }
+
     protected static String readString(byte[] response) {
 		try {
 			DataInputStream din = new DataInputStream(new ByteArrayInputStream(response));
