@@ -52,7 +52,9 @@ Currently the ACS readers
  * [ACR 1281U-C1](http://www.acs.com.hk/en/products/159/acr1281u-c1-dualboost-ii-usb-dual-interface-reader/) ([API](externalNFCAPI/src/main/java/src/com/skjolberg/nfc/acs/Acr1281UReader.java)) 
  * [ACR 1283L](http://www.acs.com.hk/en/products/226/acr1283l-standalone-contactless-reader/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1283LReader.java)) 
  
-are supported and must be connected to your Android device via an On-The-Go (OTG) USB cable.
+are supported and must be connected to your Android device via an On-The-Go (OTG) USB cable. 
+
+Additional ACR readers might work depending on their command set, however custom reader commands will (like LED, beep etc) will not be available.
 
 # Supported tag technology
 The following tags are supported by the service
@@ -68,11 +70,15 @@ The readers can for the __most part can be enabled for all tag types at the same
 
 Please note:
  - Some readers only support a subset of the above tags
- - ACR 122U the Mifare Classic does not work well.
+ - For ACR 122U the Mifare Classic does not work well.
  - No built-in NDEF support for Desfire EV1 cards
- - The service can be configured to only support NTAG21x Mifare Ultralight targets
 
-If you are only interested in the tag UIDs, there is a custom service for that which ignores tag data.
+Configuration options
+ - assume all NTAG21x Mifare Ultralight targets. This improves read speed, particullary for the tags which have legacy equivalents, like NTAG 210 and 213
+ - read only tag UIDs, ignore other tag data. This improves read speed.
+ - read NDEF data automatically
+ - read UID for Desfire EV1 targets automatically 
+
 # Troubleshooting
 Please report any issues to thomas.skjolberg@gmail.com.
 
