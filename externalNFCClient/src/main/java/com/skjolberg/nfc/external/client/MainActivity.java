@@ -67,7 +67,10 @@ import com.skjolberg.nfc.NfcReader;
 import com.skjolberg.nfc.NfcTag;
 import com.skjolberg.nfc.acs.Acr1222LReader;
 import com.skjolberg.nfc.acs.Acr122UReader;
+import com.skjolberg.nfc.acs.Acr1252UReader;
+import com.skjolberg.nfc.acs.Acr1255UReader;
 import com.skjolberg.nfc.acs.Acr1283LReader;
+import com.skjolberg.nfc.acs.AcrAutomaticPICCPolling;
 import com.skjolberg.nfc.acs.AcrFont;
 import com.skjolberg.nfc.acs.AcrPICC;
 import com.skjolberg.nfc.acs.AcrReader;
@@ -699,6 +702,13 @@ public class MainActivity extends NfcExternalDetectorActivity {
     			acr1283LReader.clearDisplay();
     			acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1283L!");
     			acr1283LReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+            } else if(reader instanceof Acr1252UReader) {
+                Acr1252UReader acr1252UReader = (Acr1252UReader)reader;
+                acr1252UReader.setPICC(
+                        AcrPICC.POLL_ISO14443_TYPE_B,
+                        AcrPICC.POLL_ISO14443_TYPE_A
+                );
+                acr1252UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
     		}
     	} else {
     		Log.d(TAG, "No reader supplied");
