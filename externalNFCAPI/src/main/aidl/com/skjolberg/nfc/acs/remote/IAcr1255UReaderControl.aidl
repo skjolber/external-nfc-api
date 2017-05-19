@@ -37,4 +37,7 @@ interface IAcr1255UReaderControl {
 	byte[] getBluetoothTransmissionPower();
 
 	byte[] setBluetoothTransmissionPower(byte distance);
+
+	byte[] setSleepModeOption(byte option);
+
 }

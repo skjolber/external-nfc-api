@@ -709,6 +709,13 @@ public class MainActivity extends NfcExternalDetectorActivity {
                         AcrPICC.POLL_ISO14443_TYPE_A
                 );
                 acr1252UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
+            } else if(reader instanceof Acr1255UReader) {
+                Acr1255UReader acr1255UReader = (Acr1255UReader)reader;
+                acr1255UReader.setPICC(
+                        AcrPICC.POLL_ISO14443_TYPE_B,
+                        AcrPICC.POLL_ISO14443_TYPE_A
+                );
+                acr1255UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
     		}
     	} else {
     		Log.d(TAG, "No reader supplied");

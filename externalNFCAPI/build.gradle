@@ -22,7 +22,7 @@ task clearJar(type: Delete) {
 }
 
 task makeJar(type: Copy) {
-    from('build/intermediates/bundles/release/')
+    from('build/intermediates/bundles/default/')
     into('build/outputs/')
     include('classes.jar')
     rename ('classes.jar', 'externalnfcapi.jar')

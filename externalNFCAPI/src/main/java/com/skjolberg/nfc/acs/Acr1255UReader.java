@@ -538,4 +538,51 @@ public class Acr1255UReader extends AcrReader {
         }
         return readBoolean(response);
     }
+
+    /**
+     *
+     */
+    public boolean setSleepModeOption(int seconds) {
+        byte option;
+        switch(seconds) {
+            case 60: {
+                option = 0x00;
+                break;
+            }
+            case 90: {
+                option = 0x01;
+                break;
+            }
+            case 120: {
+                option = 0x02;
+                break;
+            }
+            case 180: {
+                option = 0x03;
+                break;
+            }
+            case -1: {
+                option = 0x04;
+                break;
+            }
+            default : {
+                throw new IllegalArgumentException("Unsupported sleep time " + seconds + " seconds");
+            }
+        }
+        /*
+            00h = 60 seconds
+            01h = 90 seconds
+            02h = 120 seconds
+            03h = 180 seconds
+            04h = No Sleep
+        */
+        byte[] response;
+        try {
+            response = readerControl.setSleepModeOption(option);
+        } catch (RemoteException e) {
+            throw new AcrReaderException(e);
+        }
+
+        return readBoolean(response);
+    }
 }
