@@ -20,7 +20,6 @@
 package com.skjolberg.nfc.external.client;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 import org.ndeftools.Message;
@@ -50,7 +49,6 @@ import android.nfc.tech.NfcB;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -76,6 +74,7 @@ import com.skjolberg.nfc.acs.AcrPICC;
 import com.skjolberg.nfc.acs.AcrReader;
 import com.skjolberg.nfc.desfire.DesfireReader;
 import com.skjolberg.nfc.desfire.VersionInfo;
+import com.skjolberg.nfc.external.stub.NfcTagHelper;
 import com.skjolberg.nfc.util.CommandAPDU;
 import com.skjolberg.nfc.util.ResponseAPDU;
 import com.skjolberg.nfc.util.activity.NfcExternalDetectorActivity;
@@ -97,8 +96,10 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	
 	private NdefFormatable ndefFormatable;
 	private Ndef ndef;
-    
-	@Override
+    // enable this setting if your are getting abstract method not implemented at android.nfc.INfcTag$Stub.connect(INfcTag.java)
+    private boolean customTagStub = true;
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
@@ -186,6 +187,10 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		if(intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
 
 			Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+            if(customTagStub) {
+                tag = NfcTagHelper.convert(tag);
+            }
 	
 			try {
 				String[] techList = tag.getTechList();

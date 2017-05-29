@@ -1,4 +1,4 @@
-include ':externalNFCAPI'
+include ':externalNFCAPI', ':externalNFCStub'
 include ':externalNFCClient'
 include ':externalNFCHostCardEmulationClient'
 include ':externalNFCWebKiosk'
