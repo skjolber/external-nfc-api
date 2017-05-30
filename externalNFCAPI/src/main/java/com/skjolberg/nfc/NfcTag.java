@@ -30,4 +30,9 @@ public interface NfcTag {
     public static final int EXTRA_ULTRALIGHT_TYPE_NTAG213F = 6;
     public static final int EXTRA_ULTRALIGHT_TYPE_NTAG216F = 7;
 
+    /** Some Android runtimes without native NFC are missing inner NFC classes. Check for this property to work around. */
+    public static final String EXTRA_BINDER_TYPE = NfcTag.class.getName() + ".extra.BINDER_TYPE";
+    public static final String EXTRA_BINDER_TYPE_CUSTOM = NfcTag.class.getName() + ".extra.BINDER_TYPE_CUSTOM";
+    public static final String EXTRA_BINDER_TYPE_STOCK = NfcTag.class.getName() + ".extra.BINDER_TYPE_STOCK";
+
 }

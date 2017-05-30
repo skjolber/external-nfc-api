@@ -96,8 +96,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	
 	private NdefFormatable ndefFormatable;
 	private Ndef ndef;
-    // enable this setting if your are getting abstract method not implemented at android.nfc.INfcTag$Stub.connect(INfcTag.java)
-    private boolean customTagStub = true;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -188,10 +186,17 @@ public class MainActivity extends NfcExternalDetectorActivity {
 
 			Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-            if(customTagStub) {
-                tag = NfcTagHelper.convert(tag);
+            // notice this setting if you are getting abstract method not implemented at android.nfc.INfcTag$Stub.connect(INfcTag.java)
+            // if not, this check can be removed
+            if(intent.hasExtra(NfcTag.EXTRA_BINDER_TYPE)) {
+                String type = intent.getStringExtra(NfcTag.EXTRA_BINDER_TYPE);
+                Log.d(TAG, "Use binder " + type);
+                if(type.equals(NfcTag.EXTRA_BINDER_TYPE_CUSTOM)) {
+
+                    tag = NfcTagHelper.convert(tag);
+                }
             }
-	
+
 			try {
 				String[] techList = tag.getTechList();
 		
@@ -244,7 +249,12 @@ public class MainActivity extends NfcExternalDetectorActivity {
                                 int pagesToRead = size / 4 + 4;
 
                                 // instead of reading 4 and 4 pages, read more using the FAST READ command
-                                int pagesPerRead = Math.min(255, nfcA.getMaxTransceiveLength() / 4);
+                                int pagesPerRead;
+                                if(nfcA.getMaxTransceiveLength() > 0) {
+                                    pagesPerRead = Math.min(255, nfcA.getMaxTransceiveLength() / 4);
+                                } else {
+                                    pagesPerRead = 255;
+                                }
 
                                 int reads = pagesToRead / pagesPerRead;
 
