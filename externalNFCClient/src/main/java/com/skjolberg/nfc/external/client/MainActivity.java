@@ -74,7 +74,6 @@ import com.skjolberg.nfc.acs.AcrPICC;
 import com.skjolberg.nfc.acs.AcrReader;
 import com.skjolberg.nfc.desfire.DesfireReader;
 import com.skjolberg.nfc.desfire.VersionInfo;
-import com.skjolberg.nfc.external.stub.NfcTagHelper;
 import com.skjolberg.nfc.util.CommandAPDU;
 import com.skjolberg.nfc.util.ResponseAPDU;
 import com.skjolberg.nfc.util.activity.NfcExternalDetectorActivity;
@@ -96,7 +95,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	
 	private NdefFormatable ndefFormatable;
 	private Ndef ndef;
-
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -185,17 +183,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		if(intent.hasExtra(NfcAdapter.EXTRA_TAG)) {
 
 			Tag tag = (Tag)intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-            // notice this setting if you are getting abstract method not implemented at android.nfc.INfcTag$Stub.connect(INfcTag.java)
-            // if not, this check can be removed
-            if(intent.hasExtra(NfcTag.EXTRA_BINDER_TYPE)) {
-                String type = intent.getStringExtra(NfcTag.EXTRA_BINDER_TYPE);
-                Log.d(TAG, "Use binder " + type);
-                if(type.equals(NfcTag.EXTRA_BINDER_TYPE_CUSTOM)) {
-
-                    tag = NfcTagHelper.convert(tag);
-                }
-            }
 
 			try {
 				String[] techList = tag.getTechList();
