@@ -49,7 +49,7 @@ Currently the ACS readers
  * [ACR 1222L](http://www.acs.com.hk/index.php?pid=product&id=ACR1222L) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1222LReader.java)) 
  * [ACR 1251U](http://www.acs.com.hk/en/products/218/acr1251-usb-nfc-reader-ii/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1251UReader.java)) 
  * [ACR 1252U](http://www.acs.com.hk/en/products/342/acr1252u-usb-nfc-reader-iii-nfc-forum-certified-reader/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1252UReader.java)) 
- * [ACR 12525U-J1](http://www.acs.com.hk/en/products/403/acr1255u-j1-secure-bluetooth%C2%AE-nfc-reader/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1255UReader.java)) - NOTE: No bluetooth support yet.
+ * [ACR 1255U-J1](http://www.acs.com.hk/en/products/403/acr1255u-j1-secure-bluetooth%C2%AE-nfc-reader/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1255UReader.java)) - NOTE: No bluetooth support yet.
  * [ACR 1281U-C1](http://www.acs.com.hk/en/products/159/acr1281u-c1-dualboost-ii-usb-dual-interface-reader/) ([API](externalNFCAPI/src/main/java/src/com/skjolberg/nfc/acs/Acr1281UReader.java)) 
  * [ACR 1283L](http://www.acs.com.hk/en/products/226/acr1283l-standalone-contactless-reader/) ([API](externalNFCAPI/src/main/java/com/skjolberg/nfc/acs/Acr1283LReader.java)) 
  
@@ -72,7 +72,7 @@ The readers can for the __most part can be enabled for all tag types at the same
 Please note:
  - Some readers only support a subset of the above tags
  - For ACR 122U the Mifare Classic does not work well.
- - No built-in NDEF support for Desfire EV1 cards
+ - No built-in NDEF support for Desfire EV1 cards (let me know it this is interesting to you).
 
 Configuration options
  - assume all NTAG21x Mifare Ultralight targets. This improves read speed, particullary for the tags which have legacy equivalents, like NTAG 210 and 213
