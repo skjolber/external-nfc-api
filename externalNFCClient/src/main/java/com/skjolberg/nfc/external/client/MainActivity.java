@@ -72,6 +72,7 @@ import com.skjolberg.nfc.acs.AcrAutomaticPICCPolling;
 import com.skjolberg.nfc.acs.AcrFont;
 import com.skjolberg.nfc.acs.AcrPICC;
 import com.skjolberg.nfc.acs.AcrReader;
+import com.skjolberg.nfc.acs.AcrReaderException;
 import com.skjolberg.nfc.desfire.DesfireReader;
 import com.skjolberg.nfc.desfire.VersionInfo;
 import com.skjolberg.nfc.util.CommandAPDU;
@@ -667,58 +668,67 @@ public class MainActivity extends NfcExternalDetectorActivity {
 
     	if(intent.hasExtra(NfcReader.EXTRA_READER_CONTROL)) {
     		AcrReader reader = intent.getParcelableExtra(NfcReader.EXTRA_READER_CONTROL);
-    		
-    		String name = reader.getName();
-    		
-    		String firmware = reader.getFirmware();
-    		
-    		List<AcrPICC> picc = reader.getPICC();
-    		
-    		Log.d(TAG, "Got reader " + name + " with firmware " + firmware + " and PICC setting " + picc);
-    		
-    		if(reader instanceof Acr122UReader) {
-    			Acr122UReader acr122uReader = (Acr122UReader)reader;
-    			acr122uReader.setBuzzerForCardDetection(true);
-    			
-    			acr122uReader.setPICC(
-    					AcrPICC.AUTO_PICC_POLLING, 
-    					AcrPICC.POLL_ISO14443_TYPE_B, 
-    					AcrPICC.POLL_ISO14443_TYPE_A,
-    					AcrPICC.AUTO_ATS_GENERATION
-    					);
-    			
-    			//acr122uReader.setPICC(AcrPICC.AUTO_PICC_POLLING, AcrPICC.POLL_ISO14443_TYPE_B, AcrPICC.POLL_ISO14443_TYPE_A);
-    		} else if(reader instanceof Acr1222LReader) {
-    			Acr1222LReader acr1222lReader = (Acr1222LReader)reader;
-    			
-    			// display font example - note that also font type C
-    			acr1222lReader.lightDisplayBacklight(true);
-    			acr1222lReader.clearDisplay();
-    			acr1222lReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1222L!");
-    			acr1222lReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
-    		} else if(reader instanceof Acr1283LReader) {
-    			Acr1283LReader acr1283LReader = (Acr1283LReader)reader;
-    			
-    			// display font example - note that also font type C
-    			acr1283LReader.lightDisplayBacklight(true);
-    			acr1283LReader.clearDisplay();
-    			acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1283L!");
-    			acr1283LReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
-            } else if(reader instanceof Acr1252UReader) {
-                Acr1252UReader acr1252UReader = (Acr1252UReader)reader;
-                acr1252UReader.setPICC(
-                        AcrPICC.POLL_ISO14443_TYPE_B,
-                        AcrPICC.POLL_ISO14443_TYPE_A
-                );
-                acr1252UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
-            } else if(reader instanceof Acr1255UReader) {
-                Acr1255UReader acr1255UReader = (Acr1255UReader)reader;
-                acr1255UReader.setPICC(
-                        AcrPICC.POLL_ISO14443_TYPE_B,
-                        AcrPICC.POLL_ISO14443_TYPE_A
-                );
-                acr1255UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
-    		}
+
+            try {
+                String name = reader.getName();
+
+                String firmware = "unkown";
+                try {
+                    firmware = reader.getFirmware();
+                } catch(Exception e) {
+                    Log.d(TAG, "Problem reading firmware", e);
+                }
+                List<AcrPICC> picc = reader.getPICC();
+
+                Log.d(TAG, "Got reader " + name + " with firmware " + firmware + " and PICC setting " + picc);
+
+                if (reader instanceof Acr122UReader) {
+                    Acr122UReader acr122uReader = (Acr122UReader) reader;
+                    acr122uReader.setBuzzerForCardDetection(true);
+
+                    acr122uReader.setPICC(
+                            AcrPICC.AUTO_PICC_POLLING,
+                            AcrPICC.POLL_ISO14443_TYPE_B,
+                            AcrPICC.POLL_ISO14443_TYPE_A,
+                            AcrPICC.AUTO_ATS_GENERATION
+                    );
+
+                    //acr122uReader.setPICC(AcrPICC.AUTO_PICC_POLLING, AcrPICC.POLL_ISO14443_TYPE_B, AcrPICC.POLL_ISO14443_TYPE_A);
+                } else if (reader instanceof Acr1222LReader) {
+                    Acr1222LReader acr1222lReader = (Acr1222LReader) reader;
+
+                    // display font example - note that also font type C
+                    acr1222lReader.lightDisplayBacklight(true);
+                    acr1222lReader.clearDisplay();
+                    acr1222lReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1222L!");
+                    acr1222lReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+                } else if (reader instanceof Acr1283LReader) {
+                    Acr1283LReader acr1283LReader = (Acr1283LReader) reader;
+
+                    // display font example - note that also font type C
+                    acr1283LReader.lightDisplayBacklight(true);
+                    acr1283LReader.clearDisplay();
+                    acr1283LReader.displayText(AcrFont.FontA, Typeface.BOLD, 0, 0, "Hello ACR1283L!");
+                    acr1283LReader.displayText(AcrFont.FontB, Typeface.BOLD, 1, 0, "ABCDE 0123456789");
+                } else if (reader instanceof Acr1252UReader) {
+                    Acr1252UReader acr1252UReader = (Acr1252UReader) reader;
+                    acr1252UReader.setPICC(
+                            AcrPICC.POLL_ISO14443_TYPE_B,
+                            AcrPICC.POLL_ISO14443_TYPE_A
+                    );
+                    acr1252UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
+                } else if (reader instanceof Acr1255UReader) {
+                    Acr1255UReader acr1255UReader = (Acr1255UReader) reader;
+                    acr1255UReader.setPICC(
+                            AcrPICC.POLL_ISO14443_TYPE_B,
+                            AcrPICC.POLL_ISO14443_TYPE_A
+                    );
+                    acr1255UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
+                    //acr1255UReader.setSleepModeOption(-1); // no sleep
+                }
+            } catch(AcrReaderException e) {
+                Log.d(TAG, "Problem accessing reader", e);
+            }
     	} else {
     		Log.d(TAG, "No reader supplied");
     	}
