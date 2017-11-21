@@ -724,6 +724,8 @@ public class MainActivity extends NfcExternalDetectorActivity {
                             AcrPICC.POLL_ISO14443_TYPE_A
                     );
                     acr1255UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
+
+                    // XXX this seems to put the reader in a sort of bricked state
                     //acr1255UReader.setSleepModeOption(-1); // no sleep
                 }
             } catch(AcrReaderException e) {
