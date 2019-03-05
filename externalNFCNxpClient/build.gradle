@@ -19,6 +19,6 @@ android {
 }
 
 dependencies {
-    compile project(':externalNFCAPI')
-    compile files('libs/nxpnfcliblite.jar')
+    api project(':externalNFCAPI')
+    api files('libs/nxpnfcliblite.jar')
 }

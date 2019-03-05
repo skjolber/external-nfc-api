@@ -19,5 +19,5 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.+'
+    api 'com.android.support:support-v4:23.+'
 }

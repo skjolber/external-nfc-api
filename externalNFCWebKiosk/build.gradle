@@ -23,5 +23,5 @@ repositories {
 }
 
 dependencies {
-    compile project(':externalNFCAPI')
+    api project(':externalNFCAPI')
 }
