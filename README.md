@@ -1,7 +1,7 @@
 
 
-# External NFC Service API (native style) for Android
-Library for interaction with ACS NFC readers over USB for Android devices.
+# External NFC Service (native style) for Android
+Library for interaction with ACS NFC readers over USB; external NFC support Android devices. 
 
 Features:
  - External NFC reader management and interaction
