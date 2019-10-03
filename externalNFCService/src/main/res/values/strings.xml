@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">External NFC Reader Service</string>
+
+    <string name="mainActivityLabel">External NFC Reader Service</string>
+
+    <string name="startingService">Starting service..</string>
+    
+    <string name="introductionTitle">Service configuration and controls</string>
+    
+    <string name="startService">Start USB service now</string>
+    <string name="stopService">Stop USB service now</string>
+    
+    <string name="serviceStatus">Service status</string>
+    <string name="serviceStatusUnknown">Unknown</string>
+    <string name="serviceStatusStarted">Started</string>
+    <string name="serviceStatusStopped">Stopped</string>
+
+    <string name="readerStatus">Reader status</string>
+    <string name="readerStatusUnknown">Unknown</string>
+    <string name="readerStatusClosed">Closed</string>
+    <string name="readerStatusOpen">Opened</string>
+    
+    <string name="tagStatus">Tag status</string>
+    <string name="tagStatusNone">Unknown</string>
+    <string name="tagStatusAbsent">Absent</string>
+    <string name="tagStatusPresent">Present</string>
+    
+    <string name="tagType">Tag type</string>
+    <string name="tagTypeNone">Unknown</string>
+    
+    
+    <string name="preferences">Preferences</string>
+    <string name="openPreferences">Open preferences</string>
+    <string name="preference_category_reader">Reader</string>
+    <string name="preference_category_tag">Tag</string>
+    <string name="preference_auto_read_ndef">Auto read NDEF</string>
+    <string name="preference_auto_read_ndef_summary">For Mifare Classic and Ultralight</string>
+    <string name="preference_auto_read_uid">Auto read UID</string>
+    <string name="preference_auto_read_uid_summary">For Desfire cards</string>
+    <string name="preference_category_service">Service</string>
+    <string name="preference_auto_start_on_reader_connect">Auto start on reader connect</string>
+    <string name="preference_auto_stop_on_reader_disconnect">Auto stop on reader disconnect</string>
+    <string name="preference_auto_start_on_restart">Auto start after reboot</string>
+
+    <string name="preference_ntag21x_ultralights">NTAG21x Ultralights</string>
+    <string name="preference_ntag21x_ultralights_summary">All Ultralight targets are NTAG21x tags</string>
+
+    <string name="preference_uid_mode">UID mode</string>
+    <string name="preference_uid_mode_summary">Limit reads to tag UIDs</string>
+
+    <string name="share">Share</string>
+
+    <string name="ble_not_supported">BLE is not supported.</string>
+    <string name="title_devices">Bluetooth device scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="unknown_device">Unknown device</string>
+
+    <!-- Menu items -->
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+
+    <string name="deviceScan">Device scan</string>
+
+    <string name="startScan">Select bluetooth device</string>
+
+    <string name="stopBluetoothService">Stop bluetooth service</string>
+
+</resources>

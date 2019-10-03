@@ -3,3 +3,8 @@ include ':externalNFCClient'
 include ':externalNFCHostCardEmulationClient'
 include ':externalNFCWebKiosk'
 include ':externalNFCNxpClient'
+
+include ':externalNFCTools'
+include ':externalNFCCore'
+include ':externalNFCService'
+

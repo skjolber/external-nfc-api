@@ -1,10 +1,9 @@
+
+
 # External NFC Service API (native style) for Android
+Library for interaction with ACS NFC readers over USB for Android devices.
 
-This API is for interaction with the [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app found in Google Play. 
-
-The [External NFC Service](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.external) app provides NFC-functionality along the lines of native Android NFC for external NFC readers connected via USB. 
-
-Projects using this library will benefit from:
+Features:
  - External NFC reader management and interaction
  - Parallell use of external and/or internal NFC (i.e. in the same activity, both enabled at the same time)
  - Support for both tags and Android devices (Host Card Emulation), simultaneously
@@ -12,14 +11,22 @@ Projects using this library will benefit from:
 
 As this project very much simplifies implementation for use-cases requiring external NFC readers, it saves a lot of development time (2-8 weeks depending on use-case and previous knowledge).
 
-# Overview
+Bugs, feature suggestions and help requests can be filed with the [issue-tracker].
+
+## License
+[Apache 2.0]
+
+# Usage
 This repository contains source code for 
 
- * An Android library project (the actual API), and 
- * Demo client apps demonstrating actual usage
-  * [Basic client app](externalNFCClient)
-  * [NXP API client](externalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/)
-  * [Web Kiosk client](externalNFCWebKiosk) with javascript bindings
+ * [A server library](externalNFCCore); services for interaction with the readers & tags
+ * [A client library](externalNFCAPI) (i.e. API), receiving NFC-related intents
+ * [An NFC library](externalNFCTools) - Android adaptation of NFC Tools
+ * Demo apps
+    * [Basic server app](externalNFCService)
+    * [Basic client app](externalNFCClient)
+    * [NXP API client](externalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/)
+    * [Web Kiosk client](externalNFCWebKiosk) with javascript bindings
 
 There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the [Basic client app](externalNFCClient).
 
@@ -105,20 +112,20 @@ You might be interested in
 
 for configuration of your reader. Approximately the same configuration options are available using this API. 
 
-# Feature requests
-Please email feature requests to thomas.skjolberg@gmail.com.
+# See also 
+This project contains adapted code from
 
-# Distribution
-Get in touch for bulk and/or offline distribution. A library jar is also available on request, simplifying distribution of your own app(s). Source code is also an option.
+ * NFC Tools for Java
+ * SMARTRAC SDK for Android NFC NTAG
 
-# Development
+# Support
 If you need professional, cost-efficient assistance with an NFC project, get in touch. I also do
 
  * Desfire EV1 tech (with encryption) - [example app](https://play.google.com/store/apps/details?id=com.skjolberg.mifare.desfiretool)
  * WebView-based apps, either visiting ULRs and/or interaction over Javascript.
  * NFC-initiated [wifi connectivity](https://play.google.com/store/apps/details?id=w.i)
  * More advanced Host Card Emulation (HCE) for Android
- * NFC development tools
+ * NFC development tools (some are a bit outdatet now)
    * [NFC Developer](https://play.google.com/store/apps/details?id=com.antares.nfc)
    * [NDEF Tools for Android](https://play.google.com/store/apps/details?id=org.ndeftools.boilerplate&hl=no)
    * [Mifare Classic refactor](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.mifareclassic)
@@ -133,3 +140,6 @@ Feel free to connect with me on [LinkedIn](http://lnkd.in/r7PWDz), see also my [
 [MifareUltralight]:     https://developer.android.com/reference/android/nfc/tech/MifareUltralight.html
 [IsoDep]:               https://developer.android.com/reference/android/nfc/tech/IsoDep.html
 [Apache Cordova]:       https://cordova.apache.org/
+[Apache 2.0]:           http://www.apache.org/licenses/LICENSE-2.0.html
+[issue-tracker]:        https://github.com/skjolber/external-nfc-api/issues
+
