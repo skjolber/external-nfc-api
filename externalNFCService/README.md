@@ -1,4 +1,4 @@
-# External NFC Reader
+# External NFC Service example
 Gradle / Android-studio based project. 
 
 ## Building
