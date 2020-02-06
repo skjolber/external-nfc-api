@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "29.0.3"
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        applicationId "com.github.skjolber.nfc.external"
+        minSdkVersion 19
+        targetSdkVersion 28
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    implementation files('../../libs/acssmc-1.1.5.jar')
+    implementation files('../../libs/acsbt-1.0.1.aar')
+    api project(':api')
+    api project(':core')
+    api project(':tools')
+}
