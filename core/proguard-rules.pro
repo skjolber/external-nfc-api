@@ -23,10 +23,10 @@
 
 -dontwarn android.nfc.**
 
--keep public class com.skjolberg.nfc.acs.**
--keep public class com.skjolberg.nfc.NfcReader
--keep public class com.skjolberg.nfc.NfcService
--keep public class com.skjolberg.nfc.NfcTag
+-keep public class com.github.skjolber.nfc.acs.**
+-keep public class com.github.skjolber.nfc.NfcReader
+-keep public class com.github.skjolber.nfc.NfcService
+-keep public class com.github.skjolber.nfc.NfcTag
 
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
@@ -65,8 +65,8 @@
     public static final *;
 }
 
--keep public class com.skjolberg.service.BackgroundUsbService
+-keep public class com.github.skjolber.nfc.service.BackgroundUsbService
 
--keepclassmembers class com.skjolberg.hce.**
+-keepclassmembers class com.github.skjolber.nfc.hce.**
 
--keepclassmembers interface com.skjolberg.hce.**
+-keepclassmembers interface com.github.skjolber.nfc.hce.**

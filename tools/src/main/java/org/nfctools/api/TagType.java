@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 import android.util.Log;
 
-import com.skjolberg.nfc.command.Utils;
+import com.github.skjolber.nfc.command.Utils;
 
 public enum TagType {
 

@@ -15,7 +15,7 @@
  */
 package org.nfctools.ndef;
 
-import com.skjolberg.reader.operations.NdefOperations;
+import com.github.skjolber.nfc.skjolberg.reader.operations.NdefOperations;
 
 public interface NdefOperationsListener {
 

@@ -22,13 +22,13 @@
 -printmapping mapping.txt
 
 -dontwarn android.nfc.**
--dontwarn com.skjolberg.hce.CustomINFcTagStub15to23
--dontwarn com.skjolberg.hce.CustomINFcTagStub24to25
+-dontwarn com.github.skjolber.nfc.hce.CustomINFcTagStub15to23
+-dontwarn com.github.skjolber.nfc.hce.CustomINFcTagStub24to25
 
--keep public class com.skjolberg.nfc.acs.**
--keep public class com.skjolberg.nfc.NfcReader
--keep public class com.skjolberg.nfc.NfcService
--keep public class com.skjolberg.nfc.NfcTag
+-keep public class com.github.skjolber.nfc.acs.**
+-keep public class com.github.skjolber.nfc.NfcReader
+-keep public class com.github.skjolber.nfc.NfcService
+-keep public class com.github.skjolber.nfc.NfcTag
 
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
@@ -67,9 +67,9 @@
     public static final *;
 }
 
--keep public class com.skjolberg.service.BackgroundUsbService
+-keep public class com.github.skjolber.nfc.service.BackgroundUsbService
 
 -keepclassmembernames public class com..skjolberg.hce.** {*;}
 
--keep public interface com.skjolberg.hce.** {*;}
+-keep public interface com.github.skjolber.nfc.hce.** {*;}
 

@@ -1,6 +1,6 @@
 package com.github.skjolber.nfc.service.service;
 
-import com.skjolberg.service.TechnologyType;
+import com.github.skjolber.nfc.service.TechnologyType;
 
 import org.junit.Assert;
 import org.junit.Test;

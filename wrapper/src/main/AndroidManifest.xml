@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.skjolberg.nfc.external.core">
+    package="com.github.skjolber.nfc.external.core">
 
     <uses-permission android:name="android.permission.NFC" />
 

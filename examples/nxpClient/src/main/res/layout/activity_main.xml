@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.skjolberg.nfc.external.hceclient.MainActivity"
+    tools:context="com.github.skjolber.nfc.external.hceclient.MainActivity"
     android:orientation="vertical" >
 
     <TextView 

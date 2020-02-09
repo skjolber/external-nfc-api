@@ -1,5 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.skjolberg.nfc.external.nxpclient.MainActivity" >
+    tools:context="com.github.skjolber.nfc.external.nxpclient.MainActivity" >
 
 </menu>

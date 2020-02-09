@@ -24,21 +24,12 @@ package org.nfctools.mf.ul.ntag;
  */
 
 
-import android.nfc.Tag;
-import android.nfc.tech.NfcA;
-import android.nfc.tech.TagTechnology;
-import android.util.Log;
-
 import com.acs.smartcard.ReaderException;
-import com.skjolberg.nfc.command.ReaderWrapper;
-import com.skjolberg.nfc.command.Utils;
-import com.skjolberg.service.IsoDepWrapper;
+import com.github.skjolber.nfc.command.Utils;
+import com.github.skjolber.nfc.service.IsoDepWrapper;
 
 import org.nfctools.mf.MfException;
 import org.nfctools.mf.ul.MfUlReaderWriter;
-
-import java.io.IOException;
-import java.io.Reader;
 
 import custom.java.CommandAPDU;
 import custom.java.ResponseAPDU;

@@ -11,11 +11,10 @@ import org.nfctools.mf.tlv.NdefMessageTlv;
 import org.nfctools.mf.tlv.Tlv;
 import org.nfctools.mf.tlv.TypeLengthValueReader;
 
-import com.skjolberg.reader.operations.NdefOperations;
+import com.github.skjolber.nfc.skjolberg.reader.operations.NdefOperations;
 
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
-import android.util.Log;
 
 public abstract class AbstractNdefOperations implements NdefOperations {
 

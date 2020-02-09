@@ -17,10 +17,6 @@ package org.nfctools.mf.ul;
 
 import org.nfctools.mf.block.MfBlock;
 
-import android.util.Log;
-
-import com.skjolberg.nfc.command.Utils;
-
 import java.util.Arrays;
 
 public class UltralightHandler {

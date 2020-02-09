@@ -25,8 +25,8 @@ import org.nfctools.scio.Response;
 
 import android.util.Log;
 
-import com.skjolberg.nfc.command.ReaderWrapper;
-import com.skjolberg.nfc.command.Utils;
+import com.github.skjolber.nfc.command.ReaderWrapper;
+import com.github.skjolber.nfc.command.Utils;
 
 import custom.java.CommandAPDU;
 import custom.java.ResponseAPDU;

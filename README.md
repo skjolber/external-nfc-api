@@ -104,11 +104,11 @@ There is quite a few types of tags out there, and if your tag type is not recogn
 # Reader setting utility apps
 You might be interested in
 
- * [ACR 1222L USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1222) 
- * [ACR 122 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr122u)
- * [ACR 1251 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1251u)
- * [ACR 1252 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1252u)
- * [ACR 1281 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.skjolberg.acr1281u)
+ * [ACR 1222L USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.skjolberg.acr1222)
+ * [ACR 122 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.skjolberg.acr122u)
+ * [ACR 1251 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.skjolberg.acr1251u)
+ * [ACR 1252 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.skjolberg.acr1252u)
+ * [ACR 1281 USB NFC Reader Utils](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.skjolberg.acr1281u)
 
 for configuration of your reader. Approximately the same configuration options are available using this API. 
 
@@ -121,14 +121,14 @@ This project contains adapted code from
 # Support
 If you need professional, cost-efficient assistance with an NFC project, get in touch. I also do
 
- * Desfire EV1 tech (with encryption) - [example app](https://play.google.com/store/apps/details?id=com.skjolberg.mifare.desfiretool)
+ * Desfire EV1 tech (with encryption) - [example app](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.skjolberg.mifare.desfiretool)
  * WebView-based apps, either visiting ULRs and/or interaction over Javascript.
  * NFC-initiated [wifi connectivity](https://play.google.com/store/apps/details?id=w.i)
  * More advanced Host Card Emulation (HCE) for Android
  * NFC development tools (some are a bit outdatet now)
    * [NFC Developer](https://play.google.com/store/apps/details?id=com.antares.nfc)
    * [NDEF Tools for Android](https://play.google.com/store/apps/details?id=org.ndeftools.boilerplate&hl=no)
-   * [Mifare Classic refactor](https://play.google.com/store/apps/details?id=com.skjolberg.nfc.mifareclassic)
+   * [Mifare Classic refactor](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.mifareclassic)
  * NFC supplimented with QR codes
  * Smartcard-related workflows and integrations over [ESB](http://camel.apache.org/) or [BPM](https://camunda.com/) modelling
  * Custom binary formats for NDEF or raw tag data - fit your data for __minimal read/write time and best form factor selection__

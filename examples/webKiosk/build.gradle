@@ -9,7 +9,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.skjolberg.nfc.external.kiosk"
+        applicationId "com.github.skjolber.nfc.external.kiosk"
         minSdkVersion 19
         targetSdkVersion 28
     }

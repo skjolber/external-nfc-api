@@ -9,7 +9,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.skjolberg.nfc.external.hceclient"
+        applicationId "com.github.skjolber.nfc.external.hceclient"
         minSdkVersion 19
         targetSdkVersion 28
     }
