@@ -1,6 +1,6 @@
 package com.github.skjolber.nfc.hce.tech.mifare;
 
-import android.nfc.TransceiveResult;
+import com.github.skjolber.android.nfc.TransceiveResult;
 import android.nfc.tech.IsoDep;
 import android.os.RemoteException;
 import android.util.Log;

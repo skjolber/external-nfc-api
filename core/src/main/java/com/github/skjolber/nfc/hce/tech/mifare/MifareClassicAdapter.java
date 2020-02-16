@@ -9,7 +9,7 @@ import org.nfctools.mf.classic.KeyValue;
 import org.nfctools.mf.classic.MfClassicAccess;
 import org.nfctools.mf.classic.MfClassicReaderWriter;
 
-import android.nfc.TransceiveResult;
+import com.github.skjolber.android.nfc.TransceiveResult;
 import android.nfc.tech.MifareClassic;
 import android.os.RemoteException;
 import android.util.Log;

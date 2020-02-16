@@ -18,6 +18,9 @@ package com.github.skjolber.android.nfc.tech;
 
 import com.github.skjolber.android.nfc.ErrorCodes;
 import com.github.skjolber.android.nfc.Tag;
+import com.github.skjolber.android.nfc.TagImpl;
+import com.github.skjolber.android.nfc.TagWrapper;
+
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -25,7 +28,7 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
- * Provides access to NFC-F (JIS 6319-4) properties and I/O operations on a {@link Tag}.
+ * Provides access to NFC-F (JIS 6319-4) properties and I/O operations on a {@link TagImpl}.
  *
  * <p>Acquire a {@link NfcF} object using {@link #get}.
  * <p>The primary NFC-F I/O operation is {@link #transceive}. Applications must
@@ -34,20 +37,16 @@ import java.io.IOException;
  * <p class="note"><strong>Note:</strong> Methods that perform I/O operations
  * require the {@link android.Manifest.permission#NFC} permission.
  */
-public final class NfcF extends BasicTagTechnology {
-    private static final String TAG = "NFC";
+public abstract class NfcF implements BasicTagTechnology {
 
     /** @hide */
     public static final String EXTRA_SC = "systemcode";
     /** @hide */
     public static final String EXTRA_PMM = "pmm";
 
-    private byte[] mSystemCode = null;
-    private byte[] mManufacturer = null;
-
     /**
      * Get an instance of {@link NfcF} for the given tag.
-     * <p>Returns null if {@link NfcF} was not enumerated in {@link Tag#getTechList}.
+     * <p>Returns null if {@link NfcF} was not enumerated in {@link TagImpl#getTechList}.
      * This indicates the tag does not support NFC-F.
      * <p>Does not cause any RF activity and does not block.
      *
@@ -55,22 +54,21 @@ public final class NfcF extends BasicTagTechnology {
      * @return NFC-F object
      */
     public static NfcF get(Tag tag) {
-        if (!tag.hasTech(TagTechnology.NFC_F)) return null;
-        try {
-            return new NfcF(tag);
-        } catch (RemoteException e) {
-            return null;
+        if(tag instanceof TagImpl) {
+            TagImpl tagImpl = (TagImpl)tag;
+            if (!tagImpl.hasTech(TagTechnology.NFC_F)) return null;
+            try {
+                return new NfcFImpl(tagImpl);
+            } catch (RemoteException e) {
+                return null;
+            }
+        } else if(tag instanceof TagWrapper) {
+            TagWrapper delegate = (TagWrapper)tag;
+            return new NfcFWrapper(android.nfc.tech.NfcF.get(delegate.getDelegate()));
+        } else {
+            throw new IllegalArgumentException();
         }
-    }
 
-    /** @hide */
-    public NfcF(Tag tag) throws RemoteException {
-        super(tag, TagTechnology.NFC_F);
-        Bundle extras = tag.getTechExtras(TagTechnology.NFC_F);
-        if (extras != null) {
-            mSystemCode = extras.getByteArray(EXTRA_SC);
-            mManufacturer = extras.getByteArray(EXTRA_PMM);
-        }
     }
 
     /**
@@ -80,9 +78,7 @@ public final class NfcF extends BasicTagTechnology {
      *
      * @return System Code bytes
      */
-    public byte[] getSystemCode() {
-      return mSystemCode;
-    }
+    public abstract byte[] getSystemCode();
 
     /**
      * Return the Manufacturer bytes from tag discovery.
@@ -91,9 +87,7 @@ public final class NfcF extends BasicTagTechnology {
      *
      * @return Manufacturer bytes
      */
-    public byte[] getManufacturer() {
-      return mManufacturer;
-    }
+    public abstract byte[] getManufacturer();
 
     /**
      * Send raw NFC-F commands to the tag and receive the response.
@@ -117,20 +111,16 @@ public final class NfcF extends BasicTagTechnology {
      *
      * @param data bytes to send
      * @return bytes received in response
-     * @throws TagLostException if the tag leaves the field
+     * @throws android.nfc.TagLostException if the tag leaves the field
      * @throws IOException if there is an I/O failure, or this operation is canceled
      */
-    public byte[] transceive(byte[] data) throws IOException {
-        return transceive(data, true);
-    }
+    public abstract byte[] transceive(byte[] data) throws IOException;
 
     /**
      * Return the maximum number of bytes that can be sent with {@link #transceive}.
      * @return the maximum number of bytes that can be sent with {@link #transceive}.
      */
-    public int getMaxTransceiveLength() {
-        return getMaxTransceiveLengthInternal();
-    }
+    public abstract int getMaxTransceiveLength();
 
     /**
      * Set the {@link #transceive} timeout in milliseconds.
@@ -146,16 +136,7 @@ public final class NfcF extends BasicTagTechnology {
      *
      * @param timeout timeout value in milliseconds
      */
-    public void setTimeout(int timeout) {
-        try {
-            int err = mTag.getTagService().setTimeout(TagTechnology.NFC_F, timeout);
-            if (err != ErrorCodes.SUCCESS) {
-                throw new IllegalArgumentException("The supplied timeout is not valid");
-            }
-        } catch (RemoteException e) {
-            Log.e(TAG, "NFC service dead", e);
-        }
-    }
+    public abstract void setTimeout(int timeout);
 
     /**
      * Get the current {@link #transceive} timeout in milliseconds.
@@ -164,12 +145,5 @@ public final class NfcF extends BasicTagTechnology {
      *
      * @return timeout value in milliseconds
      */
-    public int getTimeout() {
-        try {
-            return mTag.getTagService().getTimeout(TagTechnology.NFC_F);
-        } catch (RemoteException e) {
-            Log.e(TAG, "NFC service dead", e);
-            return 0;
-        }
-    }
+    public abstract int getTimeout();
 }

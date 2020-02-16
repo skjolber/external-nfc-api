@@ -2,8 +2,7 @@ package com.github.skjolber.nfc.hce.resolve;
 
 import java.util.List;
 
-import android.nfc.Tag;
-
+import com.github.skjolber.android.nfc.TagImpl;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 
 public class TagProxy {
@@ -84,7 +83,7 @@ public class TagProxy {
         this.current = null;
     }
 
-    public Tag rediscover(Object callback) {
+    public TagImpl rediscover(Object callback) {
         throw new RuntimeException();
     }
 

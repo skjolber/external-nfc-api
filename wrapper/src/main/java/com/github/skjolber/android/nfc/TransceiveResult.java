@@ -16,6 +16,7 @@
 
 package com.github.skjolber.android.nfc;
 
+import android.nfc.TagLostException;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -24,9 +25,9 @@ import java.io.IOException;
 /**
  * Class used to pipe transceive result from the NFC service.
  *
- * @hide
  */
-public final class TransceiveResult implements Parcelable {
+public final class TransceiveResult implements Parcelable{
+
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_FAILURE = 1;
     public static final int RESULT_TAGLOST = 2;
@@ -53,12 +54,10 @@ public final class TransceiveResult implements Parcelable {
         }
     }
 
-    @Override
     public int describeContents() {
         return 0;
     }
 
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
         if (mResult == RESULT_SUCCESS) {

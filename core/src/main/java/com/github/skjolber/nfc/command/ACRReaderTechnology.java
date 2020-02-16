@@ -1,6 +1,6 @@
 package com.github.skjolber.nfc.command;
 
-import android.nfc.ErrorCodes;
+import com.github.skjolber.android.nfc.ErrorCodes;
 import android.os.RemoteException;
 
 import com.acs.smartcard.ReaderException;

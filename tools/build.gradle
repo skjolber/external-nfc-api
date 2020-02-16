@@ -28,7 +28,6 @@ android {
 
 dependencies {
     compileOnly files('../libs/acssmc-1.1.5.jar')
-    compileOnly files('../libs/classes-dex2jar.jar')
     api project(':api')
     api 'com.google.code.ndef-tools-for-android:ndeftools:1.2.4'
 }

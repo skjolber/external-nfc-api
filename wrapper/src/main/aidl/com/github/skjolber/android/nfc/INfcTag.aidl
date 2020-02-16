@@ -17,7 +17,7 @@
 package com.github.skjolber.android.nfc;
 
 import android.nfc.NdefMessage;
-import com.github.skjolber.android.nfc.Tag;
+import com.github.skjolber.android.nfc.TagImpl;
 import com.github.skjolber.android.nfc.TransceiveResult;
 
 /**
@@ -37,7 +37,7 @@ interface INfcTag
     int ndefMakeReadOnly(int nativeHandle);
     boolean ndefIsWritable(int nativeHandle);
     int formatNdef(int nativeHandle, in byte[] key);
-    Tag rediscover(int nativehandle);
+    TagImpl rediscover(int nativehandle);
 
     int setTimeout(int technology, int timeout);
     int getTimeout(int technology);

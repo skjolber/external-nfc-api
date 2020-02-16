@@ -38,14 +38,14 @@ import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
-import android.nfc.tech.Ndef;
-import android.nfc.tech.NdefFormatable;
-import android.nfc.tech.NfcA;
-import android.nfc.tech.NfcB;
+import com.github.skjolber.android.nfc.Tag;
+import com.github.skjolber.android.nfc.tech.IsoDep;
+import com.github.skjolber.android.nfc.tech.MifareClassic;
+import com.github.skjolber.android.nfc.tech.MifareUltralight;
+import com.github.skjolber.android.nfc.tech.Ndef;
+import com.github.skjolber.android.nfc.tech.NdefFormatable;
+import com.github.skjolber.android.nfc.tech.NfcA;
+import com.github.skjolber.android.nfc.tech.NfcB;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -334,7 +334,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 					} else if (tech.equals(android.nfc.tech.NfcV.class.getName())) {
 						Log.d(TAG, "Ignore " + tech);
 					} else if (tech.equals(android.nfc.tech.IsoDep.class.getName())) {
-						android.nfc.tech.IsoDep isoDep = IsoDep.get(tag);
+						com.github.skjolber.android.nfc.tech.IsoDep isoDep = IsoDep.get(tag);
 
 						boolean hostCardEmulation = intent.getBooleanExtra(NfcTag.EXTRA_HOST_CARD_EMULATION, false);
 
@@ -411,7 +411,7 @@ public class MainActivity extends NfcExternalDetectorActivity {
 						}						
 	
 					} else if (tech.equals(android.nfc.tech.MifareClassic.class.getName())) {
-						android.nfc.tech.MifareClassic mifareClassic = MifareClassic.get(tag);
+						com.github.skjolber.android.nfc.tech.MifareClassic mifareClassic = MifareClassic.get(tag);
 						
 						setTagType(getString(R.string.tagTypeMifareClassic));
 
@@ -422,7 +422,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 						Log.d(TAG, "Got " + ndef.getClass().getName());
 	
 					} else if (tech.equals(android.nfc.tech.NdefFormatable.class.getName())) {
-	
 						this.ndefFormatable = NdefFormatable.get(tag);
 						
 						Log.d(TAG, "Got " + ndefFormatable.getClass().getName());

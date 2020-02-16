@@ -6,9 +6,10 @@ import org.nfctools.mf.block.DataBlock;
 import org.nfctools.mf.block.MfBlock;
 import org.nfctools.mf.ul.MfUlReaderWriter;
 
-import android.nfc.TransceiveResult;
 import android.os.RemoteException;
 import android.util.Log;
+
+import com.github.skjolber.android.nfc.TransceiveResult;
 
 import com.acs.smartcard.ReaderException;
 import com.github.skjolber.nfc.hce.tech.CommandTechnology;

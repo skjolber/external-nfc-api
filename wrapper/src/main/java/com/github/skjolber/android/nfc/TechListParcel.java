@@ -20,7 +20,6 @@ package com.github.skjolber.android.nfc;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/** @hide */
 public class TechListParcel implements Parcelable {
 
     private String[][] mTechLists;

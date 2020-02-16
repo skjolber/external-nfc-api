@@ -1,11 +1,11 @@
 package com.github.skjolber.nfc.hce.tech.mifare;
 
-import android.nfc.TransceiveResult;
-import android.nfc.tech.NfcA;
 import android.os.RemoteException;
 import android.util.Log;
 
 import com.acs.smartcard.ReaderException;
+import com.github.skjolber.android.nfc.TransceiveResult;
+import com.github.skjolber.android.nfc.tech.NfcA;
 import com.github.skjolber.nfc.hce.tech.CommandTechnology;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.command.ACRCommands;

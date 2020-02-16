@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 
+import com.github.skjolber.android.nfc.INfcTag;
 import com.github.skjolber.nfc.hce.TagFactory;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.NfcTag;
@@ -50,7 +51,7 @@ public class MifareDesfireTagFactory extends TagFactory {
 	}
 	*/
 
-    public Intent getTag(int serviceHandle, int slotNumber, byte[] historicalBytes, byte[] hiresp, byte[] id, boolean hce, byte[] atr, Object tagService) {
+    public Intent getTag(int serviceHandle, int slotNumber, byte[] historicalBytes, byte[] hiresp, byte[] id, boolean hce, byte[] atr, INfcTag tagService) {
 
         if (id != null && id[0] != NXP_MANUFACTURER_ID) {
             throw new IllegalArgumentException("Non-NXP tag id");

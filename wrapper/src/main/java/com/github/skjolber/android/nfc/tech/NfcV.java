@@ -17,13 +17,16 @@
 package com.github.skjolber.android.nfc.tech;
 
 import com.github.skjolber.android.nfc.Tag;
+import com.github.skjolber.android.nfc.TagImpl;
+import com.github.skjolber.android.nfc.TagWrapper;
+
 import android.os.Bundle;
 import android.os.RemoteException;
 
 import java.io.IOException;
 
 /**
- * Provides access to NFC-V (ISO 15693) properties and I/O operations on a {@link Tag}.
+ * Provides access to NFC-V (ISO 15693) properties and I/O operations on a {@link TagImpl}.
  *
  * <p>Acquire a {@link NfcV} object using {@link #get}.
  * <p>The primary NFC-V I/O operation is {@link #transceive}. Applications must
@@ -32,7 +35,7 @@ import java.io.IOException;
  * <p class="note"><strong>Note:</strong> Methods that perform I/O operations
  * require the {@link android.Manifest.permission#NFC} permission.
  */
-public final class NfcV extends BasicTagTechnology {
+public abstract class NfcV implements BasicTagTechnology {
     /** @hide */
     public static final String EXTRA_RESP_FLAGS = "respflags";
 
@@ -44,7 +47,7 @@ public final class NfcV extends BasicTagTechnology {
 
     /**
      * Get an instance of {@link NfcV} for the given tag.
-     * <p>Returns null if {@link NfcV} was not enumerated in {@link Tag#getTechList}.
+     * <p>Returns null if {@link NfcV} was not enumerated in {@link TagImpl#getTechList}.
      * This indicates the tag does not support NFC-V.
      * <p>Does not cause any RF activity and does not block.
      *
@@ -52,20 +55,20 @@ public final class NfcV extends BasicTagTechnology {
      * @return NFC-V object
      */
     public static NfcV get(Tag tag) {
-        if (!tag.hasTech(TagTechnology.NFC_V)) return null;
-        try {
-            return new NfcV(tag);
-        } catch (RemoteException e) {
-            return null;
+        if(tag instanceof TagImpl) {
+            TagImpl tagImpl = (TagImpl)tag;
+            if (!tagImpl.hasTech(TagTechnology.NFC_V)) return null;
+            try {
+                return new NfcVImpl(tagImpl);
+            } catch (RemoteException e) {
+                return null;
+            }
+        } else if(tag instanceof TagWrapper) {
+            TagWrapper delegate = (TagWrapper)tag;
+            return new NfcVWrapper(android.nfc.tech.NfcV.get(delegate.getDelegate()));
+        } else {
+            throw new IllegalArgumentException();
         }
-    }
-
-    /** @hide */
-    public NfcV(Tag tag) throws RemoteException {
-        super(tag, TagTechnology.NFC_V);
-        Bundle extras = tag.getTechExtras(TagTechnology.NFC_V);
-        mRespFlags = extras.getByte(EXTRA_RESP_FLAGS);
-        mDsfId = extras.getByte(EXTRA_DSFID);
     }
 
     /**
@@ -108,19 +111,15 @@ public final class NfcV extends BasicTagTechnology {
      *
      * @param data bytes to send
      * @return bytes received in response
-     * @throws TagLostException if the tag leaves the field
+     * @throws android.nfc.TagLostException if the tag leaves the field
      * @throws IOException if there is an I/O failure, or this operation is canceled
      */
-    public byte[] transceive(byte[] data) throws IOException {
-        return transceive(data, true);
-    }
+    public abstract byte[] transceive(byte[] data) throws IOException;
 
 
     /**
      * Return the maximum number of bytes that can be sent with {@link #transceive}.
      * @return the maximum number of bytes that can be sent with {@link #transceive}.
      */
-    public int getMaxTransceiveLength() {
-        return getMaxTransceiveLengthInternal();
-    }
+    public abstract int getMaxTransceiveLength();
 }

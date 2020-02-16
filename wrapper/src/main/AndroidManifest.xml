@@ -1,14 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.skjolber.nfc.external.core">
-
-    <uses-permission android:name="android.permission.NFC" />
-
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
-    <uses-feature
-        android:name="android.hardware.bluetooth_le"
-        android:required="false" />
-
+    package="com.github.skjolber.nfc.android">
 
 </manifest>

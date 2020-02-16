@@ -2,13 +2,13 @@ package com.github.skjolber.nfc.hce.tech.mifare;
 
 import org.ndeftools.Message;
 
-import android.nfc.ErrorCodes;
+import com.github.skjolber.android.nfc.ErrorCodes;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
-import android.nfc.tech.Ndef;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.github.skjolber.android.nfc.tech.Ndef;
 import com.github.skjolber.nfc.hce.tech.NdefTechnology;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.skjolberg.reader.operations.NdefOperations;

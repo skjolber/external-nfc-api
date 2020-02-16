@@ -17,12 +17,13 @@
 package com.github.skjolber.android.nfc.tech;
 
 import com.github.skjolber.android.nfc.Tag;
+import com.github.skjolber.android.nfc.TagImpl;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * {@link TagTechnology} is an interface to a technology in a {@link Tag}.
+ * {@link TagTechnology} is an interface to a technology in a {@link TagImpl}.
  * <p>
  * Obtain a {@link TagTechnology} implementation by calling the static method <code>get()</code>
  * on the implementation class.
@@ -31,25 +32,25 @@ import java.io.IOException;
  * wide range of capabilities. The
  * {@link TagTechnology} implementations provide access to these different
  * technologies and capabilities. Some sub-classes map to technology
- * specification (for example {@link NfcA}, {@link IsoDep}, others map to
- * pseudo-technologies or capabilities (for example {@link Ndef}, {@link NdefFormatable}).
+ * specification (for example {@link NfcAImpl}, {@link IsoDepImpl}, others map to
+ * pseudo-technologies or capabilities (for example {@link NdefImpl}, {@link NdefFormatable}).
  * <p>
  * It is mandatory for all Android NFC devices to provide the following
  * {@link TagTechnology} implementations.
  * <ul>
- * <li>{@link NfcA} (also known as ISO 14443-3A)
+ * <li>{@link NfcAImpl} (also known as ISO 14443-3A)
  * <li>{@link NfcB} (also known as ISO 14443-3B)
  * <li>{@link NfcF} (also known as JIS 6319-4)
  * <li>{@link NfcV} (also known as ISO 15693)
- * <li>{@link IsoDep}
- * <li>{@link Ndef} on NFC Forum Type 1, Type 2, Type 3 or Type 4 compliant tags
+ * <li>{@link IsoDepImpl}
+ * <li>{@link NdefImpl} on NFC Forum Type 1, Type 2, Type 3 or Type 4 compliant tags
  * </ul>
  * It is optional for Android NFC devices to provide the following
  * {@link TagTechnology} implementations. If it is not provided, the
- * Android device will never enumerate that class via {@link Tag#getTechList}.
+ * Android device will never enumerate that class via {@link TagImpl#getTechList}.
  * <ul>
- * <li>{@link MifareClassic}
- * <li>{@link MifareUltralight}
+ * <li>{@link MifareClassicImpl}
+ * <li>{@link MifareUltralightImpl}
  * <li>{@link NfcBarcode}
  * <li>{@link NdefFormatable} must only be enumerated on tags for which this Android device
  * is capable of formatting. Proprietary knowledge is often required to format a tag
@@ -82,7 +83,7 @@ import java.io.IOException;
  */
 public interface TagTechnology extends Closeable {
     /**
-     * This technology is an instance of {@link NfcA}.
+     * This technology is an instance of {@link NfcAImpl}.
      * <p>Support for this technology type is mandatory.
      * @hide
      */
@@ -96,7 +97,7 @@ public interface TagTechnology extends Closeable {
     public static final int NFC_B = 2;
 
     /**
-     * This technology is an instance of {@link IsoDep}.
+     * This technology is an instance of {@link IsoDepImpl}.
      * <p>Support for this technology type is mandatory.
      * @hide
      */
@@ -117,7 +118,7 @@ public interface TagTechnology extends Closeable {
     public static final int NFC_V = 5;
 
     /**
-     * This technology is an instance of {@link Ndef}.
+     * This technology is an instance of {@link NdefImpl}.
      * <p>Support for this technology type is mandatory.
      * @hide
      */
@@ -131,7 +132,7 @@ public interface TagTechnology extends Closeable {
     public static final int NDEF_FORMATABLE = 7;
 
     /**
-     * This technology is an instance of {@link MifareClassic}.
+     * This technology is an instance of {@link MifareClassicImpl}.
      * <p>Support for this technology type is optional. If a stack doesn't support this technology
      * type tags using it must still be discovered and present the lower level radio interface
      * technologies in use.
@@ -140,7 +141,7 @@ public interface TagTechnology extends Closeable {
     public static final int MIFARE_CLASSIC = 8;
 
     /**
-     * This technology is an instance of {@link MifareUltralight}.
+     * This technology is an instance of {@link MifareUltralightImpl}.
      * <p>Support for this technology type is optional. If a stack doesn't support this technology
      * type tags using it must still be discovered and present the lower level radio interface
      * technologies in use.
@@ -158,8 +159,8 @@ public interface TagTechnology extends Closeable {
     public static final int NFC_BARCODE = 10;
 
     /**
-     * Get the {@link Tag} object backing this {@link TagTechnology} object.
-     * @return the {@link Tag} backing this {@link TagTechnology} object.
+     * Get the {@link TagImpl} object backing this {@link TagTechnology} object.
+     * @return the {@link TagImpl} backing this {@link TagTechnology} object.
      */
     public Tag getTag();
 
@@ -168,34 +169,16 @@ public interface TagTechnology extends Closeable {
      * <p>May cause RF activity and may block. Must not be called
      * from the main application thread. A blocked call will be canceled with
      * {@link IOException} by calling {@link #close} from another thread.
-     * <p>Only one {@link TagTechnology} object can be connected to a {@link Tag} at a time.
+     * <p>Only one {@link TagTechnology} object can be connected to a {@link TagImpl} at a time.
      * <p>Applications must call {@link #close} when I/O operations are complete.
      *
      * <p class="note">Requires the {@link android.Manifest.permission#NFC} permission.
      *
      * @see #close()
-     * @throws TagLostException if the tag leaves the field
+     * @throws android.nfc.TagLostException if the tag leaves the field
      * @throws IOException if there is an I/O failure, or connect is canceled
      */
     public void connect() throws IOException;
-
-    /**
-     * Re-connect to the {@link Tag} associated with this connection. Reconnecting to a tag can be
-     * used to reset the state of the tag itself.
-     *
-     * <p>May cause RF activity and may block. Must not be called
-     * from the main application thread. A blocked call will be canceled with
-     * {@link IOException} by calling {@link #close} from another thread.
-     *
-     * <p class="note">Requires the {@link android.Manifest.permission#NFC} permission.
-     *
-     * @see #connect()
-     * @see #close()
-     * @throws TagLostException if the tag leaves the field
-     * @throws IOException if there is an I/O failure, or connect is canceled
-     * @hide
-     */
-    public void reconnect() throws IOException;
 
     /**
      * Disable I/O operations to the tag from this {@link TagTechnology} object, and release resources.
@@ -212,7 +195,7 @@ public interface TagTechnology extends Closeable {
      * Helper to indicate if I/O operations should be possible.
      *
      * <p>Returns true if {@link #connect} has completed, and {@link #close} has not been
-     * called, and the {@link Tag} is not known to be out of range.
+     * called, and the {@link TagImpl} is not known to be out of range.
      * <p>Does not cause RF activity, and does not block.
      *
      * @return true if I/O operations should be possible

@@ -13,7 +13,7 @@ import android.os.UserHandle;
  * amount of IPC calls at "touch time".
  * @hide
  */
-public final class BeamShareData implements Parcelable {
+public class BeamShareData implements Parcelable {
     public final NdefMessage ndefMessage;
     public final Uri[] uris;
     public final UserHandle userHandle;

@@ -2,7 +2,7 @@ package com.github.skjolber.nfc.desfire;
 
 import java.io.ByteArrayOutputStream;
 
-import android.nfc.tech.IsoDep;
+import com.github.skjolber.android.nfc.tech.IsoDep;
 import android.util.Log;
 
 public class DesfireReader {

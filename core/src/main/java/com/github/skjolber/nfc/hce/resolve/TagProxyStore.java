@@ -1,5 +1,7 @@
 package com.github.skjolber.nfc.hce.resolve;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +59,7 @@ public class TagProxyStore {
     }
 
     public TagProxy get(int serviceHandle) {
+        Log.d(TAG, "Get service handle " + serviceHandle);
         for (TagProxy tagItem : items) {
             if (tagItem.getHandle() == serviceHandle) {
                 return tagItem;

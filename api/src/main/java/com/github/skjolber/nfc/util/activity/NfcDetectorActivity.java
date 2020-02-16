@@ -41,6 +41,8 @@ import android.nfc.tech.TagTechnology;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.github.skjolber.android.nfc.IntentConverter;
+
 
 /**
  * 
@@ -200,8 +202,7 @@ public abstract class NfcDetectorActivity extends Activity {
     /**
      * 
      * NFC feature was found and is currently enabled
-     * @param external 
-     * 
+     *
      */
     
     protected abstract void onNfcStateEnabled();
@@ -209,8 +210,7 @@ public abstract class NfcDetectorActivity extends Activity {
     /**
      * 
      * NFC feature was found but is currently disabled
-     * @param b 
-     * 
+     *
      */
 
     protected abstract void onNfcStateDisabled();
@@ -359,19 +359,19 @@ public abstract class NfcDetectorActivity extends Activity {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
         	Log.d(TAG, "Process NDEF discovered action");
 
-        	onNfcIntentDetected(intent, NfcAdapter.ACTION_NDEF_DISCOVERED);
+        	onNfcIntentDetected(IntentConverter.convert(intent), NfcAdapter.ACTION_NDEF_DISCOVERED);
         } else if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
         	Log.d(TAG, "Process TAG discovered action");
 
-        	onNfcIntentDetected(intent, NfcAdapter.ACTION_TAG_DISCOVERED);
+        	onNfcIntentDetected(IntentConverter.convert(intent), NfcAdapter.ACTION_TAG_DISCOVERED);
         } else  if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
         	Log.d(TAG, "Process TECH discovered action");
 
-        	onNfcIntentDetected(intent, NfcAdapter.ACTION_TECH_DISCOVERED);
+        	onNfcIntentDetected(IntentConverter.convert(intent), NfcAdapter.ACTION_TECH_DISCOVERED);
         } else  if (ACTION_TAG_LEFT_FIELD.equals(intent.getAction())) {
         	Log.d(TAG, "Process tag lost action");
         	
-        	onNfcTagLost(intent); // NOTE: This seems not to work as expected
+        	onNfcTagLost(IntentConverter.convert(intent)); // NOTE: This seems not to work as expected
         } else {
         	Log.d(TAG, "Ignore action " + intent.getAction());
         }

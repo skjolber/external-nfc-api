@@ -17,13 +17,16 @@
 package com.github.skjolber.android.nfc.tech;
 
 import com.github.skjolber.android.nfc.Tag;
+import com.github.skjolber.android.nfc.TagImpl;
+import com.github.skjolber.android.nfc.TagWrapper;
+
 import android.os.Bundle;
 import android.os.RemoteException;
 
 import java.io.IOException;
 
 /**
- * Provides access to NFC-B (ISO 14443-3B) properties and I/O operations on a {@link Tag}.
+ * Provides access to NFC-B (ISO 14443-3B) properties and I/O operations on a {@link TagImpl}.
  *
  * <p>Acquire a {@link NfcB} object using {@link #get}.
  * <p>The primary NFC-B I/O operation is {@link #transceive}. Applications must
@@ -32,40 +35,40 @@ import java.io.IOException;
  * <p class="note"><strong>Note:</strong> Methods that perform I/O operations
  * require the {@link android.Manifest.permission#NFC} permission.
  */
-public final class NfcB extends BasicTagTechnology {
+public abstract class NfcB implements BasicTagTechnology {
     /** @hide */
     public static final String EXTRA_APPDATA = "appdata";
     /** @hide */
     public static final String EXTRA_PROTINFO = "protinfo";
 
-    private byte[] mAppData;
-    private byte[] mProtInfo;
 
     /**
-     * Get an instance of {@link NfcB} for the given tag.
-     * <p>Returns null if {@link NfcB} was not enumerated in {@link Tag#getTechList}.
+     * Get an instance of {@link NfcBImpl} for the given tag.
+     * <p>Returns null if {@link NfcBImpl} was not enumerated in {@link TagImpl#getTechList}.
      * This indicates the tag does not support NFC-B.
      * <p>Does not cause any RF activity and does not block.
      *
      * @param tag an NFC-B compatible tag
      * @return NFC-B object
      */
+
     public static NfcB get(Tag tag) {
-        if (!tag.hasTech(TagTechnology.NFC_B)) return null;
-        try {
-            return new NfcB(tag);
-        } catch (RemoteException e) {
-            return null;
+        if(tag instanceof TagImpl) {
+            TagImpl tagImpl = (TagImpl)tag;
+            if (!tagImpl.hasTech(TagTechnology.NFC_B)) return null;
+            try {
+                return new NfcBImpl(tagImpl);
+            } catch (RemoteException e) {
+                return null;
+            }
+        } else if(tag instanceof TagWrapper) {
+            TagWrapper delegate = (TagWrapper)tag;
+            return new NfcBWrapper(android.nfc.tech.NfcB.get(delegate.getDelegate()));
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
-    /** @hide */
-    public NfcB(Tag tag) throws RemoteException {
-        super(tag, TagTechnology.NFC_B);
-        Bundle extras = tag.getTechExtras(TagTechnology.NFC_B);
-        mAppData = extras.getByteArray(EXTRA_APPDATA);
-        mProtInfo = extras.getByteArray(EXTRA_PROTINFO);
-    }
 
     /**
      * Return the Application Data bytes from ATQB/SENSB_RES at tag discovery.
@@ -74,9 +77,7 @@ public final class NfcB extends BasicTagTechnology {
      *
      * @return Application Data bytes from ATQB/SENSB_RES bytes
      */
-    public byte[] getApplicationData() {
-        return mAppData;
-    }
+    public abstract byte[] getApplicationData();
 
     /**
      * Return the Protocol Info bytes from ATQB/SENSB_RES at tag discovery.
@@ -85,9 +86,7 @@ public final class NfcB extends BasicTagTechnology {
      *
      * @return Protocol Info bytes from ATQB/SENSB_RES bytes
      */
-    public byte[] getProtocolInfo() {
-        return mProtInfo;
-    }
+    public abstract byte[] getProtocolInfo();
 
     /**
      * Send raw NFC-B commands to the tag and receive the response.
@@ -108,18 +107,14 @@ public final class NfcB extends BasicTagTechnology {
      *
      * @param data bytes to send
      * @return bytes received in response
-     * @throws TagLostException if the tag leaves the field
+     * @throws android.nfc.TagLostException if the tag leaves the field
      * @throws IOException if there is an I/O failure, or this operation is canceled
      */
-    public byte[] transceive(byte[] data) throws IOException {
-        return transceive(data, true);
-    }
+    public abstract byte[] transceive(byte[] data) throws IOException;
 
     /**
      * Return the maximum number of bytes that can be sent with {@link #transceive}.
      * @return the maximum number of bytes that can be sent with {@link #transceive}.
      */
-    public int getMaxTransceiveLength() {
-        return getMaxTransceiveLengthInternal();
-    }
+    public abstract int getMaxTransceiveLength();
 }

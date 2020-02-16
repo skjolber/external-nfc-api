@@ -1,7 +1,6 @@
 package com.github.skjolber.nfc.hce.tech.mifare;
 
-import android.nfc.tech.NfcA;
-
+import com.github.skjolber.android.nfc.tech.NfcA;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.service.IsoDepWrapper;
 

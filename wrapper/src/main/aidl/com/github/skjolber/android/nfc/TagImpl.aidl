@@ -17,4 +17,4 @@
 package com.github.skjolber.android.nfc;
 
 
-parcelable Tag;
+parcelable TagImpl;

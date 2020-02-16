@@ -15,7 +15,6 @@ import android.util.Log;
 
 import com.acs.smartcard.ReaderException;
 import com.github.skjolber.nfc.hce.INFcTagBinder;
-import com.github.skjolber.nfc.hce.StockINFcTagBinder;
 import com.github.skjolber.nfc.hce.resolve.TagProxyStore;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicAdapter;
@@ -122,7 +121,7 @@ public abstract class AbstractService extends Service {
 
         startReceivingStatusBroadcasts();
 
-        this.binder = new StockINFcTagBinder(store);
+        this.binder = new INFcTagBinder(store); // new INFcTagBinder(store);
 
         refreshPreferences();
     }

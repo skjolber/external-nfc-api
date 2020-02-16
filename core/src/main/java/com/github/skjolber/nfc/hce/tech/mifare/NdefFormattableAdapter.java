@@ -2,7 +2,7 @@ package com.github.skjolber.nfc.hce.tech.mifare;
 
 import org.ndeftools.Message;
 
-import android.nfc.ErrorCodes;
+import com.github.skjolber.android.nfc.ErrorCodes;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.os.RemoteException;

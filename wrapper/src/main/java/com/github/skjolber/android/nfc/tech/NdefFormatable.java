@@ -17,11 +17,12 @@
 package com.github.skjolber.android.nfc.tech;
 
 import com.github.skjolber.android.nfc.ErrorCodes;
-import com.github.skjolber.android.nfc.FormatException;
 import com.github.skjolber.android.nfc.INfcTag;
 import com.github.skjolber.android.nfc.Tag;
-import com.github.skjolber.android.nfc.TagLostException;
+import com.github.skjolber.android.nfc.TagImpl;
+import com.github.skjolber.android.nfc.TagWrapper;
 
+import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.os.RemoteException;
 import android.util.Log;
@@ -29,7 +30,7 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
- * Provide access to NDEF format operations on a {@link Tag}.
+ * Provide access to NDEF format operations on a {@link TagImpl}.
  *
  * <p>Acquire a {@link NdefFormatable} object using {@link #get}.
  *
@@ -44,8 +45,8 @@ import java.io.IOException;
  * <p class="note"><strong>Note:</strong> Methods that perform I/O operations
  * require the {@link android.Manifest.permission#NFC} permission.
  */
-public final class NdefFormatable extends BasicTagTechnology {
-    private static final String TAG = "NFC";
+public abstract class NdefFormatable implements BasicTagTechnology {
+
 
     /**
      * Get an instance of {@link NdefFormatable} for the given tag.
@@ -57,24 +58,24 @@ public final class NdefFormatable extends BasicTagTechnology {
      * @return NDEF formatable object
      */
     public static NdefFormatable get(Tag tag) {
-        if (!tag.hasTech(TagTechnology.NDEF_FORMATABLE)) return null;
-        try {
-            return new NdefFormatable(tag);
-        } catch (RemoteException e) {
-            return null;
+        if(tag instanceof TagImpl) {
+            TagImpl tagImpl = (TagImpl)tag;
+            if (!tagImpl.hasTech(TagTechnology.NDEF_FORMATABLE)) return null;
+            try {
+                return new NdefFormatableImpl(tagImpl);
+            } catch (RemoteException e) {
+                return null;
+            }
+        } else if(tag instanceof TagWrapper) {
+            TagWrapper delegate = (TagWrapper)tag;
+            return new NdefFormattableWrapper(android.nfc.tech.NdefFormatable.get(delegate.getDelegate()));
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
     /**
-     * Internal constructor, to be used by NfcAdapter
-     * @hide
-     */
-    public NdefFormatable(Tag tag) throws RemoteException {
-        super(tag, TagTechnology.NDEF_FORMATABLE);
-    }
-
-    /**
-     * Format a tag as NDEF, and write a {@link android.nfc.NdefMessage}.
+     * Format a tag as NDEF, and write a {@link NdefMessage}.
      *
      * <p>This is a multi-step process, an IOException is thrown
      * if any one step fails.
@@ -87,13 +88,11 @@ public final class NdefFormatable extends BasicTagTechnology {
      * <p class="note">Requires the {@link android.Manifest.permission#NFC} permission.
      *
      * @param firstMessage the NDEF message to write after formatting, can be null
-     * @throws TagLostException if the tag leaves the field
+     * @throws android.nfc.TagLostException if the tag leaves the field
      * @throws IOException if there is an I/O failure, or the operation is canceled
      * @throws FormatException if the NDEF Message to write is malformed
      */
-    public void format(NdefMessage firstMessage) throws IOException, FormatException {
-        format(firstMessage, false);
-    }
+    public abstract void format(NdefMessage firstMessage) throws IOException, FormatException;
 
     /**
      * Formats a tag as NDEF, write a {@link NdefMessage}, and make read-only.
@@ -109,71 +108,9 @@ public final class NdefFormatable extends BasicTagTechnology {
      * <p class="note">Requires the {@link android.Manifest.permission#NFC} permission.
      *
      * @param firstMessage the NDEF message to write after formatting
-     * @throws TagLostException if the tag leaves the field
+     * @throws android.nfc.TagLostException if the tag leaves the field
      * @throws IOException if there is an I/O failure, or the operation is canceled
      * @throws FormatException if the NDEF Message to write is malformed
      */
-    public void formatReadOnly(NdefMessage firstMessage) throws IOException, FormatException {
-        format(firstMessage, true);
-    }
-
-    /*package*/ void format(NdefMessage firstMessage, boolean makeReadOnly) throws IOException,
-            FormatException {
-        checkConnected();
-
-        try {
-            int serviceHandle = mTag.getServiceHandle();
-            INfcTag tagService = mTag.getTagService();
-            int errorCode = tagService.formatNdef(serviceHandle, MifareClassic.KEY_DEFAULT);
-            switch (errorCode) {
-                case ErrorCodes.SUCCESS:
-                    break;
-                case ErrorCodes.ERROR_IO:
-                    throw new IOException();
-                case ErrorCodes.ERROR_INVALID_PARAM:
-                    throw new FormatException();
-                default:
-                    // Should not happen
-                    throw new IOException();
-            }
-            // Now check and see if the format worked
-            if (!tagService.isNdef(serviceHandle)) {
-                throw new IOException();
-            }
-
-            // Write a message, if one was provided
-            if (firstMessage != null) {
-                errorCode = tagService.ndefWrite(serviceHandle, firstMessage);
-                switch (errorCode) {
-                    case ErrorCodes.SUCCESS:
-                        break;
-                    case ErrorCodes.ERROR_IO:
-                        throw new IOException();
-                    case ErrorCodes.ERROR_INVALID_PARAM:
-                        throw new FormatException();
-                    default:
-                        // Should not happen
-                        throw new IOException();
-                }
-            }
-
-            // optionally make read-only
-            if (makeReadOnly) {
-                errorCode = tagService.ndefMakeReadOnly(serviceHandle);
-                switch (errorCode) {
-                    case ErrorCodes.SUCCESS:
-                        break;
-                    case ErrorCodes.ERROR_IO:
-                        throw new IOException();
-                    case ErrorCodes.ERROR_INVALID_PARAM:
-                        throw new IOException();
-                    default:
-                        // Should not happen
-                        throw new IOException();
-                }
-            }
-        } catch (RemoteException e) {
-            Log.e(TAG, "NFC service dead", e);
-        }
-    }
+    public abstract void formatReadOnly(NdefMessage firstMessage) throws IOException, FormatException;
 }

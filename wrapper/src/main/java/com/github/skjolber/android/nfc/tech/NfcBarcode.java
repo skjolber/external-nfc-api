@@ -17,6 +17,9 @@
 package com.github.skjolber.android.nfc.tech;
 
 import com.github.skjolber.android.nfc.Tag;
+import com.github.skjolber.android.nfc.TagImpl;
+import com.github.skjolber.android.nfc.TagWrapper;
+
 import android.os.Bundle;
 import android.os.RemoteException;
 
@@ -26,7 +29,7 @@ import android.os.RemoteException;
  * <p>Acquire an {@link NfcBarcode} object using {@link #get}.
  *
  */
-public final class NfcBarcode extends BasicTagTechnology {
+public abstract class NfcBarcode implements BasicTagTechnology {
 
     /** Kovio Tags */
     public static final int TYPE_KOVIO = 1;
@@ -35,12 +38,10 @@ public final class NfcBarcode extends BasicTagTechnology {
     /** @hide */
     public static final String EXTRA_BARCODE_TYPE = "barcodetype";
 
-    private int mType;
-
     /**
      * Get an instance of {@link NfcBarcode} for the given tag.
      *
-     * <p>Returns null if {@link NfcBarcode} was not enumerated in {@link Tag#getTechList}.
+     * <p>Returns null if {@link NfcBarcode} was not enumerated in {@link TagImpl#getTechList}.
      *
      * <p>Does not cause any RF activity and does not block.
      *
@@ -48,25 +49,19 @@ public final class NfcBarcode extends BasicTagTechnology {
      * @return NfcBarcode object
      */
     public static NfcBarcode get(Tag tag) {
-        if (!tag.hasTech(TagTechnology.NFC_BARCODE)) return null;
-        try {
-            return new NfcBarcode(tag);
-        } catch (RemoteException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Internal constructor, to be used by NfcAdapter
-     * @hide
-     */
-    public NfcBarcode(Tag tag) throws RemoteException {
-        super(tag, TagTechnology.NFC_BARCODE);
-        Bundle extras = tag.getTechExtras(TagTechnology.NFC_BARCODE);
-        if (extras != null) {
-            mType = extras.getInt(EXTRA_BARCODE_TYPE);
+        if(tag instanceof TagImpl) {
+            TagImpl tagImpl = (TagImpl)tag;
+            if (!tagImpl.hasTech(TagTechnology.NFC_BARCODE)) return null;
+            try {
+                return new NfcBarcodeImpl(tagImpl);
+            } catch (RemoteException e) {
+                return null;
+            }
+        } else if(tag instanceof TagWrapper) {
+            TagWrapper delegate = (TagWrapper)tag;
+            return new NfcBarcodeWrapper(android.nfc.tech.NfcBarcode.get(delegate.getDelegate()));
         } else {
-            throw new NullPointerException("NfcBarcode tech extras are null.");
+            throw new IllegalArgumentException();
         }
     }
 
@@ -79,9 +74,7 @@ public final class NfcBarcode extends BasicTagTechnology {
      *
      * @return the NFC Barcode tag type
      */
-    public int getType() {
-        return mType;
-    }
+    public abstract int getType();
 
     /**
      * Returns the barcode of an NfcBarcode tag.
@@ -118,13 +111,5 @@ public final class NfcBarcode extends BasicTagTechnology {
      * @see <a href="http://www.thinfilm.no/docs/thinfilm-nfc-barcode-data-format.pdf">
      *      Thinfilm NFC Barcode data format (previously Kovio NFC Barcode)</a>
      */
-    public byte[] getBarcode() {
-        switch (mType) {
-            case TYPE_KOVIO:
-                // For Kovio tags the barcode matches the ID
-                return mTag.getId();
-            default:
-                return null;
-        }
-    }
+    public abstract byte[] getBarcode();
 }

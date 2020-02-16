@@ -8,6 +8,7 @@ import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 
+import com.github.skjolber.android.nfc.INfcTag;
 import com.github.skjolber.nfc.hce.TagFactory;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.NfcTag;
@@ -122,7 +123,7 @@ public class MifareUltralightTagFactory extends TagFactory {
 	}
 	*/
 
-    public Intent getTag(int serviceHandle, int slotNumber, int type, Integer ntagType, byte[] id, int maxNdefSize, NdefMessage message, boolean formatted, Boolean writable, byte[] atr, Object tagService) {
+    public Intent getTag(int serviceHandle, int slotNumber, int type, Integer ntagType, byte[] id, int maxNdefSize, NdefMessage message, boolean formatted, Boolean writable, byte[] atr, INfcTag tagService) {
 
         if (id != null) {
             if (id[0] != NXP_MANUFACTURER_ID) {

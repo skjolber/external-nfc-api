@@ -24,7 +24,6 @@ android {
 dependencies {
     api project(':tools')
     compileOnly files('../libs/acssmc-1.1.5.jar')
-    compileOnly files('../libs/classes-dex2jar.jar')
     compileOnly files('../libs/acsbt-1.0.1.aar')
 
     // Required -- JUnit 4 framework

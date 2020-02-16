@@ -22,7 +22,6 @@ package com.github.skjolber.android.nfc;
  * and producing an exception on the application level. These are needed since
  * binders does not support exceptions.
  *
- * @hide
  */
 public class ErrorCodes {
 
