@@ -3,6 +3,7 @@ package com.github.skjolber.android.nfc;
 import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
+import android.os.Bundle;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
@@ -20,26 +21,23 @@ public class IntentConverter {
 
         // detect supported types
         if(input.hasExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)) {
+
             Parcelable[] messages = input.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 
-            ArrayList<NdefMessage> list = new ArrayList<>();
-            for (int i = 0; i < messages.length; i++) {
-                list.add((NdefMessage) messages[i]);
-            }
+            Bundle extras = new Bundle();
+            extras.putParcelableArray(NfcAdapter.EXTRA_NDEF_MESSAGES, messages);
 
-            output.putParcelableArrayListExtra(NfcAdapter.EXTRA_NDEF_MESSAGES, list);
+            output.putExtras(extras);
         }
 
         if(input.hasExtra(NfcAdapter.EXTRA_TAG)) {
             android.nfc.Tag tag = (android.nfc.Tag) input.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-            input.putExtra(NfcAdapter.EXTRA_TAG, new TagWrapper(tag));
+            output.putExtra(NfcAdapter.EXTRA_TAG, new TagWrapper(tag));
         }
 
         if(input.hasExtra(NfcAdapter.EXTRA_AID)) {
-            android.nfc.Tag tag = (android.nfc.Tag) input.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-            input.putExtra(NfcAdapter.EXTRA_TAG, new TagWrapper(tag));
+            output.putExtra(NfcAdapter.EXTRA_AID, input.getParcelableExtra(NfcAdapter.EXTRA_AID));
         }
 
 
