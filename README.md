@@ -135,7 +135,7 @@ If you need professional, cost-efficient assistance with an NFC project, get in 
 Feel free to connect with me on [LinkedIn](http://lnkd.in/r7PWDz), see also my [Github page](https://skjolber.github.io).
 
 # History
- - 2.0.0: Moved to wrapped `android.nfc` NFC android classes.
+ - 2.0.0: Moved to wrapped `android.nfc` NFC android classes + various refactorings.
  - 1.0.0: Library using native NFC android classes
 
 [Ndef]:                 https://developer.android.com/reference/android/nfc/tech/Ndef.html
