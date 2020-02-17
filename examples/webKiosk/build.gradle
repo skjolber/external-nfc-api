@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "29.0.3"
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        applicationId "com.github.skjolber.nfc.external.kiosk"
+        minSdkVersion 19
+        targetSdkVersion 28
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api project(':api')
+}
