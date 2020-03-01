@@ -198,4 +198,13 @@ public class IAcr1255UBinder extends IAcr1255UReaderControl.Stub {
         return wrapper.setLEDs(leds);
     }
 
+    @Override
+    public byte[] setAutomaticPolling(boolean b) throws RemoteException {
+        if (wrapper == null) {
+            return noReaderException();
+        }
+        return wrapper.setAutomaticPolling(b);
+    }
+
+
 }

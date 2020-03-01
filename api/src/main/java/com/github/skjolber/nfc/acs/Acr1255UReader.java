@@ -373,7 +373,7 @@ public class Acr1255UReader extends AcrReader {
 	}
 
 
-    public boolean setAutoPPS(AcrCommunicationSpeed tx, AcrCommunicationSpeed rx) {
+    public boolean setAutomaticPICCPollingSpeed(AcrCommunicationSpeed tx, AcrCommunicationSpeed rx) {
         byte[] response;
         try {
 
@@ -408,7 +408,7 @@ public class Acr1255UReader extends AcrReader {
      * @return list of Max Tx Speed, Current Tx Speed, Max Rx Speed, Current Rx Speed
      */
 
-    public List<AcrCommunicationSpeed> getAutoPPS() {
+    public List<AcrCommunicationSpeed> getAutomaticPICCPollingSpeed() {
         byte[] response;
         try {
             response = readerControl.getAutoPPS();
@@ -585,4 +585,16 @@ public class Acr1255UReader extends AcrReader {
 
         return readBoolean(response);
     }
+
+    public boolean setAutomaticPolling(boolean on) {
+        byte[] response;
+        try {
+            response = readerControl.setAutomaticPolling(on);
+        } catch (RemoteException e) {
+            throw new AcrReaderException(e);
+        }
+
+        return readBoolean(response);
+    }
+
 }

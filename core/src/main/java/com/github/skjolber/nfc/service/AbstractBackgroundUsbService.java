@@ -19,6 +19,7 @@ import com.acs.smartcard.Reader;
 import com.acs.smartcard.Reader.OnStateChangeListener;
 import com.acs.smartcard.ReaderException;
 import com.acs.smartcard.RemovedCardException;
+import com.acs.smartcard.TlvProperties;
 import com.github.skjolber.nfc.hce.DefaultNfcReaderServiceListener;
 import com.github.skjolber.nfc.hce.IAcr1222LBinder;
 import com.github.skjolber.nfc.hce.IAcr122UBinder;
@@ -202,11 +203,41 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
                 setNfcReaderStatus(NfcReader.READER_STATUS_OK, null);
 
-                ACRCommands reader = getReaderCommands();
+                ACRCommands acrCommands = getReaderCommands();
 
-                binder.setReaderTechnology(new ACRReaderTechnology(reader));
+                binder.setReaderTechnology(new ACRReaderTechnology(acrCommands));
 
-                nfcReaderServiceListener.onReaderOpen(reader, NfcReader.READER_STATUS_OK);
+                int protocol = reader.getProtocol(0);
+
+                Log.d(TAG, "Protocol is " + protocol);
+
+                //byte[] readRegister = reader.transmitPassThrough(0, asBytes());
+                //byte[] readRegister = reader.readerPassThrough(0, asBytes());
+
+                //byte[] readRegister = reader.control(0, 3418, passthrough(asBytes(0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38)));
+                //int p = reader.setProtocol(0, Reader.PROTOCOL_UNDEFINED);
+
+                //byte[] readRegister = reader.control(0, Reader.IOCTL_CCID_ESCAPE, passthrough(asBytes(0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38)));
+                //byte[] readRegister = reader.transmit(0, passthrough(asBytes(0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38)));
+                //byte[] commandAPDU1     = {(byte)0xFF,0x00,0x00,0x00,0x08,  (byte)0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38 };
+                //byte[] readRegister = reader.control(0, Reader.IOCTL_CCID_ESCAPE, commandAPDU1);
+
+
+
+                /*
+                //byte[] enterInitiatorMode = reader.transmit(0, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x40, 0x03, 0x01, 0x02, 0x02});
+                byte[] enterInitiatorMode = reader.control(0, Reader.IOCTL_CCID_ESCAPE, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x40, 0x03, 0x01, 0x00, 0x00});
+                Log.d(TAG, "enterInitiatorMode " + ACRCommands.toHexString(enterInitiatorMode));
+
+                byte[] mifareUltralightUID = reader.control(0, Reader.IOCTL_CCID_ESCAPE, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x61, 0x07, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07});
+                Log.d(TAG, "mifareUltralightUID " + ACRCommands.toHexString(mifareUltralightUID));
+
+
+                byte[] mifareUltralightData = reader.control(0, Reader.IOCTL_CCID_ESCAPE, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x60, 20, 0x01, 0x01, 0x00, 16, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25});
+                Log.d(TAG, "mifareUltralightData" + ACRCommands.toHexString(mifareUltralightData));
+*/
+
+                nfcReaderServiceListener.onReaderOpen(acrCommands, NfcReader.READER_STATUS_OK);
 
                 synchronized (AbstractBackgroundUsbService.this) {
                     requestPermissionDevices.remove(params[0].getDeviceId());
@@ -253,6 +284,29 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
         protected void onPostExecute(Exception result) {
             onOpenACR(result == null);
         }
+    }
+
+    public static byte[] asBytes(Integer ... content) {
+        byte[] cmd = new byte[content.length];
+        for(int i = 0; i < content.length; i++) {
+            cmd[i] = content[i].byteValue();
+        }
+
+        return cmd;
+
+    }
+
+    public static byte[] passthrough(byte[] payload) {
+        byte[] cmd = new byte[payload.length + 5];
+        cmd[0] = (byte)0xff;
+        cmd[1] = 0x0;
+        cmd[2] = 0x0;
+        cmd[3] = 0x0;
+        cmd[4] = (byte)(payload.length & 0xFF);
+
+        System.arraycopy(payload, 0, cmd, 5, payload.length);
+
+        return cmd;
     }
 
     private class CloseTask extends AsyncTask<Void, Void, Exception> {
@@ -428,6 +482,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
         // Initialize reader
         reader = new ReaderWrapper(mManager);
 
+
         reader.setOnStateChangeListener(new OnStateChangeListener() {
 
             @Override
@@ -457,7 +512,6 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
             }
         });
-
 
         // Register receiver for USB permission
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);

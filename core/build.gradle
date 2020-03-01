@@ -1,7 +1,5 @@
-apply plugin: 'com.android.library'
-
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '29.0.3'
 
     lintOptions {
@@ -32,15 +30,3 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:1.10.19'
 }
 
-task clearJar(type: Delete) {
-    delete 'build/outputs/core.jar'
-}
-
-task makeJar(type: Copy) {
-    from('build/intermediates/bundles/library/')
-    into('build/outputs/')
-    include('classes.jar')
-    rename ('classes.jar', 'core.jar')
-}
-
-makeJar.dependsOn(clearJar, build)

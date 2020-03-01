@@ -177,9 +177,10 @@ public class ReaderWrapper {
         // 0x42 InCommunicateThru from PN532
 
         sub[0] = (byte) 0xD4;
-        sub[1] = (byte) 0x42;
+        sub[1] = (byte) 0x04;
 
         System.arraycopy(req, 0, sub, 2, req.length);
+        // https://stackoverflow.com/questions/57609513/what-is-the-apdu-command-combination-for-ntag-213-tag
         // 0xD4 magic byte
         // 0x42 InCommunicateThru from PN532
 
@@ -207,6 +208,45 @@ public class ReaderWrapper {
 
         return content;
     }
+
+    public byte[] controlPassThrough(int slotNumber, int controlCode, byte[] req) throws ReaderException {
+        byte[] sub = new byte[2 + req.length];
+        // 0xD4 magic byte
+        // 0x42 InCommunicateThru from PN532
+
+        sub[0] = (byte) 0xD4;
+        sub[1] = (byte) 0x04;
+
+        System.arraycopy(req, 0, sub, 2, req.length);
+        // https://stackoverflow.com/questions/57609513/what-is-the-apdu-command-combination-for-ntag-213-tag
+        // 0xD4 magic byte
+        // 0x42 InCommunicateThru from PN532
+
+        CommandAPDU command = new CommandAPDU(0xFF, 0x00, 0x00, 0x00, sub, 0, sub.length);
+
+        byte[] responseBytes = control(slotNumber, controlCode, command.getBytes());
+
+        ResponseAPDU response = new ResponseAPDU(responseBytes);
+
+        NfcNtagVersion version = null;
+
+        if (!response.isSuccess()) {
+            throw new ReaderCommandException("Unable to issue command " + Utils.toHexString(sub) + ", response " + Utils.toHexString(responseBytes));
+        }
+        byte[] data = response.getData();
+
+        if (LOG) log("Status " + (0xFF & data[2]));
+
+        if ((data[2] & 0xFF) != 0) {
+            throw new PassthroughCommandException("Got command error", (data[2] & 0xFF));
+        }
+
+        byte[] content = new byte[data.length - 3];
+        System.arraycopy(data, 3, content, 0, content.length);
+
+        return content;
+    }
+
 
     public int transmit(int slotNum, byte[] command, int length, byte[] response, int responseLength) throws ReaderException {
 
