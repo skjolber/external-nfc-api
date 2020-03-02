@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">External NFC HCE Client</string>
+    <string name="appName">External NFC HCE Client</string>
     <string name="aidDescription">External NFC AID</string>
-    <string name="serviceDescription">External NFC HCE service</string>
+    <string name="serviceDescription">HCE client</string>
     
-    <string name="title">HCE Log View</string>
-    <string name="help">HCE online resource</string>
+    <string name="title">HCE Client</string>
     <string name="clear">Clear</string>
     
     <string name="hceServiceStarted">HCE service triggered</string>
     <string name="hceApplicationSelected">Application 0x%s selected</string>
 
-    <string name="dialogTitle">HCE Log View:</string>
-    <string name="dialogMessage">This simple activity listens to broadcasts sent from the HCE service in this application. See also LogCat output.\n\nHCE behaviour is triggered when the device is locked, but with the screen on. See online resource for more information.</string>
+    <string name="dialogTitle">HCE Client:</string>
+    <string name="dialogMessage">This simple activity listens to broadcasts sent from the HCE service in this application. See also LogCat output.\n\nHCE behaviour is triggered when the device is locked, but with the screen on.</string>
     <string name="dialogClose">Close</string>
-    
+
+    <string name="invokerTitle">HCE invoker</string>
+
+    <string name="invokerDialogTitle">HCE Invoker:</string>
+    <string name="invokerDialogMessage">This simple activity will attempt to trigger the HCE service on another device (with the same app as this) for Android-to-Android two-way communications. So upon connection it will send an AID so that the correct application is invoked.</string>
+    <string name="invokerDialogClose">Close</string>
+
 </resources>

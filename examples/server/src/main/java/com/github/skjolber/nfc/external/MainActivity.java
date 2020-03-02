@@ -29,13 +29,10 @@ import com.github.skjolber.nfc.NfcService;
 import com.github.skjolber.nfc.NfcTag;
 import com.github.skjolber.nfc.acs.Acr1255UReader;
 import com.github.skjolber.nfc.acs.AcrAutomaticPICCPolling;
-import com.github.skjolber.nfc.acs.AcrDefaultLEDAndBuzzerBehaviour;
 import com.github.skjolber.nfc.acs.AcrPICC;
 import com.github.skjolber.nfc.acs.AcrReader;
 import com.github.skjolber.nfc.service.BackgroundUsbService;
 import com.github.skjolber.nfc.service.BluetoothBackgroundService;
-
-import org.nfctools.api.TagType;
 
 
 public class MainActivity extends Activity {
@@ -83,7 +80,7 @@ public class MainActivity extends Activity {
     private boolean recieveReaderBroadcasts = false;
     private boolean recieveServiceBroadcasts = false;
 
-    private boolean running = false;
+    private boolean usbRunning = false;
     private boolean bluetoothRunning = false;
 
     private final BroadcastReceiver usbDevicePermissionReceiver = new BroadcastReceiver() {
@@ -179,13 +176,13 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Custom broacast receiver: " + action);
 
             if (NfcService.ACTION_SERVICE_STARTED.equals(action)) {
-                running = true;
+                usbRunning = true;
             } else if (NfcService.ACTION_SERVICE_STOPPED.equals(action)) {
-                running = false;
+                usbRunning = false;
             } else {
                 Log.d(TAG, "Ignore action " + action);
             }
-            setServiceStarted(running);
+            setServiceStarted(usbRunning);
 
         }
 
@@ -201,7 +198,7 @@ public class MainActivity extends Activity {
 
     public void startBluetoothService() {
         Intent intent = new Intent(this, DeviceScanActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     @Override
@@ -390,7 +387,7 @@ public class MainActivity extends Activity {
 
     public void startReaderService(View view) {
 
-        if (running) {
+        if (usbRunning) {
             Log.d(TAG, "Stop reader service");
 
             Intent intent = new Intent(this, BackgroundUsbService.class);
@@ -555,4 +552,16 @@ public class MainActivity extends Activity {
         startActivity(Intent.createChooser(getDefaultShareIntent(), getString(R.string.share)));
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode == Activity.RESULT_OK){
+            Intent intent = new Intent(this, BluetoothBackgroundService.class);
+            intent.putExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME, data.getStringExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME));
+            intent.putExtra(BluetoothBackgroundService.EXTRAS_DEVICE_ADDRESS, data.getStringExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME));
+            startService(intent);
+
+            setBluetoothServiceStarted(true);
+        }
+    }
 }

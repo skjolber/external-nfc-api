@@ -858,7 +858,7 @@ public class BluetoothBackgroundService extends AbstractService {
             return false;
         }
 
-        /* Connect to GATT server. */
+        /* Connect to GATT internal_invoker. */
         updateConnectionState(BluetoothReader.STATE_CONNECTING);
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         return true;

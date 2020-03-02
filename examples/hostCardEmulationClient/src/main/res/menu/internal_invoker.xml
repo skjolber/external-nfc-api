@@ -3,9 +3,4 @@
     tools:context="com.github.skjolber.nfc.external.hceclient.EchoHostAdpuServiceActivity" >-
 
 
-    <item
-        android:id="@+id/menu_server"
-        android:showAsAction="always"
-        android:title="@string/invokerTitle"/>
-
 </menu>

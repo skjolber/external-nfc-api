@@ -228,12 +228,11 @@ public class DeviceScanActivity extends ListActivity {
             return;
         }
         scanLeDevice(false);
-        final Intent intent = new Intent(this, BluetoothBackgroundService.class);
+        Intent intent = new Intent();
         intent.putExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME, device.getName());
-        intent.putExtra(BluetoothBackgroundService.EXTRAS_DEVICE_ADDRESS,
-                device.getAddress());
-        startService(intent);
+        intent.putExtra(BluetoothBackgroundService.EXTRAS_DEVICE_ADDRESS, device.getAddress());
 
+        setResult(Activity.RESULT_OK, intent);
         finish();
     }
 

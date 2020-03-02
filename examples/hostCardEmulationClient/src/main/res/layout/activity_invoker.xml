@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.github.skjolber.nfc.external.hceclient.EchoHostAdpuServiceActivity"
+    tools:context="com.github.skjolber.nfc.external.hceclient.HceInvokerActivity"
     android:orientation="vertical" >
 
     <LinearLayout  
@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:text="@string/title"
+            android:text="@string/invokerTitle"
             android:textSize="20sp"
             android:textStyle="bold"
             />

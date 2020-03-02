@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.cardemulation.CardEmulation;
 import android.nfc.cardemulation.HostApduService;
@@ -13,14 +14,14 @@ import android.util.Log;
 import com.github.skjolber.nfc.util.Broadcast;
 import com.github.skjolber.nfc.util.CommandAPDU;
 
-public class ExternalNFCHostApduService extends HostApduService {
+public class EchoHostApduService extends HostApduService {
 
 	public final static int ISO_SELECT_APPLICATION = 0xA4;//
 	public final static int SELECT_APPLICATION = 0x5A;//
     public static final byte OPERATION_OK = (byte)0x00;
     public static final byte APPL_INTEGRITY_ERROR = (byte)0xA1;
     
-	private static String TAG = ExternalNFCHostApduService.class.getName();
+	private static String TAG = EchoHostApduService.class.getName();
 	
 	protected static String AID = "F00A2B4C6D8E";
 	
@@ -33,7 +34,7 @@ public class ExternalNFCHostApduService extends HostApduService {
 		
 		CardEmulation cardEmulation = CardEmulation.getInstance(NfcAdapter.getDefaultAdapter(this));
 		
-		boolean defaultService = cardEmulation.isDefaultServiceForAid(new ComponentName(this, ExternalNFCHostApduService.class), AID);
+		boolean defaultService = cardEmulation.isDefaultServiceForAid(new ComponentName(this, EchoHostApduService.class), AID);
 		
 		if(!defaultService) {
 			throw new IllegalArgumentException("Expected default service for AID " + AID);
@@ -43,39 +44,58 @@ public class ExternalNFCHostApduService extends HostApduService {
 	
 	@Override
 	public byte[] processCommandApdu(byte[] buffer, Bundle extras) {
-		Log.d(TAG, "Process command Apdu " + toHexString(buffer));
+		Log.d(TAG, "Process command ADPU " + toHexString(buffer));
 
 		CommandAPDU command = new CommandAPDU(buffer);
 		int ins = command.getINS();
-		
-		switch (ins) {
-			case ISO_SELECT_APPLICATION: {
-				Log.d(TAG, "ISO Select Application");
-				
-				broadcast.broadcast(Broadcast.HOST_CARD_EMULATION_SERVICE_STARTED);
-				
-				return send(OPERATION_OK);
-			}
-			case SELECT_APPLICATION: {
 
-				String application = toHexString(command.getData(), 1, 3);
-				
-				Log.d(TAG, "Selected application " + application);
-
-				broadcast.broadcast(Broadcast.HOST_CARD_EMULATION_APPLICATION_SELECTED, Broadcast.KEY_APPLICATION_ID, application);
-
-				return send(OPERATION_OK);
-			}
-			default : {
-				Log.d(TAG, "Receieved unknown command " + Integer.toHexString(ins));
+		if(extras != null) {
+			for (String s : extras.keySet()) {
+				Log.d(TAG, "Got extras " + s + ": " + extras.get(s));
 			}
 		}
-		
-		return send(APPL_INTEGRITY_ERROR);
 
+		Intent intent = new Intent(this, EchoHostAdpuServiceActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setAction(Broadcast.HOST_CARD_EMULATION_ACTION_PROCESS_COMMAND_ADPU);
+
+		switch (ins) {
+
+			case ISO_SELECT_APPLICATION: {
+				Log.i(TAG, "ISO Select Application");
+				break;
+			}
+			case SELECT_APPLICATION: {
+				String application = toHexString(command.getData(), 1, 3);
+
+				Log.i(TAG, "Selected Application " + application);
+
+				break;
+			}
+			default: {
+				Log.i(TAG, "Received unknown command " + String.format("0x%08X", ins));
+			}
+		}
+
+		intent.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_COMMAND, buffer);
+
+		byte[] response =  response(OPERATION_OK);
+
+		intent.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_RESPONSE, buffer);
+
+		startActivity(intent);
+
+		Intent b = new Intent();
+		b.setAction(Broadcast.HOST_CARD_EMULATION_ACTION_PROCESS_COMMAND_ADPU);
+		b.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_COMMAND, buffer);
+		b.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_RESPONSE, response);
+
+		broadcast.sendBroadcast(b);
+
+		return response;
 	}
 
-	public byte[] send(byte command, byte[] contents) {
+	public byte[] response(byte command, byte[] contents) {
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			bout.write(contents);
@@ -87,13 +107,15 @@ public class ExternalNFCHostApduService extends HostApduService {
 		}
 	}
 
-	private byte[] send(byte command) {
+	private byte[] response(byte command) {
 		return new byte[]{(byte) 0x91, command};
 	}
 
 	@Override
 	public void onDeactivated(int reason) {
 		Log.i(TAG, "Deactivated: " + reason);
+
+		broadcast.broadcast(Broadcast.HOST_CARD_EMULATION_ACTION_DEACTIVATED);
 	}
 	
 	/**

@@ -1,11 +1,11 @@
-package com.github.skjolber.nfc.service;
+package com.github.skjolber.nfc.external.hceclient;
+
+import android.app.Activity;
+import android.content.res.Resources;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import android.app.Activity;
-import android.content.res.Resources;
 
 public class Utils {
 
@@ -44,6 +44,9 @@ public class Utils {
         StringBuilder sb = new StringBuilder();
         for (int x = offset; x < offset + length; x++) {
             sb.append(String.format("%02X ", bin[x]));
+        }
+        if(length > 0) {
+            sb.setLength(sb.length() - 1);
         }
         return sb.toString().toUpperCase();
     }

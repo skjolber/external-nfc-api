@@ -286,16 +286,6 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
         }
     }
 
-    public static byte[] asBytes(Integer ... content) {
-        byte[] cmd = new byte[content.length];
-        for(int i = 0; i < content.length; i++) {
-            cmd[i] = content[i].byteValue();
-        }
-
-        return cmd;
-
-    }
-
     public static byte[] passthrough(byte[] payload) {
         byte[] cmd = new byte[payload.length + 5];
         cmd[0] = (byte)0xff;

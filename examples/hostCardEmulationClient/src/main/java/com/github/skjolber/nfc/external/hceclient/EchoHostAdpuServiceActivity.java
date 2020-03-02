@@ -13,15 +13,22 @@ import android.nfc.cardemulation.CardEmulation;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.github.skjolber.nfc.util.Broadcast;
 
+/**
+ *
+ * Activity for this app to echo the HCE service using internal NFC.
+ *
+ */
 
-public class MainActivity extends DialogActivity {
 
-	private static String TAG = MainActivity.class.getName();
+public class EchoHostAdpuServiceActivity extends DialogActivity {
+
+	private static String TAG = EchoHostAdpuServiceActivity.class.getName();
 
 	private boolean receiving = false;
 
@@ -31,86 +38,90 @@ public class MainActivity extends DialogActivity {
 
 			String action = intent.getAction();
 
-			if (Broadcast.HOST_CARD_EMULATION_SERVICE_STARTED.equals(action)) {
-				runOnUiThread(new Runnable(){
+			if (Broadcast.HOST_CARD_EMULATION_ACTION_PROCESS_COMMAND_ADPU.equals(action)) {
+				final byte[] command = intent.getByteArrayExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_COMMAND);
+				final byte[] response = intent.getByteArrayExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_RESPONSE);
+				runOnUiThread(new Runnable() {
 					public void run() {
 						TextView textView = (TextView) findViewById(R.id.text);
 
-						textView.setText(textView.getText() + MainActivity.this.getString(R.string.hceServiceStarted) + "\n");
+						textView.setText(textView.getText() + " <- " + EchoHostApduService.toHexString(command) + "\n -> " + EchoHostApduService.toHexString(response) + "\n");
 					}
 				});
+			} else if (Broadcast.HOST_CARD_EMULATION_ACTION_DEACTIVATED.equals(action)) {
 
-			} else if (Broadcast.HOST_CARD_EMULATION_APPLICATION_SELECTED.equals(action)) {
-
-				runOnUiThread(new Runnable(){
+				runOnUiThread(new Runnable() {
 					public void run() {
 						TextView textView = (TextView) findViewById(R.id.text);
 
-						String applicationId = intent.getStringExtra(Broadcast.KEY_APPLICATION_ID);
-						
-						textView.setText(textView.getText() + MainActivity.this.getString(R.string.hceApplicationSelected, applicationId) + "\n");
+						textView.setText(textView.getText() + "Deactivated (tag lost or IsoDep.close() called)" + "\n");
 					}
 				});
-
+			} else if ("android.intent.action.MAIN".equals(action)) {
+				// ignore
 			} else throw new IllegalArgumentException("Unexpected action " + action);
 		}
 	};
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
 		CardEmulation cardEmulation = CardEmulation.getInstance(NfcAdapter.getDefaultAdapter(this));
-		
-		boolean defaultService = cardEmulation.isDefaultServiceForAid(new ComponentName(this, ExternalNFCHostApduService.class), ExternalNFCHostApduService.AID);
-		
-		if(!defaultService) {
-			Log.d(TAG, "Expected default service for AID " + ExternalNFCHostApduService.AID);
+
+		boolean defaultService = cardEmulation.isDefaultServiceForAid(new ComponentName(this, EchoHostApduService.class), EchoHostApduService.AID);
+
+		if (!defaultService) {
+			Log.d(TAG, "Expected default service for AID " + EchoHostApduService.AID);
 		}
-		Log.d(TAG, "Service AID is " + ExternalNFCHostApduService.AID);
-		
+		Log.d(TAG, "Service AID is " + EchoHostApduService.AID);
+
 		enableBroadcast();
-		
+
 		showHelpfulDialog();
-    }
+
+		Intent intent = getIntent();
+
+		hostCardEmulationBroadcastReceiver.onReceive(this, getIntent());
+	}
 
 
-    private void showHelpfulDialog() {
-		final AlertDialog.Builder alert = new AlertDialog.Builder(this);                 
-		alert.setTitle(R.string.dialogTitle);  
+	private void showHelpfulDialog() {
+		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle(R.string.dialogTitle);
 		alert.setMessage(R.string.dialogMessage);
-		
+
 		alert.setNegativeButton(R.string.dialogClose, new DialogInterface.OnClickListener() {
 
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				
-				return;   
+
+				return;
 			}
 		});
-		
+
 		final AlertDialog dialog = alert.create();
-		
+
 		dialog.setCanceledOnTouchOutside(true);
 		dialog.setCancelable(true); // back button
-		
-		show(dialog);		
+
+		show(dialog);
 	}
 
 
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
 
 	public void enableBroadcast() {
-		if(!receiving) {
+		if (!receiving) {
 			IntentFilter serviceFilter = new IntentFilter();
-			serviceFilter.addAction(Broadcast.HOST_CARD_EMULATION_APPLICATION_SELECTED);
-			serviceFilter.addAction(Broadcast.HOST_CARD_EMULATION_SERVICE_STARTED);
+			serviceFilter.addAction(Broadcast.HOST_CARD_EMULATION_ACTION_PROCESS_COMMAND_ADPU);
+			serviceFilter.addAction(Broadcast.HOST_CARD_EMULATION_ACTION_DEACTIVATED);
 			registerReceiver(hostCardEmulationBroadcastReceiver, serviceFilter);
 
 			receiving = true;
@@ -118,7 +129,7 @@ public class MainActivity extends DialogActivity {
 	}
 
 	public void disableBroadcast() {
-		if(receiving) {
+		if (receiving) {
 			unregisterReceiver(hostCardEmulationBroadcastReceiver);
 
 			receiving = false;
@@ -131,16 +142,16 @@ public class MainActivity extends DialogActivity {
 		i.setData(Uri.parse(url));
 		startActivity(i);
 	}
-	
+
 	public void clear(View view) {
 		TextView textView = (TextView) findViewById(R.id.text);
 		textView.setText("");
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		disableBroadcast();
-		
+
 		super.onDestroy();
 	}
 
@@ -148,4 +159,23 @@ public class MainActivity extends DialogActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+
+			case R.id.menu_server: {
+				Intent intent = new Intent(this, HceInvokerActivity.class);
+				startActivity(intent);
+				return true;
+			}
+
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+
+	}
+
 }
