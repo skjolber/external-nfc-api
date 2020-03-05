@@ -10,13 +10,14 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
+        android:label="@string/appName"
         android:theme="@style/AppTheme"
          >
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:name=".EchoHostAdpuServiceActivity"
+            android:label="@string/appName"
             android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleInstance"
              >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,9 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
+
 		<service
-            android:name=".ExternalNFCHostApduService"
+            android:name=".EchoHostApduService"
             android:exported="true"
             android:permission="android.permission.BIND_NFC_SERVICE" >
             
@@ -37,7 +39,15 @@
             <meta-data
                 android:name="android.nfc.cardemulation.host_apdu_service"
                 android:resource="@xml/apduservice" />
-        </service>                
+        </service>
+
+        <activity
+            android:launchMode="singleInstance"
+            android:name=".HceInvokerActivity"
+            android:label="@string/invokerTitle"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            >
+        </activity>
     </application>
 
 </manifest>

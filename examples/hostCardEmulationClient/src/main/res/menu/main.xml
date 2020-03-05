@@ -1,5 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.github.skjolber.nfc.external.hceclient.MainActivity" >-
+    tools:context="com.github.skjolber.nfc.external.hceclient.EchoHostAdpuServiceActivity" >-
+
+
+    <item
+        android:id="@+id/menu_server"
+        android:showAsAction="always"
+        android:title="@string/invokerTitle"/>
 
 </menu>

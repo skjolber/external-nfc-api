@@ -1,7 +1,5 @@
-apply plugin: 'com.android.application'
-
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     lintOptions {
@@ -20,8 +18,4 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-}
-
-dependencies {
-    api 'com.android.support:support-v4:23.4.0'
 }

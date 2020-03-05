@@ -242,8 +242,6 @@ public class IAcr1255UCommandWrapper extends CommandWrapper {
         }
 
         return returnValue(result, exception);
-
-
     }
 
     public byte[] getBluetoothTransmissionPower() {
@@ -288,4 +286,19 @@ public class IAcr1255UCommandWrapper extends CommandWrapper {
 
         return returnValue(result, exception);
     }
+
+    public byte[] setAutomaticPolling(boolean b) {
+        Boolean result = null;
+        Exception exception = null;
+        try {
+            result = commands.setAutomaticPolling(0, b);
+        } catch (Exception e) {
+            Log.d(TAG, "Problem enabling/disabling automatic polling", e);
+
+            exception = e;
+        }
+
+        return returnValue(result, exception);
+    }
+
 }

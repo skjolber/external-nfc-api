@@ -14,6 +14,14 @@ public interface ACR1255Commands {
     public static final int LED_2_BLUE = 4;
     public static final int LED_2_RED = 8;
 
+    /**
+     *
+     * Note: Defaults to 10001011
+     *
+     * @return list of resulting picc parameters.
+     * @throws ReaderException
+     */
+
     List<AcrAutomaticPICCPolling> setAutomaticPICCPolling(int slot, AcrAutomaticPICCPolling... picc) throws ReaderException;
 
     List<AcrAutomaticPICCPolling> getAutomaticPICCPolling(int slot) throws ReaderException;
@@ -50,9 +58,11 @@ public interface ACR1255Commands {
 
     byte[] getAutoPPS(int slot) throws ReaderException;
 
-    Boolean setSleepModeOption(int slot, byte option) throws ReaderException;
+    boolean setSleepModeOption(int slot, byte option) throws ReaderException;
 
     byte[] control(int slotNum, int controlCode, byte[] command) throws ReaderException;
 
     byte[] transmit(int slotNum, byte[] command) throws ReaderException;
+
+    boolean setAutomaticPolling(int slotNum, boolean b) throws ReaderException;
 }

@@ -340,7 +340,7 @@ public class ACR1255UsbCommands extends ACRCommands implements ACR1255Commands {
         return response.getData();
     }
 
-    public Boolean setSleepModeOption(int slot, byte option) throws ReaderException {
+    public boolean setSleepModeOption(int slot, byte option) throws ReaderException {
         if (option < 0 || option > 4) throw new RuntimeException();
         byte[] command = new byte[]{(byte) 0xE0, 0x00, 0x00, 0x48, option};
 
@@ -356,6 +356,30 @@ public class ACR1255UsbCommands extends ACRCommands implements ACR1255Commands {
             return Boolean.FALSE;
         } else {
             Log.d(TAG, "Set sleep mode option " + Integer.toHexString(response.getData()[0] & 0xFF));
+
+            return Boolean.TRUE;
+        }
+    }
+
+    public boolean setAutomaticPolling(int slot, boolean on) throws ReaderException {
+        byte b = (byte) (on ? 0x01 : 0x00);
+
+        CommandAPDU command = new CommandAPDU(0xE0, 0x00, 0x00, 0x40, new byte[]{b});
+
+        CommandAPDU response = reader.control2(slot, Reader.IOCTL_CCID_ESCAPE, command);
+
+        if (!isSuccess(response)) {
+            throw new IllegalArgumentException("Card responded with error code");
+        }
+
+        boolean result = response.getData()[0] == 0x01;
+
+        if (result != on) {
+            Log.w(TAG, "Unable to properly update antenna field: Expected " + on + " got " + result);
+
+            return Boolean.FALSE;
+        } else {
+            Log.d(TAG, "Updated antenna field to " + result);
 
             return Boolean.TRUE;
         }

@@ -19,6 +19,7 @@ import com.acs.smartcard.Reader;
 import com.acs.smartcard.Reader.OnStateChangeListener;
 import com.acs.smartcard.ReaderException;
 import com.acs.smartcard.RemovedCardException;
+import com.acs.smartcard.TlvProperties;
 import com.github.skjolber.nfc.hce.DefaultNfcReaderServiceListener;
 import com.github.skjolber.nfc.hce.IAcr1222LBinder;
 import com.github.skjolber.nfc.hce.IAcr122UBinder;
@@ -202,11 +203,15 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
                 setNfcReaderStatus(NfcReader.READER_STATUS_OK, null);
 
-                ACRCommands reader = getReaderCommands();
+                ACRCommands acrCommands = getReaderCommands();
 
-                binder.setReaderTechnology(new ACRReaderTechnology(reader));
+                binder.setReaderTechnology(new ACRReaderTechnology(acrCommands));
 
-                nfcReaderServiceListener.onReaderOpen(reader, NfcReader.READER_STATUS_OK);
+                int protocol = reader.getProtocol(0);
+
+                Log.d(TAG, "Protocol is " + protocol);
+
+                nfcReaderServiceListener.onReaderOpen(acrCommands, NfcReader.READER_STATUS_OK);
 
                 synchronized (AbstractBackgroundUsbService.this) {
                     requestPermissionDevices.remove(params[0].getDeviceId());
@@ -253,6 +258,19 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
         protected void onPostExecute(Exception result) {
             onOpenACR(result == null);
         }
+    }
+
+    public static byte[] passthrough(byte[] payload) {
+        byte[] cmd = new byte[payload.length + 5];
+        cmd[0] = (byte)0xff;
+        cmd[1] = 0x0;
+        cmd[2] = 0x0;
+        cmd[3] = 0x0;
+        cmd[4] = (byte)(payload.length & 0xFF);
+
+        System.arraycopy(payload, 0, cmd, 5, payload.length);
+
+        return cmd;
     }
 
     private class CloseTask extends AsyncTask<Void, Void, Exception> {
@@ -428,6 +446,7 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
         // Initialize reader
         reader = new ReaderWrapper(mManager);
 
+
         reader.setOnStateChangeListener(new OnStateChangeListener() {
 
             @Override
@@ -457,7 +476,6 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
             }
         });
-
 
         // Register receiver for USB permission
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);

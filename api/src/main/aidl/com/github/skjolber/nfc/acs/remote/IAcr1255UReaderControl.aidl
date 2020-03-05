@@ -40,4 +40,6 @@ interface IAcr1255UReaderControl {
 
 	byte[] setSleepModeOption(byte option);
 
+	byte[] setAutomaticPolling(boolean on);
+
 }

@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.github.skjolber.nfc.external.hceclient.MainActivity"
+    tools:context="com.github.skjolber.nfc.external.hceclient.EchoHostAdpuServiceActivity"
     android:orientation="vertical" >
 
     <LinearLayout  
@@ -23,14 +23,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             />
-        
-        <Button 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="showHelp"
-            android:text="@string/help"
-            />
-        
+
     </LinearLayout>
     
     <ScrollView

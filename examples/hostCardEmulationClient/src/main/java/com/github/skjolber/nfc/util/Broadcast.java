@@ -9,71 +9,75 @@ import android.util.Log;
 
 public class Broadcast {
 
-    private static final String TAG = Broadcast.class.getName();
+	private static final String TAG = Broadcast.class.getName();
 
-    public static final String HOST_CARD_EMULATION_SERVICE_STARTED = Broadcast.class.getName()+ ":SERVICE_STARTED";
-    public static final String HOST_CARD_EMULATION_APPLICATION_SELECTED = Broadcast.class.getName()+ ":APPLICATION_SELECTED";
+    public static final String HOST_CARD_EMULATION_ACTION_PROCESS_COMMAND_ADPU = Broadcast.class.getName()+ ":PROCESS_COMMAND_ADPU";
+	public static final String HOST_CARD_EMULATION_ACTION_DEACTIVATED = Broadcast.class.getName()+ ":DEACTIVATED";
+	public static final String HOST_CARD_EMULATION_EXTRA_COMMAND = Broadcast.class.getName()+ "extra:COMMAND";
+	public static final String HOST_CARD_EMULATION_EXTRA_RESPONSE = Broadcast.class.getName()+ "extra:RESPONSE";
 
-    public static final String KEY_APPLICATION_ID = "AUTHORIZATION_ID";
-	
 	private Context context;
 	
 	public Broadcast(Context context) {
 		this.context = context;
 	}
 
-	public void broadcast(String action) {
+	public Intent broadcast(String action) {
 		Intent intent = new Intent();
 		intent.setAction(action);
-		sendBroadcast(intent); 
+		sendBroadcast(intent);
+
+		return intent;
 	}
 	
-	public void broadcast(String action, String key, boolean value) {
+	public Intent broadcast(String action, String key, boolean value) {
 		Intent intent = new Intent();
 		intent.setAction(action);
 		intent.putExtra(key, value);
-		
-		sendBroadcast(intent); 
+
+		return sendBroadcast(intent);
 	}
 
-	public void broadcast(String action, String key, String value) {
+	public Intent broadcast(String action, String key, String value) {
 		Intent intent = new Intent();
 		intent.setAction(action);
 		intent.putExtra(key, value);
-		
-		sendBroadcast(intent); 
+
+		return sendBroadcast(intent);
 	}
 	
-	public void broadcast(String action, String key, String value, String booleanKey, boolean booleanValue) {
+	public Intent broadcast(String action, String key, String value, String booleanKey, boolean booleanValue) {
 		Intent intent = new Intent();
 		intent.setAction(action);
 		intent.putExtra(key, value);
 		intent.putExtra(booleanKey, booleanValue);
-		
-		sendBroadcast(intent); 
+
+		return sendBroadcast(intent);
 	}
 
 
-	public void broadcast(String action, String key, byte[] value) {
+	public Intent broadcast(String action, String key, byte[] value) {
+		Intent intent = new Intent();
+		intent.setAction(action);
+		intent.putExtra(key, value);
+
+		return sendBroadcast(intent);
+	}
+
+	public Intent broadcast(String action, String key, Parcelable[] value) {
 		Intent intent = new Intent();
 		intent.setAction(action);
 		intent.putExtra(key, value);
 		
-		sendBroadcast(intent); 
-	}
-
-	public void broadcast(String action, String key, Parcelable[] value) {
-		Intent intent = new Intent();
-		intent.setAction(action);
-		intent.putExtra(key, value);
-		
-		sendBroadcast(intent); 
+		return sendBroadcast(intent);
 	}
 	
-	private void sendBroadcast(Intent intent) {
+	public Intent sendBroadcast(Intent intent) {
 		Log.d(TAG, "Broadcast " + intent.getAction());
 		
 		context.sendBroadcast(intent);
+
+		return intent;
 	}
 	
 }

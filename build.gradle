@@ -10,14 +10,62 @@ buildscript {
     }
 }
 
-allprojects {
+plugins {
+    id "com.vanniktech.maven.publish" version '0.9.0' apply false
+    id 'com.github.ben-manes.versions' version '0.28.0' apply false
+    id 'org.owasp.dependencycheck' version '5.3.0' apply false
+    id "com.github.spotbugs" version "3.0.0" apply false
+}
+
+def buildProjects() {
+    subprojects.findAll { new File(it.projectDir, 'build.gradle').file  }
+}
+
+def exampleProjects() {
+    buildProjects().findAll { it.name.endsWith("-example") || it.projectDir.path.substring(rootProject.projectDir.path.length()).contains('examples') }
+}
+
+def libraryProjects() {
+    buildProjects().findAll { !exampleProjects().contains(it)  }
+}
+
+configure(buildProjects()) {
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'org.owasp.dependencycheck'
+    apply plugin: 'com.github.spotbugs'
+
     repositories {
         google()
         jcenter()
     }
+}
+
+configure(exampleProjects()) {
+    apply plugin: 'com.android.application'
 
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+configure(libraryProjects()) {
+    apply plugin: 'com.android.library'
+    apply plugin: 'com.vanniktech.maven.publish'
+}
+
+allprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
+    eclipse {
+        classpath {
+            downloadSources = true
+            downloadJavadoc = true
+        }
+    }
+
+    // Tell idea to output to build/classes/main instead of /out/
+    idea {
+        module {
+            outputDir file('build/classes/main')
+            testOutputDir file('build/classes/test')
+        }
+    }
 }

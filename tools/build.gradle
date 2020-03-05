@@ -6,7 +6,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '29.0.3'
 
     lintOptions {
@@ -31,16 +31,3 @@ dependencies {
     api project(':api')
     api 'com.google.code.ndef-tools-for-android:ndeftools:1.2.4'
 }
-
-task clearJar(type: Delete) {
-    delete 'build/outputs/tools.jar'
-}
-
-task makeJar(type: Copy) {
-    from('build/intermediates/bundles/release/')
-    into('build/outputs/')
-    include('classes.jar')
-    rename ('classes.jar', 'tools.jar')
-}
-
-makeJar.dependsOn(clearJar, build)

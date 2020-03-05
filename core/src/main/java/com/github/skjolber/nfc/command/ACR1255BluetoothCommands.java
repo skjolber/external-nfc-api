@@ -24,10 +24,10 @@ import custom.java.CommandAPDU;
 
 public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReader.OnResponseApduAvailableListener, BluetoothReader.OnEscapeResponseAvailableListener {
 
-    private static final String TAG = ACR1255UsbCommands.class.getName();
+    private static final String TAG = ACR1255BluetoothCommands.class.getName();
 
     private volatile CountDownLatch latch;
-    private byte[] in;
+    private volatile byte[] in;
 
     private BluetoothReader reader;
     private String name;
@@ -356,7 +356,7 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
         return response.getData();
     }
 
-    public Boolean setSleepModeOption(int slot, byte option) throws ReaderException {
+    public boolean setSleepModeOption(int slot, byte option) throws ReaderException {
         if (option < 0 || option > 4) throw new RuntimeException();
         byte[] command = new byte[]{(byte) 0xE0, 0x00, 0x00, 0x48, option};
 
@@ -383,11 +383,11 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
 
     @Override
     public byte[] control(int slotNum, int controlCode, byte[] request) throws ReaderException {
-        Log.d(TAG, "Raw request: " + Utils.toHexString(request));
+        Log.d(TAG, "Raw control request: " + Utils.toHexString(request));
         try {
 
-            in = null;
-            latch = new CountDownLatch(1);
+            this.in = null;
+            this.latch = new CountDownLatch(1);
 
             reader.setOnEscapeResponseAvailableListener(this);
             if (!reader.transmitEscapeCommand(request)) {
@@ -400,7 +400,7 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
                 throw new NfcException("Problem waiting for response");
             }
 
-            Log.d(TAG, "Raw response: " + Utils.toHexString(in));
+            Log.d(TAG, "Raw control response: " + Utils.toHexString(in));
 
             return in;
         } catch (Exception e) {
@@ -414,7 +414,7 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
     }
 
     public byte[] transmit(byte[] request) {
-        Log.d(TAG, "Raw request: " + Utils.toHexString(request));
+        Log.d(TAG, "Raw transmit request: " + Utils.toHexString(request));
         try {
 
             in = null;
@@ -431,7 +431,7 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
                 throw new NfcException("Problem waiting for response");
             }
 
-            Log.d(TAG, "Raw response: " + Utils.toHexString(in));
+            Log.d(TAG, "Raw transmit response: " + Utils.toHexString(in));
 
             return in;
         } catch (Exception e) {
@@ -463,5 +463,29 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
 
     public String getName() {
         return name;
+    }
+
+    public boolean setAutomaticPolling(int slot, boolean on) throws ReaderException {
+        byte b = (byte) (on ? 0x01 : 0x00);
+
+        CommandAPDU command = new CommandAPDU(0xE0, 0x00, 0x00, 0x40, new byte[]{b});
+
+        CommandAPDU response = control(slot, Reader.IOCTL_CCID_ESCAPE, command);
+
+        if (!isSuccess(response)) {
+            throw new IllegalArgumentException("Card responded with error code");
+        }
+
+        boolean result = response.getData()[0] == 0x01;
+
+        if (result != on) {
+            Log.w(TAG, "Unable to properly enable/disable automatic polling: Expected " + on + " got " + result);
+
+            return Boolean.FALSE;
+        } else {
+            Log.d(TAG, "Updated automatic polling to " + result);
+
+            return Boolean.TRUE;
+        }
     }
 }

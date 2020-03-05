@@ -29,6 +29,17 @@ public class Utils {
         return bout.toByteArray();
     }
 
+
+    public static byte[] asBytes(Integer ... content) {
+        byte[] cmd = new byte[content.length];
+        for(int i = 0; i < content.length; i++) {
+            cmd[i] = content[i].byteValue();
+        }
+
+        return cmd;
+
+    }
+
     public static String convertBinToASCII(byte[] bin, int offset, int length) {
         StringBuilder sb = new StringBuilder();
         for (int x = offset; x < offset + length; x++) {

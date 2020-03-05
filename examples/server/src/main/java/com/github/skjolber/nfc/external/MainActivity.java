@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -26,6 +27,10 @@ import android.widget.TextView;
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcService;
 import com.github.skjolber.nfc.NfcTag;
+import com.github.skjolber.nfc.acs.Acr1255UReader;
+import com.github.skjolber.nfc.acs.AcrAutomaticPICCPolling;
+import com.github.skjolber.nfc.acs.AcrPICC;
+import com.github.skjolber.nfc.acs.AcrReader;
 import com.github.skjolber.nfc.service.BackgroundUsbService;
 import com.github.skjolber.nfc.service.BluetoothBackgroundService;
 
@@ -75,7 +80,7 @@ public class MainActivity extends Activity {
     private boolean recieveReaderBroadcasts = false;
     private boolean recieveServiceBroadcasts = false;
 
-    private boolean running = false;
+    private boolean usbRunning = false;
     private boolean bluetoothRunning = false;
 
     private final BroadcastReceiver usbDevicePermissionReceiver = new BroadcastReceiver() {
@@ -90,6 +95,44 @@ public class MainActivity extends Activity {
         }
     };
 
+    private class InitReaderTask extends AsyncTask<AcrReader, Void, Exception> {
+
+        private AcrReader reader;
+
+        public InitReaderTask(AcrReader reader) {
+            this.reader = reader;
+        }
+
+        @Override
+        protected Exception doInBackground(AcrReader... params) {
+
+            Exception result = null;
+
+            try {
+                Log.d(TAG, "Got reader " + reader + " with name " + reader.getName() + " and firmware " + reader.getFirmware() + " and picc " + reader.getPICC());
+
+                if (reader instanceof Acr1255UReader) {
+                    Acr1255UReader bluetoothReader = (Acr1255UReader) reader;
+
+                    bluetoothReader.setPICC(AcrPICC.POLL_ISO14443_TYPE_A, AcrPICC.POLL_ISO14443_TYPE_B);
+
+                    bluetoothReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4, AcrAutomaticPICCPolling.PICC_POLLING_INTERVAL_1000);
+                }
+            } catch(Exception e) {
+                Log.e(TAG, "Problem initializing reader", e);
+
+                result = e;
+            }
+
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Exception result) {
+        }
+    }
+
     private final BroadcastReceiver readerReceiver = new BroadcastReceiver() {
 
         public void onReceive(Context context, Intent intent) {
@@ -99,19 +142,19 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Custom broacast receiver: " + action);
 
             if (NfcReader.ACTION_READER_OPENED.equals(action)) {
+                setReaderOpen(true);
+
                 Log.d(TAG, "Reader open");
 
-            	/*
             	if(intent.hasExtra(NfcReader.EXTRA_READER_CONTROL)) {
-            		AcrReader reader = intent.getParcelableExtra(NfcReader.EXTRA_READER_CONTROL);
-            		
-            		Log.d(TAG, "Got reader " + reader + " with name " + reader.getName() + " and firmware " + reader.getFirmware() + " and picc " + reader.getPICC());
+
+                    AcrReader reader = intent.getParcelableExtra(NfcReader.EXTRA_READER_CONTROL);
+
+                    new InitReaderTask(reader).execute();
             	} else {
             		Log.d(TAG, "No reader");
             	}
-            	*/
 
-                setReaderOpen(true);
             } else if (NfcReader.ACTION_READER_CLOSED.equals(action)) {
                 Log.d(TAG, "Reader closed");
                 setReaderOpen(false);
@@ -133,13 +176,13 @@ public class MainActivity extends Activity {
             Log.d(TAG, "Custom broacast receiver: " + action);
 
             if (NfcService.ACTION_SERVICE_STARTED.equals(action)) {
-                running = true;
+                usbRunning = true;
             } else if (NfcService.ACTION_SERVICE_STOPPED.equals(action)) {
-                running = false;
+                usbRunning = false;
             } else {
                 Log.d(TAG, "Ignore action " + action);
             }
-            setServiceStarted(running);
+            setServiceStarted(usbRunning);
 
         }
 
@@ -155,7 +198,7 @@ public class MainActivity extends Activity {
 
     public void startBluetoothService() {
         Intent intent = new Intent(this, DeviceScanActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     @Override
@@ -344,7 +387,7 @@ public class MainActivity extends Activity {
 
     public void startReaderService(View view) {
 
-        if (running) {
+        if (usbRunning) {
             Log.d(TAG, "Stop reader service");
 
             Intent intent = new Intent(this, BackgroundUsbService.class);
@@ -509,4 +552,16 @@ public class MainActivity extends Activity {
         startActivity(Intent.createChooser(getDefaultShareIntent(), getString(R.string.share)));
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode == Activity.RESULT_OK){
+            Intent intent = new Intent(this, BluetoothBackgroundService.class);
+            intent.putExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME, data.getStringExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME));
+            intent.putExtra(BluetoothBackgroundService.EXTRAS_DEVICE_ADDRESS, data.getStringExtra(BluetoothBackgroundService.EXTRAS_DEVICE_NAME));
+            startService(intent);
+
+            setBluetoothServiceStarted(true);
+        }
+    }
 }

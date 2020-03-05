@@ -85,13 +85,18 @@ public class DefaultNfcReaderServiceListener implements NfcReaderServiceListener
                 } else if (reader instanceof ACR1283Commands) {
                     acr1283Binder.setCommands((ACR1283Commands) reader);
                     intent.putExtra(NfcReader.EXTRA_READER_CONTROL, new Acr1283LReader(reader.getName(), acr1283Binder));
+                } else if (reader instanceof ACR1255UsbCommands) {
+                    acr1255Binder.setCommands((ACR1255UsbCommands) reader);
+                    intent.putExtra(NfcReader.EXTRA_READER_CONTROL, new Acr1255UReader(reader.getName(), acr1255Binder));
                 } else {
-                    Log.d(TAG, "Not supporting reader extras");
+                    Log.d(TAG, "Not supporting reader extras for " + r);
                 }
             } else if (r instanceof ACR1255BluetoothCommands) {
                 ACR1255BluetoothCommands reader = (ACR1255BluetoothCommands) r;
                 acr1255Binder.setCommands(reader);
                 intent.putExtra(NfcReader.EXTRA_READER_CONTROL, new Acr1255UReader(reader.getName(), acr1255Binder));
+            } else {
+                Log.d(TAG, "Not supporting reader extras for " + r);
             }
         } else {
             Log.d(TAG, "No reader extras");
