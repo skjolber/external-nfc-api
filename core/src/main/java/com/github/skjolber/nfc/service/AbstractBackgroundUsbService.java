@@ -211,32 +211,6 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
                 Log.d(TAG, "Protocol is " + protocol);
 
-                //byte[] readRegister = reader.transmitPassThrough(0, asBytes());
-                //byte[] readRegister = reader.readerPassThrough(0, asBytes());
-
-                //byte[] readRegister = reader.control(0, 3418, passthrough(asBytes(0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38)));
-                //int p = reader.setProtocol(0, Reader.PROTOCOL_UNDEFINED);
-
-                //byte[] readRegister = reader.control(0, Reader.IOCTL_CCID_ESCAPE, passthrough(asBytes(0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38)));
-                //byte[] readRegister = reader.transmit(0, passthrough(asBytes(0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38)));
-                //byte[] commandAPDU1     = {(byte)0xFF,0x00,0x00,0x00,0x08,  (byte)0xD4, 0x06, 0x63, 0x05, 0x63, 0x0D, 0x63, 0x38 };
-                //byte[] readRegister = reader.control(0, Reader.IOCTL_CCID_ESCAPE, commandAPDU1);
-
-
-
-                /*
-                //byte[] enterInitiatorMode = reader.transmit(0, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x40, 0x03, 0x01, 0x02, 0x02});
-                byte[] enterInitiatorMode = reader.control(0, Reader.IOCTL_CCID_ESCAPE, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x40, 0x03, 0x01, 0x00, 0x00});
-                Log.d(TAG, "enterInitiatorMode " + ACRCommands.toHexString(enterInitiatorMode));
-
-                byte[] mifareUltralightUID = reader.control(0, Reader.IOCTL_CCID_ESCAPE, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x61, 0x07, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07});
-                Log.d(TAG, "mifareUltralightUID " + ACRCommands.toHexString(mifareUltralightUID));
-
-
-                byte[] mifareUltralightData = reader.control(0, Reader.IOCTL_CCID_ESCAPE, new byte[]{(byte)0xE0, (byte)0, (byte)0, 0x60, 20, 0x01, 0x01, 0x00, 16, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25});
-                Log.d(TAG, "mifareUltralightData" + ACRCommands.toHexString(mifareUltralightData));
-*/
-
                 nfcReaderServiceListener.onReaderOpen(acrCommands, NfcReader.READER_STATUS_OK);
 
                 synchronized (AbstractBackgroundUsbService.this) {
