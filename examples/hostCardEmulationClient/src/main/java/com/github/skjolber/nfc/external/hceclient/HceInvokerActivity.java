@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 
 /**
@@ -106,6 +107,7 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 			if(isoDep.getHiLayerResponse() != null) {
 				Log.d(TAG, "HiLayer bytes were '" + Utils.convertBinToASCII(isoDep.getHiLayerResponse()) + "'");
 			}
+			Log.d(TAG, "Technologies were " + Arrays.asList(tag.getTechList()) + ", id was " + Utils.convertBinToASCII(tag.getId()));
 			try {
 				try {
 					// https://stackoverflow.com/questions/44967567/ioexception-with-host-based-card-emulation
@@ -115,12 +117,6 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 					final byte[] command = Utils.asBytes(0x00, 0xA4, 0x04, 0x00, 0x06, 0xF0, 0x0A, 0x2B, 0x4C, 0x6D, 0x8E);
 
 					Log.i(TAG, " -> " + Utils.convertBinToASCII(command));
-
-					Log.d(TAG, "Historical bytes were '" + Utils.convertBinToASCII(isoDep.getHistoricalBytes()) + "'");
-					if(isoDep.getHiLayerResponse() != null) {
-						Log.d(TAG, "HiLayer bytes were '" + Utils.convertBinToASCII(isoDep.getHiLayerResponse()) + "'");
-					}
-
 
 					// 6A 82: file not found
 
