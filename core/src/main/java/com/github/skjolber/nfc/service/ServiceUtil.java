@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.util.Log;
 
+import com.github.skjolber.nfc.command.ACRCommands;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicTagFactory;
 import com.github.skjolber.nfc.NfcTag;
 import com.github.skjolber.nfc.command.Utils;
@@ -26,6 +27,8 @@ public class ServiceUtil {
 
     private static byte[] mifareClassicUIDCommand = new byte[]{(byte) 0xFF, (byte) 0xCA, 0x00, 0x00, 0x00};
 
+    // https://stackoverflow.com/questions/9514684/what-apdu-command-gets-card-id
+    private static final byte[] GET_TAG_ID = new byte[]{(byte)0xFF, (byte)0xCA, 0x00, 0x00, 0x00};
 
     public static void sendTagIdIndent(Context context, byte[] uid) {
         final Intent intent = new Intent(NfcTag.ACTION_TAG_DISCOVERED);
@@ -215,4 +218,19 @@ public class ServiceUtil {
 
         return TagType.identifyTagType(historicalBytes);
     }
+
+    public static byte[] getPcscUid(IsoDepWrapper wrapper) {
+        try {
+            byte[] response = wrapper.transceive(GET_TAG_ID);
+            if(ACRCommands.isSuccessControl(response)) {
+                byte[] uid = new byte[response.length - 2];
+                System.arraycopy(response, 0, uid, 0, uid.length);
+                return uid;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Problem getting tag uid", e);
+        }
+        return null;
+    }
+
 }

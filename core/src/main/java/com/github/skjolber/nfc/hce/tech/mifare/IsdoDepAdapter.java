@@ -10,14 +10,14 @@ import com.github.skjolber.nfc.hce.tech.CommandTechnology;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.service.IsoDepWrapper;
 
-public class MifareDesfireAdapter extends DefaultTechnology implements CommandTechnology {
+public class IsdoDepAdapter extends DefaultTechnology implements CommandTechnology {
 
-    protected static final String TAG = MifareDesfireAdapter.class.getName();
+    protected static final String TAG = IsdoDepAdapter.class.getName();
 
     private DESFireAdapter adapter;
     private boolean hostCardEmulation;
 
-    public MifareDesfireAdapter(int slotNumber, IsoDepWrapper isoDep, boolean hostCardEmulation) {
+    public IsdoDepAdapter(int slotNumber, IsoDepWrapper isoDep, boolean hostCardEmulation) {
         super(TagTechnology.ISO_DEP, slotNumber);
         this.adapter = new DESFireAdapter(isoDep, false);
         this.hostCardEmulation = hostCardEmulation;

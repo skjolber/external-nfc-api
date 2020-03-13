@@ -8,6 +8,7 @@ import com.acs.smartcard.ReaderException;
 import org.nfctools.NfcException;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader.OnResponseApduAvailableListener {
 
@@ -17,6 +18,8 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
 
     private volatile CountDownLatch latch;
     private byte[] in;
+
+    private long commandTimeout = 5000;
 
     public ACSBluetoothIsoDepWrapper(BluetoothReader mBluetoothReader) {
         this.reader = mBluetoothReader;
@@ -40,7 +43,7 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
             }
 
             try {
-                latch.await();
+                latch.await(commandTimeout, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 throw new NfcException("Problem waiting for response");
             }

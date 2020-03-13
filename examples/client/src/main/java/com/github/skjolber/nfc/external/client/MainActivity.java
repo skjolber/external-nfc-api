@@ -20,6 +20,7 @@
 package com.github.skjolber.nfc.external.client;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.ndeftools.Message;
@@ -335,6 +336,12 @@ public class MainActivity extends NfcExternalDetectorActivity {
 						Log.d(TAG, "Ignore " + tech);
 					} else if (tech.equals(android.nfc.tech.IsoDep.class.getName())) {
 						com.github.skjolber.android.nfc.tech.IsoDep isoDep = IsoDep.get(tag);
+
+						Log.d(TAG, "Historical bytes were '" + toHexString(isoDep.getHistoricalBytes()) + "'");
+						if(isoDep.getHiLayerResponse() != null) {
+							Log.d(TAG, "HiLayer bytes were '" + toHexString(isoDep.getHiLayerResponse()) + "'");
+						}
+						Log.d(TAG, "Technologies were " + Arrays.asList(tag.getTechList()) + ", id was " + toHexString(tag.getId()));
 
 						boolean hostCardEmulation = intent.getBooleanExtra(NfcTag.EXTRA_HOST_CARD_EMULATION, false);
 

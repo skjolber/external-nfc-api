@@ -14,12 +14,13 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.acs.smartcard.ReaderException;
+import com.github.skjolber.nfc.command.ACRCommands;
 import com.github.skjolber.nfc.hce.INFcTagBinder;
 import com.github.skjolber.nfc.hce.resolve.TagProxyStore;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicTagFactory;
-import com.github.skjolber.nfc.hce.tech.mifare.MifareDesfireAdapter;
+import com.github.skjolber.nfc.hce.tech.mifare.IsdoDepAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareDesfireTagFactory;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareUltralightAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareUltralightTagFactory;
@@ -185,12 +186,13 @@ public abstract class AbstractService extends Service {
         try {
             List<TagTechnology> technologies = new ArrayList<TagTechnology>();
             technologies.add(new NfcAAdapter(slotNumber, wrapper, true));
-            technologies.add(new MifareDesfireAdapter(slotNumber, wrapper, true));
+            technologies.add(new IsdoDepAdapter(slotNumber, wrapper, true));
 
             int serviceHandle = store.add(slotNumber, technologies);
 
-            byte[] uid = new byte[]{MifareDesfireTagFactory.NXP_MANUFACTURER_ID}; // so that we can create a tag
-            Intent intent = mifareDesfireTagFactory.getTag(serviceHandle, slotNumber, atr, new byte[]{}, uid, true, atr, binder);
+            byte[] uid = ServiceUtil.getPcscUid(wrapper);
+
+            Intent intent = mifareDesfireTagFactory.getTag(serviceHandle, slotNumber, atr, null, uid, true, TechnologyType.getHistoricalBytes(atr), binder);
 
             sendBroadcast(intent);
         } catch (Exception e) {
@@ -201,25 +203,16 @@ public abstract class AbstractService extends Service {
     }
 
     protected void desfire(int slotNumber, byte[] atr, IsoDepWrapper wrapper) {
-        byte[] uid = null;
         try {
-            DesfireProtocol desfireProtocol = new DesfireProtocol(wrapper);
-
-            try {
-                VersionInfo versionInfo = desfireProtocol.getVersionInfo();
-
-                uid = versionInfo.getUid();
-            } catch (Exception e) {
-                Log.d(TAG, "Problem getting manufacturer data", e);
-            }
+            byte[] uid = ServiceUtil.getPcscUid(wrapper);
 
             List<TagTechnology> technologies = new ArrayList<TagTechnology>();
             technologies.add(new NfcAAdapter(slotNumber, wrapper, false));
-            technologies.add(new MifareDesfireAdapter(slotNumber, wrapper, false));
+            technologies.add(new IsdoDepAdapter(slotNumber, wrapper, false));
 
             int serviceHandle = store.add(slotNumber, technologies);
 
-            Intent intent = mifareDesfireTagFactory.getTag(serviceHandle, slotNumber, atr, new byte[]{}, uid, false, atr, binder);
+            Intent intent = mifareDesfireTagFactory.getTag(serviceHandle, slotNumber, atr, null, uid, false, TechnologyType.getHistoricalBytes(atr), binder);
 
             Log.i(TAG, "Tag technologies " + technologies);
 

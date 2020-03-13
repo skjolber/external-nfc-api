@@ -6,11 +6,13 @@ import java.util.List;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.github.skjolber.android.nfc.INfcTag;
 import com.github.skjolber.nfc.hce.TagFactory;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.NfcTag;
+import com.github.skjolber.nfc.service.AbstractService;
 
 /**
  * http://nfc-tools.org/index.php?title=ISO14443A
@@ -18,6 +20,8 @@ import com.github.skjolber.nfc.NfcTag;
  */
 
 public class MifareDesfireTagFactory extends TagFactory {
+
+    private static final String TAG = MifareDesfireTagFactory.class.getName();
 
     public static final int NXP_MANUFACTURER_ID = 0x04;
 
@@ -51,11 +55,13 @@ public class MifareDesfireTagFactory extends TagFactory {
 	}
 	*/
 
-    public Intent getTag(int serviceHandle, int slotNumber, byte[] historicalBytes, byte[] hiresp, byte[] id, boolean hce, byte[] atr, INfcTag tagService) {
+    public Intent getTag(int serviceHandle, int slotNumber, byte[] atr, byte[] hiLayer, byte[] id, boolean hce, byte[] historicalBytes, INfcTag tagService) {
 
+        /*
         if (id != null && id[0] != NXP_MANUFACTURER_ID) {
             throw new IllegalArgumentException("Non-NXP tag id");
         }
+        */
 
         List<Bundle> bundles = new ArrayList<Bundle>();
         List<Integer> tech = new ArrayList<Integer>();
@@ -68,7 +74,9 @@ public class MifareDesfireTagFactory extends TagFactory {
 
         Bundle desfire = new Bundle();
         desfire.putByteArray(EXTRA_HIST_BYTES, historicalBytes);
-        desfire.putByteArray(EXTRA_HI_LAYER_RESP, hiresp);
+        if(hiLayer != null) {
+            desfire.putByteArray(EXTRA_HI_LAYER_RESP, hiLayer);
+        }
         bundles.add(desfire);
         tech.add(TagTechnology.ISO_DEP);
 

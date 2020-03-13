@@ -31,6 +31,7 @@ public class BackgroundUsbService extends AbstractBackgroundUsbService {
     }
 
     private void handleTagInitRegularMode(int slotNumber, byte[] atr, TagType tagType) throws ReaderException {
+        Log.d(TAG, "Handle tag in regular mode");
         AcsTag acsTag = new AcsTag(tagType, atr, reader, slotNumber);
         IsoDepWrapper wrapper = new ACSIsoDepWrapper(reader, slotNumber);
 
@@ -58,6 +59,7 @@ public class BackgroundUsbService extends AbstractBackgroundUsbService {
     }
 
     public void handleTagInitUIDMode(int slotNumber, byte[] atr, TagType tagType) throws ReaderException {
+        Log.d(TAG, "Handle tag in UID only mode");
 
         int preferredProtocols = Reader.PROTOCOL_T1;
         int protocol = reader.setProtocol(slotNumber, preferredProtocols);

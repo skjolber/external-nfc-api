@@ -19,7 +19,7 @@ public class ACSIsoDepWrapper implements IsoDepWrapper {
 
         //Log.d(TAG, "Transceive request " + ACRCommands.toHexString(data));
 
-        byte[] buffer = new byte[256];
+        byte[] buffer = new byte[2048];
         int read;
         try {
             read = isoDep.transmit(slotNum, data, data.length, buffer, buffer.length);

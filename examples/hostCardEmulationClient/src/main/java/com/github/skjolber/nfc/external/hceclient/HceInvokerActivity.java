@@ -108,6 +108,17 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 				Log.d(TAG, "HiLayer bytes were '" + Utils.convertBinToASCII(isoDep.getHiLayerResponse()) + "'");
 			}
 			Log.d(TAG, "Technologies were " + Arrays.asList(tag.getTechList()) + ", id was " + Utils.convertBinToASCII(tag.getId()));
+
+			IsoDepDeviceHint hint = new IsoDepDeviceHint(isoDep);
+
+			if(hint.isDesfireEV1()) {
+				Log.d(TAG, "Device hints indicate a Desfire EV1 card");
+			} else if(hint.isHostCardEmulation()) {
+				Log.d(TAG, "Device hints indicate a Host Card Emulation device");
+			} else {
+				Log.d(TAG, "Device hints unable to indicate a type");
+			}
+
 			try {
 				try {
 					// https://stackoverflow.com/questions/44967567/ioexception-with-host-based-card-emulation
