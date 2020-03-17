@@ -3,10 +3,25 @@ package com.github.skjolber.android.nfc;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.RemoteException;
+
+import com.github.skjolber.android.nfc.tech.IsoDep;
+import com.github.skjolber.android.nfc.tech.IsoDepImpl;
+import com.github.skjolber.android.nfc.tech.IsoDepWrapper;
+import com.github.skjolber.android.nfc.tech.TagTechnology;
 
 import java.io.IOException;
 
 public abstract class Tag implements Parcelable {
+
+    /**
+     * Get an instance of {@link Tag} for the given tag.
+     *
+     * @return a wrapped tag
+     */
+    public static Tag get(android.nfc.Tag tag) {
+        return new TagWrapper(tag);
+    }
 
     /**
      * Construct a mock Tag.

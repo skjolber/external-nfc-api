@@ -301,4 +301,17 @@ public class IAcr1255UCommandWrapper extends CommandWrapper {
         return returnValue(result, exception);
     }
 
+    public byte[] getBatteryLevel() {
+        Integer level = null;
+        Exception exception = null;
+        try {
+            level = commands.getBatteryLevel(0);
+        } catch (Exception e) {
+            Log.d(TAG, "Problem reading battery level", e);
+
+            exception = e;
+        }
+
+        return returnValue(level, exception);
+    }
 }

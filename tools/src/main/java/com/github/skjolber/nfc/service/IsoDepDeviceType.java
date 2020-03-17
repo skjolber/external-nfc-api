@@ -1,4 +1,4 @@
-package com.github.skjolber.nfc.external.hceclient;
+package com.github.skjolber.nfc.service;
 
 public enum IsoDepDeviceType {
 

@@ -32,6 +32,7 @@ import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcService;
 import com.github.skjolber.nfc.command.Utils;
 import com.github.skjolber.nfc.messages.NfcReaderServiceListener;
+import com.github.skjolber.nfc.service.desfire.DesfireReader;
 
 import org.nfctools.NfcException;
 import org.nfctools.api.ApduTag;
@@ -191,7 +192,9 @@ public abstract class AbstractService extends Service {
             int serviceHandle = store.add(slotNumber, technologies);
 
             byte[] uid = ServiceUtil.getPcscUid(wrapper);
-
+            if(uid != null) {
+                Log.d(TAG, "Read tag UID " + Utils.toHexString(uid));
+            }
             Intent intent = mifareDesfireTagFactory.getTag(serviceHandle, slotNumber, atr, null, uid, true, TechnologyType.getHistoricalBytes(atr), binder);
 
             sendBroadcast(intent);
@@ -205,6 +208,11 @@ public abstract class AbstractService extends Service {
     protected void desfire(int slotNumber, byte[] atr, IsoDepWrapper wrapper) {
         try {
             byte[] uid = ServiceUtil.getPcscUid(wrapper);
+            if(uid != null) {
+                Log.d(TAG, "Read tag UID " + Utils.toHexString(uid));
+            }
+
+            DesfireReader reader = new DesfireReader(null);
 
             List<TagTechnology> technologies = new ArrayList<TagTechnology>();
             technologies.add(new NfcAAdapter(slotNumber, wrapper, false));
@@ -836,5 +844,12 @@ public abstract class AbstractService extends Service {
         Log.d(TAG, "Bind for intent " + intent.getAction());
 
         return new Binder();
+    }
+
+    @Override
+    public void onDestroy() {
+        stopReceivingStatusBroadcasts();
+
+        super.onDestroy();
     }
 }

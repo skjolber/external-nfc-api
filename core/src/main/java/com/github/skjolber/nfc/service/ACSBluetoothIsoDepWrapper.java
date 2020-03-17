@@ -30,7 +30,7 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
     }
 
     public synchronized byte[] transceive(byte[] request) {
-        Log.d(TAG, "Raw request: " + com.github.skjolber.nfc.command.Utils.toHexString(request));
+        //Log.d(TAG, "Raw request: " + com.github.skjolber.nfc.command.Utils.toHexString(request));
 
         try {
 
@@ -43,12 +43,14 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
             }
 
             try {
-                latch.await(commandTimeout, TimeUnit.MILLISECONDS);
+                if(!latch.await(commandTimeout, TimeUnit.MILLISECONDS)) {
+                    throw new NfcException("Timeout");
+                }
             } catch (InterruptedException e) {
                 throw new NfcException("Problem waiting for response");
             }
 
-            Log.d(TAG, "Raw response: " + com.github.skjolber.nfc.command.Utils.toHexString(in));
+            //Log.d(TAG, "Raw response: " + com.github.skjolber.nfc.command.Utils.toHexString(in));
 
             return in;
         } catch (Exception e) {
@@ -63,11 +65,10 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
 
     @Override
     public void onResponseApduAvailable(BluetoothReader bluetoothReader, byte[] apdu, int errorCode) {
-        Log.d(TAG, "onResponseApduAvailable: " + BluetoothBackgroundService.getResponseString(apdu, errorCode));
+        //Log.d(TAG, "onResponseApduAvailable: " + BluetoothBackgroundService.getResponseString(apdu, errorCode));
 
         if (errorCode == BluetoothReader.ERROR_SUCCESS) {
             this.in = apdu;
-
         }
         latch.countDown();
     }

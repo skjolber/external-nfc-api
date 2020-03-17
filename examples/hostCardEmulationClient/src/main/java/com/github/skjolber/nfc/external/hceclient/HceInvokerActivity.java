@@ -6,13 +6,15 @@ import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.IsoDep;
+import com.github.skjolber.android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
+
+import com.github.skjolber.nfc.service.IsoDepDeviceHint;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -101,7 +103,8 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 			//nfcAdapter.ignore(tag, 2000, new OnTagRemovedListener(this), null);
 		}
 
-		IsoDep isoDep = IsoDep.get(tag);
+		com.github.skjolber.android.nfc.Tag wrapped = com.github.skjolber.android.nfc.Tag.get(tag);
+		IsoDep isoDep = IsoDep.get(wrapped);
 		if(isoDep != null) {
 			Log.d(TAG, "Historical bytes were '" + Utils.convertBinToASCII(isoDep.getHistoricalBytes()) + "'");
 			if(isoDep.getHiLayerResponse() != null) {
@@ -111,7 +114,7 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 
 			IsoDepDeviceHint hint = new IsoDepDeviceHint(isoDep);
 
-			if(hint.isDesfireEV1()) {
+			if(hint.isTag()) {
 				Log.d(TAG, "Device hints indicate a Desfire EV1 card");
 			} else if(hint.isHostCardEmulation()) {
 				Log.d(TAG, "Device hints indicate a Host Card Emulation device");

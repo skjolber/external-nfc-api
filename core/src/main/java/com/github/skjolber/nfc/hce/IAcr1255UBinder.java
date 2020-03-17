@@ -206,5 +206,12 @@ public class IAcr1255UBinder extends IAcr1255UReaderControl.Stub {
         return wrapper.setAutomaticPolling(b);
     }
 
+    @Override
+    public byte[] getBatteryLevel() throws RemoteException {
+        if (wrapper == null) {
+            return noReaderException();
+        }
+        return wrapper.getBatteryLevel();
+    }
 
 }

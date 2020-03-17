@@ -1,9 +1,7 @@
-package com.github.skjolber.nfc.external.hceclient;
+package com.github.skjolber.nfc.service;
 
-import android.nfc.tech.IsoDep;
-import android.util.Log;
-
-import java.util.Arrays;
+import com.github.skjolber.android.nfc.tech.IsoDep;
+import com.github.skjolber.android.nfc.tech.IsoDepWrapper;
 
 public class IsoDepDeviceHint {
 
@@ -12,6 +10,10 @@ public class IsoDepDeviceHint {
     private final byte[] historicalBytes;
 
     private final byte[] hiLayerResponse;
+
+    public IsoDepDeviceHint(android.nfc.tech.IsoDep isoDep) {
+        this(new IsoDepWrapper(isoDep));
+    }
 
     public IsoDepDeviceHint(IsoDep isoDep) {
 
@@ -36,7 +38,7 @@ public class IsoDepDeviceHint {
 
     public IsoDepDeviceType guessType() {
 
-        if(isDesfireEV1()) {
+        if(isTag()) {
             return IsoDepDeviceType.TAG;
         }
         if(isHostCardEmulation()) {
@@ -46,7 +48,7 @@ public class IsoDepDeviceHint {
         return null;
     }
 
-    public boolean isDesfireEV1() {
+    public boolean isTag() {
         if(historicalBytes.length != 1) {
             return false;
         }

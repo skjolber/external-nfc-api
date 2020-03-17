@@ -42,4 +42,6 @@ interface IAcr1255UReaderControl {
 
 	byte[] setAutomaticPolling(boolean on);
 
+	byte[] getBatteryLevel();
+
 }

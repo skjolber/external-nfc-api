@@ -50,6 +50,18 @@ public class ACRCommands extends CommandUtils {
         return in.getSW1() == 0x90 && in.getSW2() == 0x00;
     }
 
+    public static boolean isSuccess(byte[] response) {
+        return (response[0] & 0xFF) == 0xE1 && (response[1] & 0xFF) == 0x00 && (response[2] & 0xFF) == 0x00 && (response[3] & 0xFF) == 0x00;
+    }
+
+    public static boolean isSuccessForP2(byte[] response, int p2) {
+        return (response[0] & 0xFF) == 0xE1 && (response[1] & 0xFF) == 0x00 && (response[2] & 0xFF) == 0x00 && (response[3] & 0xFF) == p2;
+    }
+
+    public static boolean isSuccessForP2(CommandAPDU response, int p2) {
+        return response.getCLA() == 0xE1 && response.getP1() == 0x00 && response.getP2() == p2 && response.getINS() == 0x00;
+    }
+
     public static boolean isZero(byte[] in, int value) {
         return is(in, 0, value);
     }

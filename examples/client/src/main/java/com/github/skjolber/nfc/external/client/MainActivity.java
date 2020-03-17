@@ -76,6 +76,7 @@ import com.github.skjolber.nfc.acs.AcrReader;
 import com.github.skjolber.nfc.acs.AcrReaderException;
 import com.github.skjolber.nfc.desfire.DesfireReader;
 import com.github.skjolber.nfc.desfire.VersionInfo;
+import com.github.skjolber.nfc.service.IsoDepDeviceHint;
 import com.github.skjolber.nfc.util.CommandAPDU;
 import com.github.skjolber.nfc.util.ResponseAPDU;
 import com.github.skjolber.nfc.util.activity.NfcExternalDetectorActivity;
@@ -343,6 +344,16 @@ public class MainActivity extends NfcExternalDetectorActivity {
 						}
 						Log.d(TAG, "Technologies were " + Arrays.asList(tag.getTechList()) + ", id was " + toHexString(tag.getId()));
 
+						IsoDepDeviceHint hint = new IsoDepDeviceHint(isoDep);
+
+						if(hint.isTag()) {
+							Log.d(TAG, "Device hints indicate a Desfire EV1 card");
+						} else if(hint.isHostCardEmulation()) {
+							Log.d(TAG, "Device hints indicate a Host Card Emulation device");
+						} else {
+							Log.d(TAG, "Device hints unable to indicate a type");
+						}
+
 						boolean hostCardEmulation = intent.getBooleanExtra(NfcTag.EXTRA_HOST_CARD_EMULATION, false);
 
 						if(hostCardEmulation) {
@@ -464,14 +475,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		} else if (id == R.id.action_ndef_write) {
 			ndefWrite();
 			return true;
-		} else if(id == R.id.action_start_service) {
-	        Intent intent = new Intent();
-			intent.setClassName("com.github.skjolber.nfc.external", "com.github.skjolber.nfc.service.BackgroundUsbService");
-	        startService(intent);
-		} else if(id == R.id.action_stop_service) {
-	        Intent intent = new Intent();
-			intent.setClassName("com.github.skjolber.nfc.external", "com.github.skjolber.nfc.service.BackgroundUsbService");
-	        stopService(intent);
 		} else if(id == R.id.action_preferences) {
 			Intent intent = new Intent(this, PreferencesActivity.class);
 			startActivity(intent);

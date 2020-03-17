@@ -22,17 +22,7 @@ import android.util.Log;
 import com.acs.bluetooth.Acr1255uj1Reader;
 import com.acs.bluetooth.Acr1255uj1Reader.OnBatteryLevelAvailableListener;
 import com.acs.bluetooth.Acr1255uj1Reader.OnBatteryLevelChangeListener;
-import com.acs.bluetooth.Acr3901us1Reader;
 import com.acs.bluetooth.BluetoothReader;
-import com.acs.bluetooth.BluetoothReader.OnAtrAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnAuthenticationCompleteListener;
-import com.acs.bluetooth.BluetoothReader.OnCardPowerOffCompleteListener;
-import com.acs.bluetooth.BluetoothReader.OnCardStatusAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnCardStatusChangeListener;
-import com.acs.bluetooth.BluetoothReader.OnDeviceInfoAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnEnableNotificationCompleteListener;
-import com.acs.bluetooth.BluetoothReader.OnEscapeResponseAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnResponseApduAvailableListener;
 import com.acs.bluetooth.BluetoothReaderGattCallback;
 import com.acs.bluetooth.BluetoothReaderGattCallback.OnConnectionStateChangeListener;
 import com.acs.bluetooth.BluetoothReaderManager;
@@ -42,6 +32,7 @@ import com.github.skjolber.nfc.hce.IAcr1255UBinder;
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcTag;
 import com.github.skjolber.nfc.command.*;
+import com.github.skjolber.nfc.service.bt.CustomBluetoothReaderManager;
 import com.github.skjolber.nfc.service.utils.BluetoothAcsTag;
 
 import org.nfctools.api.TagType;
@@ -60,6 +51,8 @@ public class BluetoothBackgroundService extends AbstractService {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+
+    /** please note: device will be bricked when authentication operation fails 5x */
     public static final String EXTRAS_DEVICE_AUTHENTICATION = "DEVICE_AUTHENTICATION";
 
     private boolean detectReader = false;
@@ -100,10 +93,12 @@ public class BluetoothBackgroundService extends AbstractService {
             BluetoothManager bluetoothManager = null;
             final String action = intent.getAction();
 
+            /*
             if (!(mBluetoothReader instanceof Acr3901us1Reader)) {
-                /* Only ACR3901U-S1 require bonding. */
+                // Only ACR3901U-S1 require bonding.
                 return;
             }
+            */
 
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 Log.i(TAG, "ACTION_BOND_STATE_CHANGED");
@@ -157,7 +152,7 @@ public class BluetoothBackgroundService extends AbstractService {
             if (intent.hasExtra(EXTRAS_DEVICE_NAME)) {
                 mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
             } else {
-                mDeviceAddress = null;
+                mDeviceName = null;
             }
             if (intent.hasExtra(EXTRAS_DEVICE_ADDRESS)) {
                 mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
@@ -270,7 +265,7 @@ public class BluetoothBackgroundService extends AbstractService {
                 });
 
                 /* Initialize mBluetoothReaderManager. */
-                mBluetoothReaderManager = new BluetoothReaderManager();
+                mBluetoothReaderManager = new CustomBluetoothReaderManager();
 
                 /* Register BluetoothReaderManager's listeners */
                 mBluetoothReaderManager.setOnReaderDetectionListener(new OnReaderDetectionListener() {
@@ -326,7 +321,7 @@ public class BluetoothBackgroundService extends AbstractService {
 
         }
 
-        mBluetoothReader.setOnAtrAvailableListener(new OnAtrAvailableListener() {
+        mBluetoothReader.setOnAtrAvailableListener(new BluetoothReader.OnAtrAvailableListener() {
             @Override
             public void onAtrAvailable(BluetoothReader bluetoothReader, final byte[] atr, final int errorCode) {
                 Log.d(TAG, "onAtrAvailable: " + com.github.skjolber.nfc.command.Utils.toHexString(atr) + " " + getErrorString(errorCode));
@@ -341,7 +336,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for power off response. */
-        mBluetoothReader.setOnCardPowerOffCompleteListener(new OnCardPowerOffCompleteListener() {
+        mBluetoothReader.setOnCardPowerOffCompleteListener(new BluetoothReader.OnCardPowerOffCompleteListener() {
 
             @Override
             public void onCardPowerOffComplete(
@@ -352,7 +347,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for response APDU. */
-        mBluetoothReader.setOnResponseApduAvailableListener(new OnResponseApduAvailableListener() {
+        mBluetoothReader.setOnResponseApduAvailableListener(new BluetoothReader.OnResponseApduAvailableListener() {
 
             @Override
             public void onResponseApduAvailable(BluetoothReader bluetoothReader, final byte[] apdu, final int errorCode) {
@@ -361,7 +356,7 @@ public class BluetoothBackgroundService extends AbstractService {
 
         });
 
-        mBluetoothReader.setOnEscapeResponseAvailableListener(new OnEscapeResponseAvailableListener() {
+        mBluetoothReader.setOnEscapeResponseAvailableListener(new BluetoothReader.OnEscapeResponseAvailableListener() {
 
             @Override
             public void onEscapeResponseAvailable(
@@ -373,7 +368,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for device info available. */
-        mBluetoothReader.setOnDeviceInfoAvailableListener(new OnDeviceInfoAvailableListener() {
+        mBluetoothReader.setOnDeviceInfoAvailableListener(new BluetoothReader.OnDeviceInfoAvailableListener() {
 
             @Override
             public void onDeviceInfoAvailable(BluetoothReader bluetoothReader, final int infoId, final Object o, final int status) {
@@ -410,7 +405,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for power off response. */
-        mBluetoothReader.setOnCardPowerOffCompleteListener(new OnCardPowerOffCompleteListener() {
+        mBluetoothReader.setOnCardPowerOffCompleteListener(new BluetoothReader.OnCardPowerOffCompleteListener() {
             @Override
             public void onCardPowerOffComplete(
                     BluetoothReader bluetoothReader, final int result) {
@@ -420,7 +415,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Handle on slot status available. */
-        mBluetoothReader.setOnCardStatusAvailableListener(new OnCardStatusAvailableListener() {
+        mBluetoothReader.setOnCardStatusAvailableListener(new BluetoothReader.OnCardStatusAvailableListener() {
 
             @Override
             public void onCardStatusAvailable(
@@ -449,14 +444,13 @@ public class BluetoothBackgroundService extends AbstractService {
 
         });
 
-        mBluetoothReader.setOnCardStatusChangeListener(new OnCardStatusChangeListener() {
+        mBluetoothReader.setOnCardStatusChangeListener(new BluetoothReader.OnCardStatusChangeListener() {
 
             @Override
             public void onCardStatusChange(BluetoothReader bluetoothReader, final int cardStatus) {
                 Log.i(TAG, "onCardStatusChange sta: " + getCardStatusString(cardStatus));
 
                 if (cardStatus == BluetoothReader.CARD_STATUS_PRESENT) {
-                    /*
                     if (!mBluetoothReader.powerOnCard()) {
                         Log.d(TAG, "Card not ready for power");
                     } else {
@@ -464,7 +458,6 @@ public class BluetoothBackgroundService extends AbstractService {
 
                         //setListener(bluetoothReader);
                     }
-                     */
                 } else if (cardStatus == BluetoothReader.CARD_STATUS_POWERED) {
                     Log.d(TAG, "Card status powered");
                 } else if (cardStatus == BluetoothReader.CARD_STATUS_ABSENT) {
@@ -483,7 +476,7 @@ public class BluetoothBackgroundService extends AbstractService {
         }
 
         if (mBluetoothReader instanceof Acr1255uj1Reader) {
-            mBluetoothReader.setOnEnableNotificationCompleteListener(new OnEnableNotificationCompleteListener() {
+            mBluetoothReader.setOnEnableNotificationCompleteListener(new BluetoothReader.OnEnableNotificationCompleteListener() {
 
                 @Override
                 public void onEnableNotificationComplete(BluetoothReader bluetoothReader, final int result) {
@@ -509,7 +502,7 @@ public class BluetoothBackgroundService extends AbstractService {
             Exception result = null;
             Log.i(TAG, "Attempt to authenticate reader");
 
-            mBluetoothReader.setOnAuthenticationCompleteListener(new OnAuthenticationCompleteListener() {
+            mBluetoothReader.setOnAuthenticationCompleteListener(new BluetoothReader.OnAuthenticationCompleteListener() {
 
                 @Override
                 public void onAuthenticationComplete(BluetoothReader bluetoothReader, final int errorCode) {
@@ -759,12 +752,13 @@ public class BluetoothBackgroundService extends AbstractService {
 
     @Override
     public void onDestroy() {
+        Log.i(TAG, "Service destroyed");
 
         disconnectReader();
 
         stopReceivingBondingStateBroadcasts();
 
-        Log.i(TAG, "Service destroyed");
+        nfcReaderServiceListener.onServiceStopped();
 
         super.onDestroy();
     }
@@ -772,6 +766,7 @@ public class BluetoothBackgroundService extends AbstractService {
     private void startReceivingBondingStateBroadcasts() {
         synchronized (this) {
             if (!receivingBondingStateBroadcasts) {
+                receivingBondingStateBroadcasts = true;
                 Log.d(TAG, "Start receiving bonding state broadcasts");
 
                 final IntentFilter intentFilter = new IntentFilter();
@@ -802,7 +797,6 @@ public class BluetoothBackgroundService extends AbstractService {
      * Create a GATT connection with the reader. And detect the connected reader
      * once service list is available.
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private boolean connectReader() {
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
@@ -838,7 +832,7 @@ public class BluetoothBackgroundService extends AbstractService {
                 for (BluetoothDevice mDevice : mPairedDevices) {
                     Log.i(TAG, "Connect bonded bluetooth device " + mDevice.getName() + " " + mDevice.getAddress());
 
-                    mDeviceAddress = mDeviceAddress;
+                    mDeviceAddress = mDevice.getAddress();
                     mDeviceName = mDevice.getName();
                 }
             } else {
@@ -861,6 +855,18 @@ public class BluetoothBackgroundService extends AbstractService {
         /* Connect to GATT internal_invoker. */
         updateConnectionState(BluetoothReader.STATE_CONNECTING);
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mBluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+
+            // https://stackoverflow.com/questions/53726759/xamarin-bluetooth-data-receive-delay
+            // https://stackoverflow.com/questions/31742817/delay-between-writecharacteristic-and-callback-oncharacteristicwrite?noredirect=1&lq=1
+            // https://punchthrough.com/maximizing-ble-throughput-part-2-use-larger-att-mtu-2/
+
+            // When using larger ATT_MTU, the throughput is increased about 0-15% as we eliminate transferring ATT layer overhead bytes and replacing them with data.
+            // Using ATT_MTU sizes that are multiples of 23 bytes or (Link Layer Data Field – L2CAP Header Size(4 bytes)) is ideal.
+
+            mBluetoothGatt.requestMtu(138);
+        }
         return true;
     }
 
