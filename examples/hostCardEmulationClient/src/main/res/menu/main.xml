@@ -8,4 +8,10 @@
         android:showAsAction="always"
         android:title="@string/invokerTitle"/>
 
+
+    <item
+        android:id="@+id/action_preferences"
+        android:showAsAction="withText"
+        android:title="@string/preferences"/>
+
 </menu>

@@ -79,9 +79,6 @@ public class MainActivity extends Activity {
             getFragmentManager().beginTransaction().add(R.id.container, fragment = new PlaceholderFragment()).commit();
         }
 
-        startReceivingTagBroadcasts();
-        startReceivingReaderBroadcasts();
-        startReceivingServiceBroadcasts();
     }
 
     private static final String TAG = MainActivity.class.getName();
@@ -241,12 +238,20 @@ public class MainActivity extends Activity {
     public void onResume() {
         super.onResume();
 
+        startReceivingTagBroadcasts();
+        startReceivingReaderBroadcasts();
+        startReceivingServiceBroadcasts();
+
         broadcast(NfcService.ACTION_SERVICE_STATUS);
         broadcast(NfcReader.ACTION_READER_STATUS);
     }
 
     @Override
     public void onPause() {
+        stopReceivingTagBroadcasts();
+        stopReceivingReaderBroadcasts();
+        stopReceivingServiceBroadcasts();
+
         super.onPause();
     }
 

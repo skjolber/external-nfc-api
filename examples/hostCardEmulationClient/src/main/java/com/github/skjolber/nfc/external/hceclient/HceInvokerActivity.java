@@ -3,18 +3,21 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import com.github.skjolber.android.nfc.tech.IsoDep;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
 import com.github.skjolber.nfc.service.IsoDepDeviceHint;
+import com.github.skjolber.nfc.util.CommandAPDU;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -106,11 +109,11 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 		com.github.skjolber.android.nfc.Tag wrapped = com.github.skjolber.android.nfc.Tag.get(tag);
 		IsoDep isoDep = IsoDep.get(wrapped);
 		if(isoDep != null) {
-			Log.d(TAG, "Historical bytes were '" + Utils.convertBinToASCII(isoDep.getHistoricalBytes()) + "'");
+			Log.d(TAG, "Historical bytes were '" + Utils.toHexString(isoDep.getHistoricalBytes()) + "'");
 			if(isoDep.getHiLayerResponse() != null) {
-				Log.d(TAG, "HiLayer bytes were '" + Utils.convertBinToASCII(isoDep.getHiLayerResponse()) + "'");
+				Log.d(TAG, "HiLayer bytes were '" + Utils.toHexString(isoDep.getHiLayerResponse()) + "'");
 			}
-			Log.d(TAG, "Technologies were " + Arrays.asList(tag.getTechList()) + ", id was " + Utils.convertBinToASCII(tag.getId()));
+			Log.d(TAG, "Technologies were " + Arrays.asList(tag.getTechList()) + ", id was " + Utils.toHexString(tag.getId()));
 
 			IsoDepDeviceHint hint = new IsoDepDeviceHint(isoDep);
 
@@ -127,10 +130,20 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 					// https://stackoverflow.com/questions/44967567/ioexception-with-host-based-card-emulation
 					isoDep.setTimeout(1000);
 
-					isoDep.connect();
-					final byte[] command = Utils.asBytes(0x00, 0xA4, 0x04, 0x00, 0x06, 0xF0, 0x0A, 0x2B, 0x4C, 0x6D, 0x8E);
+					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-					Log.i(TAG, " -> " + Utils.convertBinToASCII(command));
+						// attempt to select demo HCE application using iso adpu
+					String isoApplicationString = prefs.getString(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID, null);
+					// clean whitespace
+					isoApplicationString = isoApplicationString.replaceAll("\\s","");
+
+					byte[] key = hexStringToByteArray(isoApplicationString);
+
+					isoDep.connect();
+
+					final byte[] command = new CommandAPDU(0x00, 0xA4, 0x04, 00, key).getBytes();
+
+					Log.i(TAG, " -> " + Utils.toHexString(command));
 
 					// 6A 82: file not found
 
@@ -138,21 +151,29 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 						public void run() {
 							TextView textView = (TextView) findViewById(R.id.text);
 
-							textView.setText(textView.getText() + " -> " + Utils.convertBinToASCII(command) + "\n");
+							textView.setText(textView.getText() + " -> " + Utils.toHexString(command) + "\n");
 						}
 					});
 
 					final byte[] response = isoDep.transceive(command);
 
-					Log.i(TAG, " <- " + Utils.convertBinToASCII(response));
+					Log.i(TAG, " <- " + Utils.toHexString(response));
 
 					runOnUiThread(new Runnable() {
 						public void run() {
 							TextView textView = (TextView) findViewById(R.id.text);
 
-							textView.setText(textView.getText() + " <- " + Utils.convertBinToASCII(response) + "\n");
+							textView.setText(textView.getText() + " <- " + Utils.toHexString(response) + "\n");
 						}
 					});
+					if(response[response.length - 2] == (byte)0x90 || response[response.length - 1] == (byte)0x00) {
+						boolean pingPong = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_PING_PONG, true);
+
+						if (pingPong) {
+							Log.d(TAG, "Invoker will attempt to play ping-pong");
+							PingPong.playPingPong(isoDep);
+						}
+					}
 
 				} finally {
 					isoDep.close();
@@ -206,4 +227,13 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 		show(dialog);
 	}
 
+	public static byte[] hexStringToByteArray(String s) {
+		int len = s.length();
+		byte[] data = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+					+ Character.digit(s.charAt(i+1), 16));
+		}
+		return data;
+	}
 }

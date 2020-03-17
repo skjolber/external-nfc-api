@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.cardemulation.CardEmulation;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,6 +67,9 @@ public class EchoHostAdpuServiceActivity extends DialogActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
 		setContentView(R.layout.activity_main);
 
 		CardEmulation cardEmulation = CardEmulation.getInstance(NfcAdapter.getDefaultAdapter(this));
@@ -73,7 +77,7 @@ public class EchoHostAdpuServiceActivity extends DialogActivity {
 		boolean defaultService = cardEmulation.isDefaultServiceForAid(new ComponentName(this, EchoHostApduService.class), EchoHostApduService.AID);
 
 		if (!defaultService) {
-			Log.d(TAG, "Expected default service for AID " + EchoHostApduService.AID);
+			Log.w(TAG, "Expected default service for AID " + EchoHostApduService.AID);
 		}
 		Log.d(TAG, "Service AID is " + EchoHostApduService.AID);
 
@@ -85,7 +89,6 @@ public class EchoHostAdpuServiceActivity extends DialogActivity {
 
 		hostCardEmulationBroadcastReceiver.onReceive(this, getIntent());
 	}
-
 
 	private void showHelpfulDialog() {
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -116,6 +119,8 @@ public class EchoHostAdpuServiceActivity extends DialogActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+
+
 
 	public void enableBroadcast() {
 		if (!receiving) {
@@ -171,11 +176,18 @@ public class EchoHostAdpuServiceActivity extends DialogActivity {
 				startActivity(intent);
 				return true;
 			}
+			case R.id.action_preferences: {
+				Intent intent = new Intent(this, PreferencesActivity.class);
+				startActivity(intent);
+				return true;
+			}
 
 			default:
 				return super.onOptionsItemSelected(item);
 		}
 
 	}
+
+
 
 }

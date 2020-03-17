@@ -5,10 +5,12 @@ import java.io.IOException;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.cardemulation.CardEmulation;
 import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.github.skjolber.nfc.util.Broadcast;
@@ -30,7 +32,7 @@ public class EchoHostApduService extends HostApduService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.d(TAG, "Service created");
+		Log.d(TAG, "HCE service created");
 		
 		CardEmulation cardEmulation = CardEmulation.getInstance(NfcAdapter.getDefaultAdapter(this));
 		
@@ -39,14 +41,14 @@ public class EchoHostApduService extends HostApduService {
 		if(!defaultService) {
 			throw new IllegalArgumentException("Expected default service for AID " + AID);
 		}
-		Log.d(TAG, "Service AID is " + AID);
+		Log.d(TAG, "HCE service AID is " + AID);
 	}
 	
 	@Override
-	public byte[] processCommandApdu(byte[] buffer, Bundle extras) {
-		Log.d(TAG, "Process command ADPU " + toHexString(buffer));
+	public byte[] processCommandApdu(byte[] request, Bundle extras) {
+		Log.d(TAG, "Process command ADPU " + toHexString(request));
 
-		CommandAPDU command = new CommandAPDU(buffer);
+		CommandAPDU command = new CommandAPDU(request);
 		int ins = command.getINS();
 
 		if(extras != null) {
@@ -55,39 +57,40 @@ public class EchoHostApduService extends HostApduService {
 			}
 		}
 
+		byte[] response = response(OPERATION_OK);
+		if(ins == ISO_SELECT_APPLICATION || ins == SELECT_APPLICATION) {
+			String application = toHexString(command.getData(), 1, 3);
+
+			Log.i(TAG, "Selected Application " + application);
+		} else {
+			Log.i(TAG, "Received unknown command " + String.format("0x%08X", ins));
+
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+			boolean pingPong = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_PING_PONG, true);
+
+			if (pingPong) {
+				if (PingPong.isPing(request)) {
+					// respond with pong
+					Log.d(TAG, "Detected ping command, respond with pong");
+
+					return PingPong.getPong();
+				}
+			}
+		}
+
 		Intent intent = new Intent(this, EchoHostAdpuServiceActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.setAction(Broadcast.HOST_CARD_EMULATION_ACTION_PROCESS_COMMAND_ADPU);
 
-		switch (ins) {
-
-			case ISO_SELECT_APPLICATION: {
-				Log.i(TAG, "ISO Select Application");
-				break;
-			}
-			case SELECT_APPLICATION: {
-				String application = toHexString(command.getData(), 1, 3);
-
-				Log.i(TAG, "Selected Application " + application);
-
-				break;
-			}
-			default: {
-				Log.i(TAG, "Received unknown command " + String.format("0x%08X", ins));
-			}
-		}
-
-		intent.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_COMMAND, buffer);
-
-		byte[] response =  response(OPERATION_OK);
-
-		intent.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_RESPONSE, buffer);
+		intent.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_COMMAND, request);
+		intent.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_RESPONSE, request);
 
 		startActivity(intent);
 
 		Intent b = new Intent();
 		b.setAction(Broadcast.HOST_CARD_EMULATION_ACTION_PROCESS_COMMAND_ADPU);
-		b.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_COMMAND, buffer);
+		b.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_COMMAND, request);
 		b.putExtra(Broadcast.HOST_CARD_EMULATION_EXTRA_RESPONSE, response);
 
 		broadcast.sendBroadcast(b);

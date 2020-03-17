@@ -394,9 +394,16 @@ public class MainActivity extends NfcExternalDetectorActivity {
 							    		
 							    		// issue command which now should be routed to the same HCE client
 							    		// pretend to select application of desfire card
-							    		
-							    		DesfireReader reader = new DesfireReader(isoDep);
-							    		reader.selectApplication(0x00112233);
+
+										boolean pingPong = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_PING_PONG, true);
+
+										if (pingPong) {
+											Log.d(TAG, "Invoker will attempt to play ping-pong");
+											PingPong.playPingPong(isoDep);
+										} else {
+											DesfireReader reader = new DesfireReader(isoDep);
+											reader.selectApplication(0x00112233);
+										}
 
 							    		Log.d(TAG, "Selected application using desfire select application command");
 						    		} else if(response.getSW1() == 0x82 && response.getSW2() == 0x6A) {
@@ -536,10 +543,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 				item.setVisible(ndefFormatable != null);
 			} else if(item.getItemId() == R.id.action_ndef_write) {
 				item.setVisible(ndef != null);
-			} else if(item.getItemId() == R.id.action_start_service) {
-				item.setVisible(service == null || !service);
-			} else if(item.getItemId() == R.id.action_stop_service) {
-				item.setVisible(service != null && service);
 			}
 		}
 		
@@ -885,4 +888,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
+
+
 }
