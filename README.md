@@ -112,6 +112,7 @@ This project contains adapted code from
  * SMARTRAC SDK for Android NFC NTAG
 
 # History
+ - 2.1.0: Improve bluetooth handling, various bug fixes and a few improvements.
  - 2.0.0: Moved to wrapped `android.nfc` NFC android classes + various refactorings.
  - 1.0.0: Library using native NFC android classes
 
