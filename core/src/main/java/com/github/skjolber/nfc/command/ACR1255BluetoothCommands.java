@@ -475,7 +475,7 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
         byte[] response = control(slot, Reader.IOCTL_CCID_ESCAPE, command);
 
         if (!isSuccessForP2(response, 0x40)) {
-            throw new IllegalArgumentException("Card responded with error code ");
+            throw new IllegalArgumentException("Card responded with error code " + Utils.toHexString(response));
         }
 
         // e1 00 00 40 01

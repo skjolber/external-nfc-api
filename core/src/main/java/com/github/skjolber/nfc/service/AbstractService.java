@@ -63,6 +63,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import custom.java.CommandAPDU;
+
 
 public abstract class AbstractService extends Service {
 
@@ -195,6 +197,7 @@ public abstract class AbstractService extends Service {
             if(uid != null) {
                 Log.d(TAG, "Read tag UID " + Utils.toHexString(uid));
             }
+
             Intent intent = mifareDesfireTagFactory.getTag(serviceHandle, slotNumber, atr, null, uid, true, TechnologyType.getHistoricalBytes(atr), binder);
 
             sendBroadcast(intent);

@@ -59,7 +59,7 @@ public class TagProxyStore {
     }
 
     public TagProxy get(int serviceHandle) {
-        Log.d(TAG, "Get service handle " + serviceHandle);
+        //Log.d(TAG, "Get service handle " + serviceHandle);
         for (TagProxy tagItem : items) {
             if (tagItem.getHandle() == serviceHandle) {
                 return tagItem;

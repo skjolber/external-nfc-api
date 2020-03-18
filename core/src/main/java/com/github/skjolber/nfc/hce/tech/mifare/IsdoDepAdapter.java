@@ -10,6 +10,8 @@ import com.github.skjolber.nfc.hce.tech.CommandTechnology;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.service.IsoDepWrapper;
 
+import org.nfctools.NfcException;
+
 public class IsdoDepAdapter extends DefaultTechnology implements CommandTechnology {
 
     protected static final String TAG = IsdoDepAdapter.class.getName();
@@ -48,7 +50,7 @@ public class IsdoDepAdapter extends DefaultTechnology implements CommandTechnolo
             }
 
             return new TransceiveResult(TransceiveResult.RESULT_SUCCESS, transceive);
-        } catch (ReaderException e) {
+        } catch (ReaderException | NfcException e) {
             Log.d(TAG, "Problem sending command", e);
 
             return new TransceiveResult(TransceiveResult.RESULT_FAILURE, null);

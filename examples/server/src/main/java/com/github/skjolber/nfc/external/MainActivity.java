@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
                 if (reader instanceof Acr1255UReader) {
                     Acr1255UReader bluetoothReader = (Acr1255UReader) reader;
 
-                    // Log.d(TAG, "Battery level is " + bluetoothReader.getBatteryLevel() + "%");
+                    Log.d(TAG, "Battery level is " + bluetoothReader.getBatteryLevel() + "%");
 
                     bluetoothReader.setPICC(AcrPICC.POLL_ISO14443_TYPE_A, AcrPICC.POLL_ISO14443_TYPE_B);
 
@@ -251,6 +251,11 @@ public class MainActivity extends Activity {
         stopReceivingTagBroadcasts();
         stopReceivingReaderBroadcasts();
         stopReceivingServiceBroadcasts();
+
+        setReaderOpen(false);
+        setBluetoothServiceStarted(false);
+        setUsbServiceStarted(false);
+        setTagPresent(false);
 
         super.onPause();
     }

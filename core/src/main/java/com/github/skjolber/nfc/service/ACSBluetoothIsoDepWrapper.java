@@ -17,7 +17,7 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
     private BluetoothReader reader;
 
     private volatile CountDownLatch latch;
-    private byte[] in;
+    private volatile byte[] in;
 
     private long commandTimeout = 5000;
 
@@ -52,6 +52,10 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
 
             //Log.d(TAG, "Raw response: " + com.github.skjolber.nfc.command.Utils.toHexString(in));
 
+            if(this.in == null) {
+                throw new NfcException("No ADPU response");
+            }
+
             return in;
         } catch (Exception e) {
             throw new NfcException(e);
@@ -65,10 +69,10 @@ public class ACSBluetoothIsoDepWrapper implements IsoDepWrapper, BluetoothReader
 
     @Override
     public void onResponseApduAvailable(BluetoothReader bluetoothReader, byte[] apdu, int errorCode) {
-        //Log.d(TAG, "onResponseApduAvailable: " + BluetoothBackgroundService.getResponseString(apdu, errorCode));
+        this.in = apdu;
 
-        if (errorCode == BluetoothReader.ERROR_SUCCESS) {
-            this.in = apdu;
+        if (errorCode != BluetoothReader.ERROR_SUCCESS) {
+            Log.d(TAG, "onResponseApduAvailable: " + BluetoothBackgroundService.getResponseString(apdu, errorCode) + " " + com.github.skjolber.nfc.command.Utils.toHexString(apdu));
         }
         latch.countDown();
     }

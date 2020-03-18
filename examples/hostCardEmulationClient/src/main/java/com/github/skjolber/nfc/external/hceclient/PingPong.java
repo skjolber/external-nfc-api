@@ -16,19 +16,29 @@ public class PingPong {
         int count = 0;
         long elapsed = 0;
 
+        long max = Long.MIN_VALUE;
+        long min = Long.MAX_VALUE;
+
         while (isoDep.isConnected()) {
-            Log.i(TAG, " <- " +toHexString(ping));
+            //Log.i(TAG, " <- " +toHexString(ping));
             long time = System.currentTimeMillis();
             final byte[] pong = isoDep.transceive(ping);
             time = System.currentTimeMillis() - time;
-            Log.i(TAG, " <- " + toHexString(pong));
+            //Log.i(TAG, " <- " + toHexString(pong));
             if (!isPong(ping, pong)) {
                 Log.d(TAG, "No pong to the ping");
                 break;
             } else {
+                if(time > max) {
+                    max = time;
+                }
+                if(time < min) {
+                    min = time;
+                }
+
                 count++;
                 elapsed += time;
-                Log.d(TAG, "Ping-pong in " + time + " ms (average " + (elapsed / count)  + " ms)");
+                Log.d(TAG, "Ping-pong in " + time + " ms (average " + (elapsed / count)  + " ms. Min " + min + " / max "+ max + ")");
             }
         }
     }
