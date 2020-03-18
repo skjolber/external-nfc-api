@@ -48,6 +48,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
+
+        <activity
+            android:name=".PreferencesActivity"
+            android:label="@string/preferences"
+            >
+        </activity>
     </application>
 
 </manifest>

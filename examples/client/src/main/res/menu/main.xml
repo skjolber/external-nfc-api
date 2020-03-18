@@ -3,22 +3,6 @@
     tools:context="com.github.skjolber.nfc.external.client.MainActivity" >
 
     <item
-        android:id="@+id/action_start_service"
-        android:showAsAction="ifRoom"
-        android:title="@string/startService"
-        android:visible="false"
-        android:icon="@android:drawable/ic_media_play"
-        />
-        
-	<item
-        android:id="@+id/action_stop_service"
-        android:showAsAction="always"
-        android:title="@string/stopService"
-        android:visible="false"
-        android:icon="@android:drawable/ic_media_pause"
-        />
-            
-    <item
         android:id="@+id/action_ndef_format"
         android:showAsAction="withText"
         android:title="@string/ndefFormat"/>

@@ -5,6 +5,8 @@
 
     <string name="mainActivityLabel">External NFC Reader Service</string>
 
+    <string name="modes_description">Service connection type:</string>
+    <string name="bluetooth_device_description">Bluetooth device:</string>
     <string name="startingService">Starting service..</string>
     
     <string name="introductionTitle">Service configuration and controls</string>
@@ -63,8 +65,13 @@
 
     <string name="deviceScan">Device scan</string>
 
-    <string name="startScan">Select bluetooth device</string>
+    <string name="bluetooth_service_start">Start bluetooth service</string>
+    <string name="bluetooth_service_stop">Stop bluetooth service</string>
 
-    <string name="stopBluetoothService">Stop bluetooth service</string>
-
+    <string name="bluetooth_device_add">Add</string>
+    <string name="bluetooth_device_none">None</string>
+    <string-array name="service_modes">
+        <item>USB</item>
+        <item>Bluetooth</item>
+    </string-array>
 </resources>

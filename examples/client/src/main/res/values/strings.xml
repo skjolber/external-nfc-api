@@ -9,6 +9,8 @@
     
     <string name="preferences">Preferences</string>
     <string name="preferenceCategoryHostCardEmulation">Host card emulation</string>
+    <string name="preferenceHostCardEmulationApplicationPingPongTitle">Enable ping/pong commands</string>
+    <string name="preferenceHostCardEmulationApplicationPingPongSummary">Automatically run ping/pong commands when a device is within range.</string>
     <string name="preferenceHostCardEmulationApplicationAutoSelectIsoApplicationTitle">Auto-select application</string>
     <string name="preferenceHostCardEmulationApplicationAutoSelectIsoApplicationSummary">Automatically issue command selecting HCE application upon HCE device detect.</string>
     <string name="preferenceHostCardEmulationApplicationIdTitle">Application ID</string>

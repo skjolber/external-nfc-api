@@ -22,17 +22,7 @@ import android.util.Log;
 import com.acs.bluetooth.Acr1255uj1Reader;
 import com.acs.bluetooth.Acr1255uj1Reader.OnBatteryLevelAvailableListener;
 import com.acs.bluetooth.Acr1255uj1Reader.OnBatteryLevelChangeListener;
-import com.acs.bluetooth.Acr3901us1Reader;
 import com.acs.bluetooth.BluetoothReader;
-import com.acs.bluetooth.BluetoothReader.OnAtrAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnAuthenticationCompleteListener;
-import com.acs.bluetooth.BluetoothReader.OnCardPowerOffCompleteListener;
-import com.acs.bluetooth.BluetoothReader.OnCardStatusAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnCardStatusChangeListener;
-import com.acs.bluetooth.BluetoothReader.OnDeviceInfoAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnEnableNotificationCompleteListener;
-import com.acs.bluetooth.BluetoothReader.OnEscapeResponseAvailableListener;
-import com.acs.bluetooth.BluetoothReader.OnResponseApduAvailableListener;
 import com.acs.bluetooth.BluetoothReaderGattCallback;
 import com.acs.bluetooth.BluetoothReaderGattCallback.OnConnectionStateChangeListener;
 import com.acs.bluetooth.BluetoothReaderManager;
@@ -42,6 +32,7 @@ import com.github.skjolber.nfc.hce.IAcr1255UBinder;
 import com.github.skjolber.nfc.NfcReader;
 import com.github.skjolber.nfc.NfcTag;
 import com.github.skjolber.nfc.command.*;
+import com.github.skjolber.nfc.service.bt.CustomBluetoothReaderManager;
 import com.github.skjolber.nfc.service.utils.BluetoothAcsTag;
 
 import org.nfctools.api.TagType;
@@ -60,6 +51,8 @@ public class BluetoothBackgroundService extends AbstractService {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+
+    /** please note: device will be bricked when authentication operation fails 5x */
     public static final String EXTRAS_DEVICE_AUTHENTICATION = "DEVICE_AUTHENTICATION";
 
     private boolean detectReader = false;
@@ -70,13 +63,14 @@ public class BluetoothBackgroundService extends AbstractService {
     private BluetoothAdapter mBluetoothAdapter;
 
     /* Detected reader. */
-    private BluetoothReader mBluetoothReader;
-    /* ACS Bluetooth reader library. */
-    private BluetoothReaderManager mBluetoothReaderManager;
-    private BluetoothReaderGattCallback mGattCallback;
+    private BluetoothReader acsBluetoothReader;
 
-    /* Bluetooth GATT client. */
-    private BluetoothGatt mBluetoothGatt;
+    /* ACS Bluetooth reader library. */
+    private BluetoothReaderManager acsBluetoothReaderManager;
+    private BluetoothReaderGattCallback acsGattCallback;
+
+    /* Bluetooth GATT client (native android). */
+    private BluetoothGatt bluetoothGatt;
 
     /* Reader to be connected. */
     private String mDeviceName;
@@ -99,20 +93,8 @@ public class BluetoothBackgroundService extends AbstractService {
             BluetoothAdapter bluetoothAdapter = null;
             BluetoothManager bluetoothManager = null;
             final String action = intent.getAction();
-
-            if (!(mBluetoothReader instanceof Acr3901us1Reader)) {
-                /* Only ACR3901U-S1 require bonding. */
-                return;
-            }
-
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 Log.i(TAG, "ACTION_BOND_STATE_CHANGED");
-
-                /* Get bond (pairing) state */
-                if (mBluetoothReaderManager == null) {
-                    Log.w(TAG, "Unable to initialize BluetoothReaderManager.");
-                    return;
-                }
 
                 bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
                 if (bluetoothManager == null) {
@@ -136,13 +118,6 @@ public class BluetoothBackgroundService extends AbstractService {
 
                 Log.i(TAG, "BroadcastReceiver - getBondState. state = " + getBondingStatusString(bondState));
 
-                /* Enable notification */
-                if (bondState == BluetoothDevice.BOND_BONDED) {
-                    if (mBluetoothReader != null) {
-                        mBluetoothReader.enableNotification(true);
-                    }
-                }
-
                 Log.d(TAG, getBondingStatusString(bondState));
             }
         }
@@ -151,13 +126,15 @@ public class BluetoothBackgroundService extends AbstractService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "Start command");
+        Log.d(TAG, "Service start command");
+
+        disconnectReader();
 
         synchronized (this) {
             if (intent.hasExtra(EXTRAS_DEVICE_NAME)) {
                 mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
             } else {
-                mDeviceAddress = null;
+                mDeviceName = null;
             }
             if (intent.hasExtra(EXTRAS_DEVICE_ADDRESS)) {
                 mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
@@ -175,9 +152,8 @@ public class BluetoothBackgroundService extends AbstractService {
             started = true;
 
             startDetectingReader();
-        } else {
-            connectReader();
         }
+        connectReader();
 
         return Service.START_STICKY;
     }
@@ -193,11 +169,14 @@ public class BluetoothBackgroundService extends AbstractService {
         nfcReaderServiceListener = new DefaultNfcReaderServiceListener(null, null, null, null, null, null, acr1255Binder, this);
 
         nfcReaderServiceListener.onServiceStarted();
+
+        initializeBluetoothReaderManager();
+        startReceivingBondingStateBroadcasts();
     }
 
     @Override
     public ACR1255BluetoothCommands getReaderCommands() {
-        return new ACR1255BluetoothCommands(mDeviceName, mBluetoothReader);
+        return new ACR1255BluetoothCommands(mDeviceName, acsBluetoothReader);
     }
 
     private void startDetectingReader() {
@@ -207,101 +186,99 @@ public class BluetoothBackgroundService extends AbstractService {
 
                 detectReader = true;
 
-                startReceivingBondingStateBroadcasts();
-
                 /* Initialize BluetoothReaderGattCallback. */
-                mGattCallback = new BluetoothReaderGattCallback();
+                final BluetoothReaderGattCallback gattCallback = new BluetoothReaderGattCallback();
 
                 /* Register BluetoothReaderGattCallback's listeners */
-                mGattCallback.setOnConnectionStateChangeListener(new OnConnectionStateChangeListener() {
+                gattCallback.setOnConnectionStateChangeListener(new OnConnectionStateChangeListener() {
+
+                    /**
+                     * Callback indicating when GATT client has connected/disconnected to/from a remote
+                     * GATT server.
+                     *
+                     * @param gatt GATT client
+                     * @param status Status of the connect or disconnect operation. {@link
+                     * BluetoothGatt#GATT_SUCCESS} if the operation succeeds.
+                     * @param newState Returns the new connection state. Can be one of {@link
+                     * BluetoothProfile#STATE_DISCONNECTED} or {@link BluetoothProfile#STATE_CONNECTED}
+                     */
 
                     @Override
                     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-                    public void onConnectionStateChange(final BluetoothGatt gatt, final int state, final int newState) {
+                    public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
 
-                        if (state != BluetoothGatt.GATT_SUCCESS) {
-                            /*
-                             * Show the message on fail to
-                             * connect/disconnect.
-                             */
-                            updateConnectionState(BluetoothReader.STATE_DISCONNECTED);
-
-                            if (newState == BluetoothReader.STATE_CONNECTED) {
-                                Log.d(TAG, "Connect  fail with state " + state);
-                            } else if (newState == BluetoothReader.STATE_DISCONNECTED) {
-                                Log.d(TAG, "Disconnect fail with state " + state);
-                            } else {
-                                Log.d(TAG, "Unknown error state " + state);
-                            }
-
-                            readerOpen = false;
-
-                            nfcReaderServiceListener.onReaderClosed(NfcReader.READER_STATUS_USB_DEVICE_DISCONNECTED, null);
-
+                        if(gatt != bluetoothGatt) {
+                            Log.d(TAG, "Ignore outdated state " + status + " / " + newState);
                             return;
                         }
 
-                        updateConnectionState(newState);
+                        if (status != BluetoothGatt.GATT_SUCCESS) {
+                            Log.d(TAG, "Connect / disconnect operation failed, state is " + newState);
+                        } else {
+                            Log.d(TAG, "Connect / disconnect operation successful, state is " + newState);
+                        }
+
+                        setConnectionState(newState);
 
                         if (newState == BluetoothProfile.STATE_CONNECTED) {
                             /* Detect the connected reader. */
-                            Log.d(TAG, "Connected");
-                            if (mBluetoothReaderManager != null) {
-                                mBluetoothReaderManager.detectReader(gatt, mGattCallback);
-                            }
+                            initializeBluetoothReaderManager();
+                            acsBluetoothReaderManager.detectReader(gatt, gattCallback);
                         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                            Log.d(TAG, "Disconnected");
-                            mBluetoothReader = null;
+                            acsBluetoothReader = null;
                             /*
                              * Release resources occupied by Bluetooth
                              * GATT client.
                              */
-                            if (mBluetoothGatt != null) {
-                                mBluetoothGatt.close();
-                                mBluetoothGatt = null;
+                            if (bluetoothGatt != null) {
+                                bluetoothGatt.close();
+                                bluetoothGatt = null;
                             }
 
                             readerOpen = false;
 
                             nfcReaderServiceListener.onReaderClosed(NfcReader.READER_STATUS_USB_DEVICE_DISCONNECTED, null);
-                        }
-                    }
-
-                });
-
-                /* Initialize mBluetoothReaderManager. */
-                mBluetoothReaderManager = new BluetoothReaderManager();
-
-                /* Register BluetoothReaderManager's listeners */
-                mBluetoothReaderManager.setOnReaderDetectionListener(new OnReaderDetectionListener() {
-
-                    @Override
-                    public void onReaderDetection(BluetoothReader reader) {
-                        if (reader instanceof Acr1255uj1Reader) {
-                            /* The connected reader is ACR1255U-J1 reader. */
-                            Log.d(TAG, "Acr1255uj1Reader detected.");
                         } else {
-                            Log.i(TAG, "Reader " + reader.getClass().getSimpleName() + " is not supported");
-
-                            return;
+                            throw new RuntimeException();
                         }
-
-                        mBluetoothReader = reader;
-                        setListener(reader);
-                        enableReaderNotifications(reader);
                     }
+
                 });
 
-                /* Connect the reader. */
-                connectReader();
+                this.acsGattCallback = gattCallback;
             }
         }
     }
 
-    private void setListener(BluetoothReader reader) {
+    private void initializeBluetoothReaderManager() {
+        // note: the manager must be reinitialized on bluetooth reconnect, reuse does not work
+        /* Initialize mBluetoothReaderManager. */
+        BluetoothReaderManager bluetoothReaderManager = new CustomBluetoothReaderManager();
+
+        /* Register BluetoothReaderManager's listeners */
+        bluetoothReaderManager.setOnReaderDetectionListener(new OnReaderDetectionListener() {
+
+            @Override
+            public void onReaderDetection(BluetoothReader reader) {
+                if (reader instanceof Acr1255uj1Reader) {
+                    /* The connected reader is ACR1255U-J1 reader. */
+                    Log.d(TAG, "Acr1255uj1Reader detected.");
+
+                    setReader(reader);
+                } else {
+                    Log.i(TAG, "Reader " + reader.getClass().getSimpleName() + " is not supported");
+                }
+
+            }
+        });
+
+        this.acsBluetoothReaderManager = bluetoothReaderManager;
+    }
+
+    private void setReader(final BluetoothReader reader) {
         /* Update status change listener */
-        if(mBluetoothReader instanceof Acr1255uj1Reader) {
-            Acr1255uj1Reader acr1255uj1Reader = (Acr1255uj1Reader)mBluetoothReader;
+        if(reader instanceof Acr1255uj1Reader) {
+            Acr1255uj1Reader acr1255uj1Reader = (Acr1255uj1Reader)reader;
             acr1255uj1Reader.setOnBatteryLevelChangeListener(new OnBatteryLevelChangeListener() {
 
                 @Override
@@ -326,7 +303,7 @@ public class BluetoothBackgroundService extends AbstractService {
 
         }
 
-        mBluetoothReader.setOnAtrAvailableListener(new OnAtrAvailableListener() {
+        reader.setOnAtrAvailableListener(new BluetoothReader.OnAtrAvailableListener() {
             @Override
             public void onAtrAvailable(BluetoothReader bluetoothReader, final byte[] atr, final int errorCode) {
                 Log.d(TAG, "onAtrAvailable: " + com.github.skjolber.nfc.command.Utils.toHexString(atr) + " " + getErrorString(errorCode));
@@ -341,7 +318,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for power off response. */
-        mBluetoothReader.setOnCardPowerOffCompleteListener(new OnCardPowerOffCompleteListener() {
+        reader.setOnCardPowerOffCompleteListener(new BluetoothReader.OnCardPowerOffCompleteListener() {
 
             @Override
             public void onCardPowerOffComplete(
@@ -352,7 +329,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for response APDU. */
-        mBluetoothReader.setOnResponseApduAvailableListener(new OnResponseApduAvailableListener() {
+        reader.setOnResponseApduAvailableListener(new BluetoothReader.OnResponseApduAvailableListener() {
 
             @Override
             public void onResponseApduAvailable(BluetoothReader bluetoothReader, final byte[] apdu, final int errorCode) {
@@ -361,7 +338,7 @@ public class BluetoothBackgroundService extends AbstractService {
 
         });
 
-        mBluetoothReader.setOnEscapeResponseAvailableListener(new OnEscapeResponseAvailableListener() {
+        reader.setOnEscapeResponseAvailableListener(new BluetoothReader.OnEscapeResponseAvailableListener() {
 
             @Override
             public void onEscapeResponseAvailable(
@@ -373,7 +350,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for device info available. */
-        mBluetoothReader.setOnDeviceInfoAvailableListener(new OnDeviceInfoAvailableListener() {
+        reader.setOnDeviceInfoAvailableListener(new BluetoothReader.OnDeviceInfoAvailableListener() {
 
             @Override
             public void onDeviceInfoAvailable(BluetoothReader bluetoothReader, final int infoId, final Object o, final int status) {
@@ -410,7 +387,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Wait for power off response. */
-        mBluetoothReader.setOnCardPowerOffCompleteListener(new OnCardPowerOffCompleteListener() {
+        reader.setOnCardPowerOffCompleteListener(new BluetoothReader.OnCardPowerOffCompleteListener() {
             @Override
             public void onCardPowerOffComplete(
                     BluetoothReader bluetoothReader, final int result) {
@@ -420,7 +397,7 @@ public class BluetoothBackgroundService extends AbstractService {
         });
 
         /* Handle on slot status available. */
-        mBluetoothReader.setOnCardStatusAvailableListener(new OnCardStatusAvailableListener() {
+        reader.setOnCardStatusAvailableListener(new BluetoothReader.OnCardStatusAvailableListener() {
 
             @Override
             public void onCardStatusAvailable(
@@ -434,11 +411,11 @@ public class BluetoothBackgroundService extends AbstractService {
                     Log.i(TAG, "setOnCardStatusAvailableListener: " + getCardStatusString(cardStatus));
 
                     if (cardStatus == BluetoothReader.CARD_STATUS_PRESENT) {
-                        if (!mBluetoothReader.powerOnCard()) {
+                        if (!reader.powerOnCard()) {
                             Log.d(TAG, "Card not ready for power");
                         }
                     } else if (cardStatus == BluetoothReader.CARD_STATUS_POWERED) {
-                        if (!mBluetoothReader.transmitApdu(DEFAULT_1255_APDU_COMMAND)) {
+                        if (!reader.transmitApdu(DEFAULT_1255_APDU_COMMAND)) {
                             Log.d(TAG, "Card not ready for apdu");
                         }
                     } else if (cardStatus == BluetoothReader.CARD_STATUS_ABSENT) {
@@ -449,22 +426,20 @@ public class BluetoothBackgroundService extends AbstractService {
 
         });
 
-        mBluetoothReader.setOnCardStatusChangeListener(new OnCardStatusChangeListener() {
+        reader.setOnCardStatusChangeListener(new BluetoothReader.OnCardStatusChangeListener() {
 
             @Override
             public void onCardStatusChange(BluetoothReader bluetoothReader, final int cardStatus) {
                 Log.i(TAG, "onCardStatusChange sta: " + getCardStatusString(cardStatus));
 
                 if (cardStatus == BluetoothReader.CARD_STATUS_PRESENT) {
-                    /*
-                    if (!mBluetoothReader.powerOnCard()) {
+                    if (!reader.powerOnCard()) {
                         Log.d(TAG, "Card not ready for power");
                     } else {
                         Log.d(TAG, "Power on card..");
 
                         //setListener(bluetoothReader);
                     }
-                     */
                 } else if (cardStatus == BluetoothReader.CARD_STATUS_POWERED) {
                     Log.d(TAG, "Card status powered");
                 } else if (cardStatus == BluetoothReader.CARD_STATUS_ABSENT) {
@@ -474,34 +449,33 @@ public class BluetoothBackgroundService extends AbstractService {
             }
 
         });
-    }
 
-    /* Start the process to enable the reader's notifications: Enables the reader's battery status or level, card status and response notifications. */
-    private void enableReaderNotifications(BluetoothReader reader) {
-        if (reader == null) {
-            return;
-        }
+        /* Start the process to enable the reader's notifications: Enables the reader's battery status or level, card status and response notifications. */
+        reader.setOnEnableNotificationCompleteListener(new BluetoothReader.OnEnableNotificationCompleteListener() {
 
-        if (mBluetoothReader instanceof Acr1255uj1Reader) {
-            mBluetoothReader.setOnEnableNotificationCompleteListener(new OnEnableNotificationCompleteListener() {
-
-                @Override
-                public void onEnableNotificationComplete(BluetoothReader bluetoothReader, final int result) {
-                    if (result != BluetoothGatt.GATT_SUCCESS) {
-                        Log.i(TAG, "The device is unable to set notification!");
-                    } else {
-                        new AuthTask().execute();
-                    }
+            @Override
+            public void onEnableNotificationComplete(BluetoothReader bluetoothReader, final int result) {
+                if (result != BluetoothGatt.GATT_SUCCESS) {
+                    Log.i(TAG, "The device is unable to set notification!");
+                } else {
+                    Log.d(TAG, "Enable notifications");
+                    new AuthTask(reader).execute();
                 }
-            });
-
-            if (!mBluetoothReader.enableNotification(true)) {
-                Log.d(TAG, "Unable to enable notifications");
             }
-        }
+        });
+
+        this.acsBluetoothReader = reader;
+
+        reader.enableNotification(true);
     }
 
     private class AuthTask extends AsyncTask<Void, Void, Exception> {
+
+        private BluetoothReader reader;
+
+        public AuthTask(BluetoothReader reader) {
+            this.reader = reader;
+        }
 
         @Override
         protected Exception doInBackground(Void... params) {
@@ -509,21 +483,14 @@ public class BluetoothBackgroundService extends AbstractService {
             Exception result = null;
             Log.i(TAG, "Attempt to authenticate reader");
 
-            mBluetoothReader.setOnAuthenticationCompleteListener(new OnAuthenticationCompleteListener() {
+            reader.setOnAuthenticationCompleteListener(new BluetoothReader.OnAuthenticationCompleteListener() {
 
                 @Override
                 public void onAuthenticationComplete(BluetoothReader bluetoothReader, final int errorCode) {
                     if (errorCode == BluetoothReader.ERROR_SUCCESS) {
                         Log.d(TAG, "Authentication success!");
 
-
-                        ACR1255BluetoothCommands commands = getReaderCommands();
-
-                        binder.setReaderTechnology(new ACRReaderBluetoothTechnology(commands));
-
-                        nfcReaderServiceListener.onReaderOpen(commands, NfcReader.READER_STATUS_OK);
-
-                        readerOpen = true;
+                        setAuthenticated(reader);
                     } else {
                         Log.d(TAG, "Authentication failure. Warning, only six attempts can be made before the reader is permanently locked.");
                     }
@@ -532,11 +499,10 @@ public class BluetoothBackgroundService extends AbstractService {
             });
 
             try {
-
-                if (!mBluetoothReader.authenticate(masterKey)) {
-                    Log.w(TAG, "Reader unexpectedly was not ready for authenticate");
-                } else {
+                if (reader.authenticate(masterKey)) {
                     Log.d(TAG, "Authenticating...");
+                } else {
+                    Log.w(TAG, "Reader unexpectedly was not ready for authenticate");
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Problem authenticating. Warning, only six attempts can be made before the reader is permanently locked.", e);
@@ -548,6 +514,16 @@ public class BluetoothBackgroundService extends AbstractService {
         @Override
         protected void onPostExecute(Exception result) {
         }
+    }
+
+    protected void setAuthenticated(BluetoothReader reader) {
+        ACR1255BluetoothCommands commands = getReaderCommands();
+
+        binder.setReaderTechnology(new ACRReaderBluetoothTechnology(commands));
+
+        nfcReaderServiceListener.onReaderOpen(commands, NfcReader.READER_STATUS_OK);
+
+        readerOpen = true;
     }
 
     private class InitTask extends AsyncTask<TagType, Void, Exception> {
@@ -583,8 +559,8 @@ public class BluetoothBackgroundService extends AbstractService {
 
     private void handleTagInitRegularMode(TagType tagType, byte[] atr) {
 
-        BluetoothAcsTag acsTag = new BluetoothAcsTag(TagType.MIFARE_ULTRALIGHT, new byte[]{}, mBluetoothReader);
-        IsoDepWrapper wrapper = new ACSBluetoothIsoDepWrapper(mBluetoothReader);
+        BluetoothAcsTag acsTag = new BluetoothAcsTag(TagType.MIFARE_ULTRALIGHT, new byte[]{}, acsBluetoothReader);
+        IsoDepWrapper wrapper = new ACSBluetoothIsoDepWrapper(acsBluetoothReader);
 
         if (tagType == TagType.MIFARE_ULTRALIGHT || tagType == TagType.MIFARE_ULTRALIGHT_C) {
             mifareUltralight(0, atr, tagType, acsTag, wrapper, "ACR1255U");
@@ -612,7 +588,7 @@ public class BluetoothBackgroundService extends AbstractService {
     private void handleTagInitUIDMode(TagType tagType) {
         if (tagType == TagType.MIFARE_ULTRALIGHT || tagType == TagType.MIFARE_ULTRALIGHT_C) {
             try {
-                BluetoothAcsTag tag = new BluetoothAcsTag(TagType.MIFARE_ULTRALIGHT, new byte[]{}, mBluetoothReader);
+                BluetoothAcsTag tag = new BluetoothAcsTag(TagType.MIFARE_ULTRALIGHT, new byte[]{}, acsBluetoothReader);
 
                 ServiceUtil.ultralight(BluetoothBackgroundService.this, tag);
             } catch (Exception e) {
@@ -631,7 +607,7 @@ public class BluetoothBackgroundService extends AbstractService {
         ) {
 
             try {
-                BluetoothAcsTag tag = new BluetoothAcsTag(TagType.MIFARE_ULTRALIGHT, new byte[]{}, mBluetoothReader);
+                BluetoothAcsTag tag = new BluetoothAcsTag(TagType.MIFARE_ULTRALIGHT, new byte[]{}, acsBluetoothReader);
 
                 ServiceUtil.mifareClassic(BluetoothBackgroundService.this, tag);
             } catch (Exception e) {
@@ -642,7 +618,7 @@ public class BluetoothBackgroundService extends AbstractService {
 
         } else if (tagType == TagType.DESFIRE_EV1) {
             try {
-                IsoDepWrapper wrapper = new ACSBluetoothIsoDepWrapper(mBluetoothReader);
+                IsoDepWrapper wrapper = new ACSBluetoothIsoDepWrapper(acsBluetoothReader);
 
                 ServiceUtil.desfire(BluetoothBackgroundService.this, wrapper);
             } catch (Exception e) {
@@ -759,12 +735,13 @@ public class BluetoothBackgroundService extends AbstractService {
 
     @Override
     public void onDestroy() {
+        Log.i(TAG, "Service destroyed");
 
         disconnectReader();
 
         stopReceivingBondingStateBroadcasts();
 
-        Log.i(TAG, "Service destroyed");
+        nfcReaderServiceListener.onServiceStopped();
 
         super.onDestroy();
     }
@@ -772,6 +749,7 @@ public class BluetoothBackgroundService extends AbstractService {
     private void startReceivingBondingStateBroadcasts() {
         synchronized (this) {
             if (!receivingBondingStateBroadcasts) {
+                receivingBondingStateBroadcasts = true;
                 Log.d(TAG, "Start receiving bonding state broadcasts");
 
                 final IntentFilter intentFilter = new IntentFilter();
@@ -802,19 +780,18 @@ public class BluetoothBackgroundService extends AbstractService {
      * Create a GATT connection with the reader. And detect the connected reader
      * once service list is available.
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private boolean connectReader() {
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
             Log.w(TAG, "Unable to initialize BluetoothManager.");
-            updateConnectionState(BluetoothReader.STATE_DISCONNECTED);
+            setConnectionState(BluetoothReader.STATE_DISCONNECTED);
             return false;
         }
 
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
         if (bluetoothAdapter == null) {
             Log.w(TAG, "Unable to obtain a BluetoothAdapter.");
-            updateConnectionState(BluetoothReader.STATE_DISCONNECTED);
+            setConnectionState(BluetoothReader.STATE_DISCONNECTED);
             return false;
         }
 
@@ -822,14 +799,13 @@ public class BluetoothBackgroundService extends AbstractService {
          * Connect Device.
          */
         /* Clear old GATT connection. */
-        if (mBluetoothGatt != null) {
+        if (bluetoothGatt != null) {
             Log.i(TAG, "Clear old GATT connection");
-            mBluetoothGatt.disconnect();
-            mBluetoothGatt.close();
-            mBluetoothGatt = null;
+            bluetoothGatt.disconnect();
+            bluetoothGatt.close();
+            bluetoothGatt = null;
         }
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mDeviceAddress == null) {
             Set<BluetoothDevice> mPairedDevices = mBluetoothAdapter.getBondedDevices();
 
@@ -838,7 +814,7 @@ public class BluetoothBackgroundService extends AbstractService {
                 for (BluetoothDevice mDevice : mPairedDevices) {
                     Log.i(TAG, "Connect bonded bluetooth device " + mDevice.getName() + " " + mDevice.getAddress());
 
-                    mDeviceAddress = mDeviceAddress;
+                    mDeviceAddress = mDevice.getAddress();
                     mDeviceName = mDevice.getName();
                 }
             } else {
@@ -859,34 +835,50 @@ public class BluetoothBackgroundService extends AbstractService {
         }
 
         /* Connect to GATT internal_invoker. */
-        updateConnectionState(BluetoothReader.STATE_CONNECTING);
-        mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+        setConnectionState(BluetoothReader.STATE_CONNECTING);
+        bluetoothGatt = device.connectGatt(this, false, acsGattCallback);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            bluetoothGatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+
+            // https://stackoverflow.com/questions/53726759/xamarin-bluetooth-data-receive-delay
+            // https://stackoverflow.com/questions/31742817/delay-between-writecharacteristic-and-callback-oncharacteristicwrite?noredirect=1&lq=1
+            // https://punchthrough.com/maximizing-ble-throughput-part-2-use-larger-att-mtu-2/
+
+            // When using larger ATT_MTU, the throughput is increased about 0-15% as we eliminate transferring ATT layer overhead bytes and replacing them with data.
+            // Using ATT_MTU sizes that are multiples of 23 bytes or (Link Layer Data Field – L2CAP Header Size(4 bytes)) is ideal.
+
+            bluetoothGatt.requestMtu(138);
+        }
         return true;
     }
 
     /* Disconnects an established connection. */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void disconnectReader() {
-        if (mBluetoothGatt == null) {
-            updateConnectionState(BluetoothReader.STATE_DISCONNECTED);
-            return;
+        if (bluetoothGatt != null) {
+            bluetoothGatt.disconnect();
+            setConnectionState(BluetoothReader.STATE_DISCONNECTING);
+        } else {
+            setConnectionState(BluetoothReader.STATE_DISCONNECTED);
         }
-        updateConnectionState(BluetoothReader.STATE_DISCONNECTING);
-        mBluetoothGatt.disconnect();
     }
 
     /* Update the display of Connection status string. */
-    private void updateConnectionState(final int connectState) {
-        mConnectState = connectState;
+    private void setConnectionState(final int connectState) {
+        if(connectState != mConnectState) {
+            mConnectState = connectState;
 
-        if (connectState == BluetoothReader.STATE_CONNECTING) {
-            Log.d(TAG, "Connecting");
-        } else if (connectState == BluetoothReader.STATE_CONNECTED) {
-            Log.d(TAG, "Connected");
-        } else if (connectState == BluetoothReader.STATE_DISCONNECTING) {
-            Log.d(TAG, "Disconnecting");
-        } else {
-            Log.d(TAG, "Disconnected");
+            if (connectState == BluetoothReader.STATE_CONNECTING) {
+                Log.d(TAG, "Connecting");
+            } else if (connectState == BluetoothReader.STATE_CONNECTED) {
+                Log.d(TAG, "Connected");
+            } else if (connectState == BluetoothReader.STATE_DISCONNECTING) {
+                Log.d(TAG, "Disconnecting");
+            } else if (connectState == BluetoothReader.STATE_DISCONNECTED) {
+                Log.d(TAG, "Disconnected");
+            } else {
+                Log.d(TAG, "Unknown connect state " + connectState);
+            }
         }
     }
 

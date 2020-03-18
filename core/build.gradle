@@ -7,7 +7,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 24
         targetSdkVersion 28
     }
 
@@ -22,7 +22,8 @@ android {
 dependencies {
     api project(':tools')
     compileOnly files('../libs/acssmc-1.1.5.jar')
-    compileOnly files('../libs/acsbt-1.0.1.aar')
+    //compileOnly files('../libs/acsbt-1.0.1.aar')
+    compileOnly files('../libs/acsbt-1.0.1.ext.jar')
 
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.12'

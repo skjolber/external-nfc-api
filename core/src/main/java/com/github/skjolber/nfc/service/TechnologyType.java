@@ -84,4 +84,43 @@ public class TechnologyType {
         return atr[12];
     }
 
+    public static byte[] getHistoricalBytes(byte[] atr) {
+        // see https://android.googlesource.com/platform/libcore/+/0ebbfbdbca73d6261a77183f68e1f3e56c339f9f/ojluni/src/main/java/javax/smartcardio/ATR.java
+        if (atr.length < 2) {
+            return new byte[]{};
+        }
+        if ((atr[0] != 0x3b) && (atr[0] != 0x3f)) {
+            return new byte[]{};
+        }
+        int t0 = (atr[1] & 0xf0) >> 4;
+        int n = atr[1] & 0xf;
+        int i = 2;
+        while ((t0 != 0) && (i < atr.length)) {
+            if ((t0 & 1) != 0) {
+                i++;
+            }
+            if ((t0 & 2) != 0) {
+                i++;
+            }
+            if ((t0 & 4) != 0) {
+                i++;
+            }
+            if ((t0 & 8) != 0) {
+                if (i >= atr.length) {
+                    return new byte[]{};
+                }
+                t0 = (atr[i++] & 0xf0) >> 4;
+            } else {
+                t0 = 0;
+            }
+        }
+        int k = i + n;
+        if ((k == atr.length) || (k == atr.length - 1)) {
+            byte[] b = new byte[n];
+            System.arraycopy(atr, i, b, 0, n);
+            return b;
+        }
+        return new byte[]{};
+    }
+
 }

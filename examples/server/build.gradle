@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.github.skjolber.nfc.external"
-        minSdkVersion 19
+        minSdkVersion 24
         targetSdkVersion 28
     }
     buildTypes {
@@ -21,7 +21,8 @@ android {
 
 dependencies {
     implementation files('../../libs/acssmc-1.1.5.jar')
-    implementation files('../../libs/acsbt-1.0.1.aar')
+    implementation files('../../libs/acsbt-1.0.1.ext.jar')
+    implementation 'com.google.code.gson:gson:2.8.6'
     api project(':api')
     api project(':core')
     api project(':tools')

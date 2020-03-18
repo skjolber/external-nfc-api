@@ -1,4 +1,4 @@
-package com.github.skjolber.nfc.external.client;
+package com.github.skjolber.nfc.external.hceclient;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -14,16 +14,13 @@ import android.util.Log;
  * 
  * Preference activity
  * 
- * @author thomas
- *
  */
 
 public class PreferencesActivity extends Activity implements OnSharedPreferenceChangeListener {
 
 	private static final String TAG = PreferencesActivity.class.getName();
-
+	
 	public static final String PREFERENCE_HOST_CARD_EMULATION_PING_PONG = "preference_host_card_emulation_ping_pong";
-	public static final String PREFERENCE_HOST_CARD_EMULATION_AUTO_SELECT_ISO_APPLICATION = "preference_host_card_emulation_auto_select_iso_application";
 	public static final String PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID = "preference_host_card_emulation_iso_application_id";
 	
 	@Override

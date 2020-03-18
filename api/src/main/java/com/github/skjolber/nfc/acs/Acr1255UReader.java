@@ -597,4 +597,15 @@ public class Acr1255UReader extends AcrReader {
         return readBoolean(response);
     }
 
+    public int getBatteryLevel() {
+        byte[] response;
+        try {
+            response = readerControl.getBatteryLevel();
+        } catch (RemoteException e) {
+            throw new AcrReaderException(e);
+        }
+
+        return readInteger(response);
+    }
+
 }

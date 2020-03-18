@@ -386,6 +386,8 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
         Log.d(TAG, "Raw control request: " + Utils.toHexString(request));
         try {
 
+            long time = System.currentTimeMillis();
+
             this.in = null;
             this.latch = new CountDownLatch(1);
 
@@ -400,7 +402,7 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
                 throw new NfcException("Problem waiting for response");
             }
 
-            Log.d(TAG, "Raw control response: " + Utils.toHexString(in));
+            Log.d(TAG, "Raw control response: " + Utils.toHexString(in) + " in " + (System.currentTimeMillis() - time) + " millis");
 
             return in;
         } catch (Exception e) {
@@ -468,15 +470,16 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
     public boolean setAutomaticPolling(int slot, boolean on) throws ReaderException {
         byte b = (byte) (on ? 0x01 : 0x00);
 
-        CommandAPDU command = new CommandAPDU(0xE0, 0x00, 0x00, 0x40, new byte[]{b});
+        byte[] command = new byte[]{(byte) 0xE0, 0x00, 0x00, 0x40, b};
 
-        CommandAPDU response = control(slot, Reader.IOCTL_CCID_ESCAPE, command);
+        byte[] response = control(slot, Reader.IOCTL_CCID_ESCAPE, command);
 
-        if (!isSuccess(response)) {
-            throw new IllegalArgumentException("Card responded with error code");
+        if (!isSuccessForP2(response, 0x40)) {
+            throw new IllegalArgumentException("Card responded with error code " + Utils.toHexString(response));
         }
 
-        boolean result = response.getData()[0] == 0x01;
+        // e1 00 00 40 01
+        boolean result = response[4] == 0x01;
 
         if (result != on) {
             Log.w(TAG, "Unable to properly enable/disable automatic polling: Expected " + on + " got " + result);
@@ -487,5 +490,24 @@ public class ACR1255BluetoothCommands implements ACR1255Commands, BluetoothReade
 
             return Boolean.TRUE;
         }
+    }
+
+    public int getBatteryLevel(int slot) throws ReaderException {
+        // This is only applicable to firmware version 2.03.xx and above, and when the reader is in Bluetooth mode.
+        byte[] command = new byte[]{(byte) 0xE0, 0x00, 0x00, 0x52, 0x00};
+
+        CommandAPDU response = control(slot, Reader.IOCTL_CCID_ESCAPE, new CommandAPDU(command));
+
+        if (!isSuccess(response)) {
+            throw new IllegalArgumentException();
+        }
+
+        byte[] data = response.getData();
+        if(data.length > 0) {
+            return data[0] & 0xFF;
+        }
+        Log.d(TAG, "Unable to read battery level");
+
+        return -1;
     }
 }

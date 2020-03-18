@@ -65,4 +65,7 @@ public interface ACR1255Commands {
     byte[] transmit(int slotNum, byte[] command) throws ReaderException;
 
     boolean setAutomaticPolling(int slotNum, boolean b) throws ReaderException;
+
+    int getBatteryLevel(int slot) throws ReaderException;
+
 }

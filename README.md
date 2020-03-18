@@ -1,5 +1,3 @@
-
-
 # External NFC Service (native style) for Android
 Library for interaction with ACS NFC readers over USB; external NFC support Android devices. 
 
@@ -7,11 +5,11 @@ Features:
  - External NFC reader management and interaction
  - Parallell use of external and/or internal NFC (i.e. in the same activity, both enabled at the same time)
  - Support for both tags and Android devices (Host Card Emulation), simultaneously
- - Use of forked `android.nfc` classes ([Ndef], [MifareUltralight], [IsoDep], etc). 
+ - Use of forked `android.nfc` classes ([Ndef], [MifareUltralight], [IsoDep], etc) for Android 10+ support.
 
 As this project very much simplifies implementation for use-cases requiring external NFC readers, it saves a lot of development time (2-8 weeks depending on use-case and previous knowledge).
 
-Bugs, feature suggestions and help requests can be filed with the [issue-tracker].
+Bugs, feature suggestions and help requests can be filed with the [issue-tracker]. __DO NOT send me emails unless you're prepared to pay for my time.__
 
 ## License
 [Apache 2.0]
@@ -22,13 +20,13 @@ This repository contains source code for
  * [A server library](externalNFCCore); services for interaction with the readers & tags
  * [A client library](externalNFCAPI) (i.e. API), receiving NFC-related intents
  * [An NFC library](externalNFCTools) - Android adaptation of NFC Tools
- * Demo apps
-    * [Basic server app](externalNFCService)
-    * [Basic client app](externalNFCClient)
+ * Demonstration apps
+    * [Basic server app](externalNFCService) for activation of the USB and/or bluetooth NFC background service. The rest of the examples interacts with the services exported by this app.
+    * [Basic client app](externalNFCClient).
     * [NXP API client](externalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/). Deprecated for version 2.0.0 of the library; due to Android security for hidden classes in Android 9+.
     * [Web Kiosk client](externalNFCWebKiosk) with javascript bindings
 
-There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the [Basic client app](externalNFCClient).
+There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the [Basic client app](externalNFCClient) as well as Android-to-Android communication.
 
 # External NFC reader API
 The API defines 
@@ -36,7 +34,7 @@ The API defines
    * service start / stop and status
    * reader open / close and status
    * tag connect / disconnect
- * 'extras' objects for interaction with readers
+ * `extras` objects for interaction with readers
    * disable beeps
    * display text
    * configure NFC tech types (PICC)
@@ -77,16 +75,13 @@ The readers can for the __most part can be enabled for all tag types at the same
 Please note:
  - Some readers only support a subset of the above tags
  - For ACR 122U the Mifare Classic does not work well.
- - No built-in NDEF support for Desfire EV1 cards (let me know it this is interesting to you).
+ - No built-in NDEF support for Desfire EV1 cards
 
 Configuration options
  - assume all NTAG21x Mifare Ultralight targets. This improves read speed, particullary for the tags which have legacy equivalents, like NTAG 210 and 213
  - read only tag UIDs, ignore other tag data. This improves read speed.
  - read NDEF data automatically
  - read UID for Desfire EV1 targets automatically 
-
-# Troubleshooting
-Please report any issues to thomas.skjolberg@gmail.com.
 
 ### Reader connection
 Note that not all Android devices actually have an USB hub, in which case no USB devices work.
@@ -116,25 +111,8 @@ This project contains adapted code from
  * NFC Tools for Java
  * SMARTRAC SDK for Android NFC NTAG
 
-# Support
-If you need professional, cost-efficient assistance with an NFC project, get in touch. I also do
-
- * Desfire EV1 tech (with encryption) - [example app](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.skjolberg.mifare.desfiretool)
- * WebView-based apps, either visiting ULRs and/or interaction over Javascript.
- * NFC-initiated [wifi connectivity](https://play.google.com/store/apps/details?id=w.i)
- * More advanced Host Card Emulation (HCE) for Android
- * NFC development tools (some are a bit outdatet now)
-   * [NFC Developer](https://play.google.com/store/apps/details?id=com.antares.nfc)
-   * [NDEF Tools for Android](https://play.google.com/store/apps/details?id=org.ndeftools.boilerplate&hl=no)
-   * [Mifare Classic refactor](https://play.google.com/store/apps/details?id=com.github.skjolber.nfc.mifareclassic)
- * NFC supplimented with QR codes
- * Smartcard-related workflows and integrations over [ESB](http://camel.apache.org/) or [BPM](https://camunda.com/) modelling
- * Custom binary formats for NDEF or raw tag data - fit your data for __minimal read/write time and best form factor selection__
- * [Apache Cordova] plugins for Android
-
-Feel free to connect with me on [LinkedIn](http://lnkd.in/r7PWDz), see also my [Github page](https://skjolber.github.io).
-
 # History
+ - 2.1.0: Improve bluetooth handling, various bug fixes and a few improvements.
  - 2.0.0: Moved to wrapped `android.nfc` NFC android classes + various refactorings.
  - 1.0.0: Library using native NFC android classes
 

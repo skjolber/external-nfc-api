@@ -20,6 +20,7 @@
 package com.github.skjolber.nfc.external.client;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.ndeftools.Message;
@@ -75,6 +76,7 @@ import com.github.skjolber.nfc.acs.AcrReader;
 import com.github.skjolber.nfc.acs.AcrReaderException;
 import com.github.skjolber.nfc.desfire.DesfireReader;
 import com.github.skjolber.nfc.desfire.VersionInfo;
+import com.github.skjolber.nfc.service.IsoDepDeviceHint;
 import com.github.skjolber.nfc.util.CommandAPDU;
 import com.github.skjolber.nfc.util.ResponseAPDU;
 import com.github.skjolber.nfc.util.activity.NfcExternalDetectorActivity;
@@ -336,6 +338,22 @@ public class MainActivity extends NfcExternalDetectorActivity {
 					} else if (tech.equals(android.nfc.tech.IsoDep.class.getName())) {
 						com.github.skjolber.android.nfc.tech.IsoDep isoDep = IsoDep.get(tag);
 
+						Log.d(TAG, "Historical bytes were '" + toHexString(isoDep.getHistoricalBytes()) + "'");
+						if(isoDep.getHiLayerResponse() != null) {
+							Log.d(TAG, "HiLayer bytes were '" + toHexString(isoDep.getHiLayerResponse()) + "'");
+						}
+						Log.d(TAG, "Technologies were " + Arrays.asList(tag.getTechList()) + ", id was " + toHexString(tag.getId()));
+
+						IsoDepDeviceHint hint = new IsoDepDeviceHint(isoDep);
+
+						if(hint.isTag()) {
+							Log.d(TAG, "Device hints indicate a Desfire EV1 card");
+						} else if(hint.isHostCardEmulation()) {
+							Log.d(TAG, "Device hints indicate a Host Card Emulation device");
+						} else {
+							Log.d(TAG, "Device hints unable to indicate a type");
+						}
+
 						boolean hostCardEmulation = intent.getBooleanExtra(NfcTag.EXTRA_HOST_CARD_EMULATION, false);
 
 						if(hostCardEmulation) {
@@ -376,9 +394,16 @@ public class MainActivity extends NfcExternalDetectorActivity {
 							    		
 							    		// issue command which now should be routed to the same HCE client
 							    		// pretend to select application of desfire card
-							    		
-							    		DesfireReader reader = new DesfireReader(isoDep);
-							    		reader.selectApplication(0x00112233);
+
+										boolean pingPong = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_PING_PONG, true);
+
+										if (pingPong) {
+											Log.d(TAG, "Invoker will attempt to play ping-pong");
+											PingPong.playPingPong(isoDep);
+										} else {
+											DesfireReader reader = new DesfireReader(isoDep);
+											reader.selectApplication(0x00112233);
+										}
 
 							    		Log.d(TAG, "Selected application using desfire select application command");
 						    		} else if(response.getSW1() == 0x82 && response.getSW2() == 0x6A) {
@@ -457,14 +482,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 		} else if (id == R.id.action_ndef_write) {
 			ndefWrite();
 			return true;
-		} else if(id == R.id.action_start_service) {
-	        Intent intent = new Intent();
-			intent.setClassName("com.github.skjolber.nfc.external", "com.github.skjolber.nfc.service.BackgroundUsbService");
-	        startService(intent);
-		} else if(id == R.id.action_stop_service) {
-	        Intent intent = new Intent();
-			intent.setClassName("com.github.skjolber.nfc.external", "com.github.skjolber.nfc.service.BackgroundUsbService");
-	        stopService(intent);
 		} else if(id == R.id.action_preferences) {
 			Intent intent = new Intent(this, PreferencesActivity.class);
 			startActivity(intent);
@@ -526,10 +543,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 				item.setVisible(ndefFormatable != null);
 			} else if(item.getItemId() == R.id.action_ndef_write) {
 				item.setVisible(ndef != null);
-			} else if(item.getItemId() == R.id.action_start_service) {
-				item.setVisible(service == null || !service);
-			} else if(item.getItemId() == R.id.action_stop_service) {
-				item.setVisible(service != null && service);
 			}
 		}
 		
@@ -717,12 +730,16 @@ public class MainActivity extends NfcExternalDetectorActivity {
                     );
                     acr1252UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
                 } else if (reader instanceof Acr1255UReader) {
-                    Acr1255UReader acr1255UReader = (Acr1255UReader) reader;
-                    acr1255UReader.setPICC(
-                            AcrPICC.POLL_ISO14443_TYPE_B,
-                            AcrPICC.POLL_ISO14443_TYPE_A
-                    );
-                    acr1255UReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ACTIVATE_PICC_WHEN_DETECTED, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4);
+
+
+					Acr1255UReader bluetoothReader = (Acr1255UReader) reader;
+
+					Log.d(TAG, "Battery level is " + bluetoothReader.getBatteryLevel() + "%");
+
+					bluetoothReader.setPICC(AcrPICC.POLL_ISO14443_TYPE_A, AcrPICC.POLL_ISO14443_TYPE_B);
+
+					bluetoothReader.setAutomaticPICCPolling(AcrAutomaticPICCPolling.AUTO_PICC_POLLING, AcrAutomaticPICCPolling.ENFORCE_ISO14443A_PART_4, AcrAutomaticPICCPolling.PICC_POLLING_INTERVAL_1000);
+					bluetoothReader.setAutomaticPolling(true);
 
                     // XXX this seems to put the reader in a sort of bricked state
                     //acr1255UReader.setSleepModeOption(-1); // no sleep
@@ -875,4 +892,6 @@ public class MainActivity extends NfcExternalDetectorActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
+
+
 }
