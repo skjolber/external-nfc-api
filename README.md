@@ -17,16 +17,16 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 # Usage
 This repository contains source code for 
 
- * [A server library](externalNFCCore); services for interaction with the readers & tags
- * [A client library](externalNFCAPI) (i.e. API), receiving NFC-related intents
- * [An NFC library](externalNFCTools) - Android adaptation of NFC Tools
+ * [A server library](tree/master/examples/core); services for interaction with the readers & tags
+ * [A client library](tree/master(examples/api) (i.e. API), receiving NFC-related intents
+ * [An NFC library](tools) - Android adaptation of NFC Tools
  * Demonstration apps
-    * [Basic server app](externalNFCService) for activation of the USB and/or bluetooth NFC background service. The rest of the examples interacts with the services exported by this app.
-    * [Basic client app](externalNFCClient).
-    * [NXP API client](externalNFCNxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/). Deprecated for version 2.0.0 of the library; due to Android security for hidden classes in Android 9+.
-    * [Web Kiosk client](externalNFCWebKiosk) with javascript bindings
+    * [Basic server app](tree/master/examples/server) for activation of the USB and/or bluetooth NFC background service. The rest of the examples interacts with the services exported by this app.
+    * [Basic client app](tree/master/examples/client).
+    * [NXP API client](tree/master/examples/nxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/). Deprecated for version 2.0.0 of the library; due to Android security for hidden classes in Android 9+.
+    * [Web Kiosk client](tree/master/examples/webKiosk) with javascript bindings
 
-There is also a [Host Card Emulation client app](externalNFCHostCardEmulationClient) for use with the [Basic client app](externalNFCClient) as well as Android-to-Android communication.
+There is also a [Host Card Emulation client app](tree/master/examples/hostCardEmulationClient) for use with the [Basic client app](tree/master/examples/client) as well as Android-to-Android communication.
 
 # External NFC reader API
 The API defines 
@@ -43,7 +43,7 @@ The API defines
    * and more.. 
  * abstract activities for interaction with built-in and external NFC (simultaneously)
   * these currently depend on the [NDEF Tools for Android](https://github.com/skjolber/ndef-tools-for-android) project.
- * Programmatically start and stop the service (see methods startService() and stopService() in the [NfcExternalDetectorActivity](externalNFCAPI/src/main/java/com/skjolberg/nfc/util/activity/NfcExternalDetectorActivity.java) class in for an example).
+ * Programmatically start and stop the service (see methods startService() and stopService() in the [NfcExternalDetectorActivity](/blob/master/api/src/main/java/com/github/skjolber/nfc/util/activity/NfcExternalDetectorActivity.java) class in for an example).
 
 # Supported readers
 Currently the ACS readers
