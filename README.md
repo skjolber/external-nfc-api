@@ -17,8 +17,8 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 # Usage
 This repository contains source code for 
 
- * [A server library](tree/master/examples/core); services for interaction with the readers & tags
- * [A client library](tree/master(examples/api) (i.e. API), receiving NFC-related intents
+ * [A server library](tree/master/core); services for interaction with the readers & tags
+ * [A client library](tree/master/api) (i.e. API), receiving NFC-related intents
  * [An NFC library](tools) - Android adaptation of NFC Tools
  * Demonstration apps
     * [Basic server app](tree/master/examples/server) for activation of the USB and/or bluetooth NFC background service. The rest of the examples interacts with the services exported by this app.
