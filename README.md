@@ -17,7 +17,7 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 # Usage
 This repository contains source code for 
 
- * [A server library](tree/master/core); services for interaction with the readers & tags
+ * [A server library](core); services for interaction with the readers & tags
  * [A client library](tree/master/api) (i.e. API), receiving NFC-related intents
  * [An NFC library](tools) - Android adaptation of NFC Tools
  * Demonstration apps
