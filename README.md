@@ -18,15 +18,15 @@ Bugs, feature suggestions and help requests can be filed with the [issue-tracker
 This repository contains source code for 
 
  * [A server library](core); services for interaction with the readers & tags
- * [A client library](tree/master/api) (i.e. API), receiving NFC-related intents
+ * [A client library](api) (i.e. API), receiving NFC-related intents
  * [An NFC library](tools) - Android adaptation of NFC Tools
  * Demonstration apps
-    * [Basic server app](tree/master/examples/server) for activation of the USB and/or bluetooth NFC background service. The rest of the examples interacts with the services exported by this app.
-    * [Basic client app](tree/master/examples/client).
-    * [NXP API client](tree/master/examples/nxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/). Deprecated for version 2.0.0 of the library; due to Android security for hidden classes in Android 9+.
-    * [Web Kiosk client](tree/master/examples/webKiosk) with javascript bindings
+    * [Basic server app](examples/server) for activation of the USB and/or bluetooth NFC background service. The rest of the examples interacts with the services exported by this app.
+    * [Basic client app](examples/client).
+    * [NXP API client](examples/nxpClient) for [MIFARE SDK](http://www.mifare.net/en/products/mifare-sdk/). Deprecated for version 2.0.0 of the library; due to Android security for hidden classes in Android 9+.
+    * [Web Kiosk client](examples/webKiosk) with javascript bindings
 
-There is also a [Host Card Emulation client app](tree/master/examples/hostCardEmulationClient) for use with the [Basic client app](tree/master/examples/client) as well as Android-to-Android communication.
+There is also a [Host Card Emulation client app](examples/hostCardEmulationClient) for use with the [Basic client app](examples/client) as well as Android-to-Android communication.
 
 # External NFC reader API
 The API defines 
