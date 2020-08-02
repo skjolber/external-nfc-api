@@ -682,6 +682,7 @@ public class BluetoothBackgroundService extends AbstractService {
         return "The card status is unknown.";
     }
 
+
     /* Get the Error string. */
     private static String getErrorString(int errorCode) {
         if (errorCode == BluetoothReader.ERROR_SUCCESS) {
@@ -732,6 +733,7 @@ public class BluetoothBackgroundService extends AbstractService {
         }
         return getErrorString(errorCode);
     }
+
 
     @Override
     public void onDestroy() {

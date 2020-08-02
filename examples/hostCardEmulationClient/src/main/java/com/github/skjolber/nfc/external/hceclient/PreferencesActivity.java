@@ -22,7 +22,8 @@ public class PreferencesActivity extends Activity implements OnSharedPreferenceC
 	
 	public static final String PREFERENCE_HOST_CARD_EMULATION_PING_PONG = "preference_host_card_emulation_ping_pong";
 	public static final String PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID = "preference_host_card_emulation_iso_application_id";
-	
+	public static final String PREFERENCE_HOST_CARD_EMULATION_PREFERENCE = "preference_host_card_emulation_preference";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

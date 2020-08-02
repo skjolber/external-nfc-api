@@ -2,14 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/preferenceCategoryHostCardEmulation" >
-
+        <!-- no default value for application id; autodetect from xml resource -->
         <EditTextPreference
-                android:key="preference_host_card_emulation_iso_application_id"
-                android:title="@string/preferenceHostCardEmulationApplicationIdTitle"
-                android:summary="@string/preferenceHostCardEmulationApplicationIdSummary"
-                android:dialogTitle="@string/preferenceHostCardEmulationApplicationIdTitle"
-                android:defaultValue="F00A2B4C6D8E"
-                 />
+            android:dialogTitle="@string/preferenceHostCardEmulationApplicationIdTitle"
+            android:key="preference_host_card_emulation_iso_application_id"
+            android:summary="@string/preferenceHostCardEmulationApplicationIdSummary"
+            android:title="@string/preferenceHostCardEmulationApplicationIdTitle" />
 
         <CheckBoxPreference
             android:key="preference_host_card_emulation_ping_pong"
@@ -17,6 +15,21 @@
             android:summary="@string/preferenceHostCardEmulationApplicationPingPongSummary"
             android:defaultValue="true"
             />
+
+        <CheckBoxPreference
+            android:key="preference_host_card_emulation_preference_echoHostAdpuService"
+            android:title="@string/preferenceHostCardEmulationApplicationEchoPreferenceTitle"
+            android:summary="@string/preferenceHostCardEmulationApplicationEchoPreferenceSummary"
+            android:defaultValue="true"
+            />
+
+        <CheckBoxPreference
+            android:key="preference_host_card_emulation_preference_helloHostAdpuService"
+            android:title="@string/preferenceHostCardEmulationApplicationHelloPreferenceTitle"
+            android:summary="@string/preferenceHostCardEmulationApplicationHelloPreferenceSummary"
+            android:defaultValue="true"
+            />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

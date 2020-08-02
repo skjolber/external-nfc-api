@@ -135,7 +135,16 @@ public class HceInvokerActivity extends DialogActivity implements NfcAdapter.Rea
 						// attempt to select demo HCE application using iso adpu
 					String isoApplicationString = prefs.getString(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_ISO_APPLICATION_ID, null);
 					// clean whitespace
-					isoApplicationString = isoApplicationString.replaceAll("\\s","");
+					if(isoApplicationString != null) {
+						isoApplicationString = isoApplicationString.replaceAll("\\s", "");
+						if(isoApplicationString.isEmpty()) {
+							isoApplicationString = null;
+						}
+					}
+
+					if(isoApplicationString == null) {
+						isoApplicationString = Utils.parseAid(this, R.xml.echoservice);
+					}
 
 					byte[] key = hexStringToByteArray(isoApplicationString);
 

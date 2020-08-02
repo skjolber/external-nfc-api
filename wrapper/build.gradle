@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 29
     }
 
     buildTypes {
@@ -17,6 +17,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+
+
+dependencies {
+
+    api ("com.github.skjolber.android.nfc:wrapper:1.0.0@aar")
+
 }
 
 

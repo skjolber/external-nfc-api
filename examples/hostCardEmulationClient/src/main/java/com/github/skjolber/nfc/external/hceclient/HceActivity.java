@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
@@ -20,6 +21,9 @@ import android.widget.TextView;
 
 import com.github.skjolber.nfc.util.Broadcast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * Activity for this app to echo the HCE service using internal NFC.
@@ -27,11 +31,20 @@ import com.github.skjolber.nfc.util.Broadcast;
  */
 
 
-public class EchoHostAdpuServiceActivity extends DialogActivity {
+public class HceActivity extends DialogActivity {
 
-	private static String TAG = EchoHostAdpuServiceActivity.class.getName();
+	private static String TAG = HceActivity.class.getName();
+
+	private static final Map<Class, Integer> services;
+
+	static {
+		services = new HashMap<>();
+		services.put(EchoHostApduService.class, R.xml.echoservice);
+		services.put(HelloHostApduService.class, R.xml.helloservice);
+	}
 
 	private boolean receiving = false;
+	private CardEmulation cardEmulation;
 
 	private final BroadcastReceiver hostCardEmulationBroadcastReceiver = new BroadcastReceiver() {
 
@@ -72,14 +85,17 @@ public class EchoHostAdpuServiceActivity extends DialogActivity {
 
 		setContentView(R.layout.activity_main);
 
-		CardEmulation cardEmulation = CardEmulation.getInstance(NfcAdapter.getDefaultAdapter(this));
+		cardEmulation = CardEmulation.getInstance(NfcAdapter.getDefaultAdapter(this));
 
-		boolean defaultService = cardEmulation.isDefaultServiceForAid(new ComponentName(this, EchoHostApduService.class), EchoHostApduService.AID);
+		for (Map.Entry<Class, Integer> entry : services.entrySet()) {
+			String aid = Utils.parseAid(this, entry.getValue());
 
-		if (!defaultService) {
-			Log.w(TAG, "Expected default service for AID " + EchoHostApduService.AID);
+			if (!cardEmulation.isDefaultServiceForAid(new ComponentName(this, entry.getKey()), aid)) {
+				Log.d(TAG, "This application is NOT the preferred service for aid " + aid);
+			} else {
+				Log.d(TAG, "This application is the preferred service for aid " + aid);
+			}
 		}
-		Log.d(TAG, "Service AID is " + EchoHostApduService.AID);
 
 		enableBroadcast();
 
@@ -112,6 +128,36 @@ public class EchoHostAdpuServiceActivity extends DialogActivity {
 		show(dialog);
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		// note: this will only work for a single HCE service
+		for (Map.Entry<Class, Integer> entry : services.entrySet()) {
+			boolean preferred = prefs.getBoolean(PreferencesActivity.PREFERENCE_HOST_CARD_EMULATION_PREFERENCE + "_" + entry.getKey().getSimpleName(), true);
+
+			if(preferred) {
+				if (cardEmulation.setPreferredService(this, new ComponentName(this, entry.getKey()))) {
+					Log.d(TAG, "Set " + entry.getKey().getName() + " to be the preferred HCE service for this activity");
+				} else {
+					Log.w(TAG, "Unable to set " + entry.getKey().getName() + " to be the preferred HCE service for this activity");
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if(cardEmulation.unsetPreferredService(this)) {
+			Log.d(TAG, "Unset preferred service for " + getClass().getName());
+		} else {
+			Log.d(TAG, "Unable to unset preferred service for " + getClass().getName());
+		}
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

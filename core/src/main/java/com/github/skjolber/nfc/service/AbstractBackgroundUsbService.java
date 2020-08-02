@@ -59,10 +59,6 @@ public abstract class AbstractBackgroundUsbService extends AbstractService {
 
     private static final String TAG = AbstractBackgroundUsbService.class.getName();
 
-    private static final String DESCRIPTOR = "android.nfc.INfcTag";
-    private static final String CLASS = "android.nfc.INfcTag";
-
-
     private static class Scanner extends Handler {
 
         private static final long USB_RESCAN_INTERVAL_STANDARD = 1000;

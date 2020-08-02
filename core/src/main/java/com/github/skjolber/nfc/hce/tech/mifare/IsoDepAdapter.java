@@ -12,14 +12,14 @@ import com.github.skjolber.nfc.service.IsoDepWrapper;
 
 import org.nfctools.NfcException;
 
-public class IsdoDepAdapter extends DefaultTechnology implements CommandTechnology {
+public class IsoDepAdapter extends DefaultTechnology implements CommandTechnology {
 
-    protected static final String TAG = IsdoDepAdapter.class.getName();
+    protected static final String TAG = IsoDepAdapter.class.getName();
 
     private DESFireAdapter adapter;
     private boolean hostCardEmulation;
 
-    public IsdoDepAdapter(int slotNumber, IsoDepWrapper isoDep, boolean hostCardEmulation) {
+    public IsoDepAdapter(int slotNumber, IsoDepWrapper isoDep, boolean hostCardEmulation) {
         super(TagTechnology.ISO_DEP, slotNumber);
         this.adapter = new DESFireAdapter(isoDep, false);
         this.hostCardEmulation = hostCardEmulation;

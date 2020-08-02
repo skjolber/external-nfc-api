@@ -1,6 +1,6 @@
 # wrapper
 
-> NOTE: This submodule will be retired in favour of [android-nfc-wrapper](https://github.com/skjolber/android-nfc-wrapper).
+> NOTE: This submodule is retired in favour of [android-nfc-wrapper](https://github.com/skjolber/android-nfc-wrapper).
 
 Wrapper for NFC types from the Android source code.
 
