@@ -1,8 +1,5 @@
 package com.github.skjolber.nfc.external.hceclient;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.cardemulation.HostApduService;
@@ -13,20 +10,24 @@ import android.util.Log;
 import com.github.skjolber.nfc.util.Broadcast;
 import com.github.skjolber.nfc.util.CommandAPDU;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 /**
  *
- *  Echo HCE service.
+ * Hello HCE service.
  *
  */
 
-public class EchoHostApduService extends HostApduService {
+public class HelloHostApduService extends HostApduService {
 
 	public final static int ISO_SELECT_APPLICATION = 0xA4;//
 	public final static int SELECT_APPLICATION = 0x5A;//
     public static final byte OPERATION_OK = (byte)0x00;
     public static final byte APPL_INTEGRITY_ERROR = (byte)0xA1;
     
-	private static String TAG = EchoHostApduService.class.getName();
+	private static String TAG = HelloHostApduService.class.getName();
 	
 	protected Broadcast broadcast = new Broadcast(this);
 	
@@ -49,13 +50,13 @@ public class EchoHostApduService extends HostApduService {
 			}
 		}
 
-		byte[] response = response(OPERATION_OK, request);
+		byte[] response = response(OPERATION_OK, String.format("Hello operation %02X", ins).getBytes(StandardCharsets.UTF_8));
 		if(ins == ISO_SELECT_APPLICATION || ins == SELECT_APPLICATION) {
 			String application = toHexString(command.getData(), 1, 3);
 
 			Log.i(TAG, "Selected Application " + application);
 
-			response = response(OPERATION_OK, new byte[]{0x00, 0x01, 0x02});
+			response = response(OPERATION_OK, new byte[]{0x03, 0x04, 0x05});
 		} else {
 			Log.i(TAG, "Received unknown command " + String.format("0x%08X", ins));
 

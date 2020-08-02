@@ -2,7 +2,8 @@
 <resources>
 
     <string name="appName">External NFC HCE Client</string>
-    <string name="aidDescription">External NFC AID</string>
+    <string name="echoServiceDescription">Echo service</string>
+    <string name="helloServiceDescription">Hello service</string>
     <string name="serviceDescription">HCE client</string>
 
     <string name="preferences">Preferences</string>
@@ -27,6 +28,10 @@
     <string name="invokerDialogTitle">HCE Invoker:</string>
     <string name="invokerDialogMessage">This simple activity will attempt to trigger the HCE service on another device (with the same app as this) for Android-to-Android two-way communications. So upon connection it will send an AID so that the correct application is invoked.</string>
     <string name="invokerDialogClose">Close</string>
+    <string name="preferenceHostCardEmulationApplicationHelloPreferenceTitle">Hello HCE service preference</string>
+    <string name="preferenceHostCardEmulationApplicationHelloPreferenceSummary">Use the CardEmulation.setPreference(..) when activity is active</string>
+    <string name="preferenceHostCardEmulationApplicationEchoPreferenceSummary">Echo HCE service preference</string>
+    <string name="preferenceHostCardEmulationApplicationEchoPreferenceTitle">Use the CardEmulation.setPreference(..) when activity is active</string>
 
 
 </resources>

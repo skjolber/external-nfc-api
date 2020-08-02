@@ -14,13 +14,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.acs.smartcard.ReaderException;
-import com.github.skjolber.nfc.command.ACRCommands;
 import com.github.skjolber.nfc.hce.INFcTagBinder;
 import com.github.skjolber.nfc.hce.resolve.TagProxyStore;
 import com.github.skjolber.nfc.hce.tech.TagTechnology;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareClassicTagFactory;
-import com.github.skjolber.nfc.hce.tech.mifare.IsdoDepAdapter;
+import com.github.skjolber.nfc.hce.tech.mifare.IsoDepAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareDesfireTagFactory;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareUltralightAdapter;
 import com.github.skjolber.nfc.hce.tech.mifare.MifareUltralightTagFactory;
@@ -62,8 +61,6 @@ import org.nfctools.spi.acs.AcrMfUlReaderWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import custom.java.CommandAPDU;
 
 
 public abstract class AbstractService extends Service {
@@ -189,7 +186,7 @@ public abstract class AbstractService extends Service {
         try {
             List<TagTechnology> technologies = new ArrayList<TagTechnology>();
             technologies.add(new NfcAAdapter(slotNumber, wrapper, true));
-            technologies.add(new IsdoDepAdapter(slotNumber, wrapper, true));
+            technologies.add(new IsoDepAdapter(slotNumber, wrapper, true));
 
             int serviceHandle = store.add(slotNumber, technologies);
 
@@ -219,7 +216,7 @@ public abstract class AbstractService extends Service {
 
             List<TagTechnology> technologies = new ArrayList<TagTechnology>();
             technologies.add(new NfcAAdapter(slotNumber, wrapper, false));
-            technologies.add(new IsdoDepAdapter(slotNumber, wrapper, false));
+            technologies.add(new IsoDepAdapter(slotNumber, wrapper, false));
 
             int serviceHandle = store.add(slotNumber, technologies);
 

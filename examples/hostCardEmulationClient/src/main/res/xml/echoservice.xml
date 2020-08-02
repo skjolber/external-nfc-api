@@ -4,8 +4,8 @@
 
     <aid-group
         android:category="other"
-        android:description="@string/aidDescription" >
-        	<aid-filter android:name="F00A2B4C6D8E"  />
+        android:description="@string/echoServiceDescription" >
+        	<aid-filter android:name="D2760000850101"  />
          </aid-group>
 
 </host-apdu-service>

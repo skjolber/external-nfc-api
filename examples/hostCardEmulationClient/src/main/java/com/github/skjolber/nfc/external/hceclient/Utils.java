@@ -2,6 +2,11 @@ package com.github.skjolber.nfc.external.hceclient;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +15,29 @@ import java.io.InputStream;
 public class Utils {
 
     private static String TAG = Utils.class.getName();
+
+    public static String parseAid(Activity a, int resource) {
+        XmlPullParserFactory parserFactory;
+        try (XmlResourceParser parser = a.getResources().getXml(resource)) {
+            int eventType;
+            do {
+                eventType = parser.next();
+                if(eventType == XmlPullParser.START_TAG) {
+                    if(parser.getName().equals("aid-filter")) {
+                        for(int i = 0; i < parser.getAttributeCount(); i++) {
+                            if(parser.getAttributeName(i).equals("name")) {
+                                return parser.getAttributeValue(i);
+                            }
+                        }
+                    }
+                }
+            } while(eventType != XmlPullParser.END_DOCUMENT);
+
+            throw new IllegalArgumentException("No aid-filter found");
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
 
     public static byte[] getResource(int r, Activity a) throws IOException {
         Resources res = a.getResources();

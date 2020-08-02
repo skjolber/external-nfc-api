@@ -21,3 +21,13 @@ android {
 
 
 
+dependencies {
+
+    api ("com.github.skjolber.android.nfc:wrapper:1.0.0-SNAPSHOT@aar") {
+        changing = true
+    }
+
+}
+
+
+

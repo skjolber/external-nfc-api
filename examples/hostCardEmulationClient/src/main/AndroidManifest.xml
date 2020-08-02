@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
          >
         <activity
-            android:name=".EchoHostAdpuServiceActivity"
+            android:name=".HceActivity"
             android:label="@string/appName"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance"
@@ -38,7 +38,7 @@
        
             <meta-data
                 android:name="android.nfc.cardemulation.host_apdu_service"
-                android:resource="@xml/apduservice" />
+                android:resource="@xml/echoservice" />
         </service>
 
         <activity
