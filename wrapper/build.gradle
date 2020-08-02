@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 29
     }
 
     buildTypes {
@@ -23,9 +23,7 @@ android {
 
 dependencies {
 
-    api ("com.github.skjolber.android.nfc:wrapper:1.0.0-SNAPSHOT@aar") {
-        changing = true
-    }
+    api ("com.github.skjolber.android.nfc:wrapper:1.0.0@aar")
 
 }
 
