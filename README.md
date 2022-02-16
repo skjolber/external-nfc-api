@@ -9,7 +9,11 @@ Features:
 
 As this project very much simplifies implementation for use-cases requiring external NFC readers, it saves a lot of development time (2-8 weeks depending on use-case and previous knowledge).
 
-Bugs, feature suggestions and help requests can be filed with the [issue-tracker]. __DO NOT send me emails unless you're prepared to pay for my time.__
+## Alternative
+Most of the code within this repository has been refined into [Entur's android-nfc-lib](https://github.com/entur/android-nfc-lib). This does not include
+
+ * NDEF handling
+ * Bluetooth reader
 
 ## License
 [Apache 2.0]
